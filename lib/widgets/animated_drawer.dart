@@ -31,7 +31,7 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
     );
     size = Tween<double>(
       begin: 0,
-      end: 500,
+      end: 300,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
   }
 
@@ -59,7 +59,7 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
         color: Colors.black,
         height: size.value,
         width: 170,
-        child: size.value >= 400
+        child: size.value >= 300
             ? Column(
                 children: [
                   FadeSlideIn(

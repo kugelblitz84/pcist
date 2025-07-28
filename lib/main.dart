@@ -53,7 +53,7 @@ class pcIST extends StatelessWidget {
           page: () => SignUp(),
           transition: Transition.cupertino,
         ),
-        GetPage(name: '/dashBoard', page: () => Userdashboard()),
+        GetPage(name: '/dashBoard', page: () => UserDashboard()),
         GetPage(name: '/OtpPage', page: () => OTPpage()),
         GetPage(name: '/takeUserDetails', page: () => MemberFormPage()),
         GetPage(name: '/setEvent', page: () => SetEventPage()),

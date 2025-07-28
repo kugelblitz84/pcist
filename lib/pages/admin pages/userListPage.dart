@@ -65,7 +65,6 @@ class _UserListPageState extends State<UserListPage> {
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                // Dropdown for selecting users per page
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
@@ -109,23 +108,55 @@ class _UserListPageState extends State<UserListPage> {
                   ),
                 ),
 
-                // Table header
+                // Table header with deep orange background
                 Container(
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange,
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey.shade400),
+                    ),
+                  ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 8,
+                    vertical: 12,
                   ),
-                  color: Colors.grey.shade300,
                   child: Row(
                     children: const [
-                      Expanded(flex: 2, child: Text('Name')),
-                      Expanded(flex: 3, child: Text('Email')),
-                      Expanded(flex: 2, child: Text('Membership')),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          'Name',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          'Email',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          'Membership',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
 
-                // User List
+                // User list with thin borders
                 Expanded(
                   child: ListView.builder(
                     itemCount: currentUsers.length,
@@ -137,27 +168,48 @@ class _UserListPageState extends State<UserListPage> {
                       }
 
                       return InkWell(
-                        onTap: () {
-                          Get.to(EditUserByAdmin(slug: user['slug']));
-                          // TODO: Navigate to detail page
-                          // Navigator.push(context, MaterialPageRoute(builder: (_) => UserDetailsPage(userId: user['_id'])));
-                        },
+                        onTap: () =>
+                            Get.to(EditUserByAdmin(slug: user['slug'])),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
                           decoration: BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(color: Colors.grey.shade200),
+                              bottom: BorderSide(color: Colors.grey.shade300),
                             ),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 14,
                           ),
                           child: Row(
                             children: [
-                              Expanded(flex: 2, child: Text(nameDisplay)),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      right: BorderSide(
+                                        color: Colors.grey.shade300,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(nameDisplay),
+                                ),
+                              ),
                               Expanded(
                                 flex: 3,
-                                child: Text(user['email'] ?? 'No Email'),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      right: BorderSide(
+                                        color: Colors.grey.shade300,
+                                      ),
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text(user['email'] ?? 'No Email'),
+                                ),
                               ),
                               Expanded(
                                 flex: 2,
@@ -165,6 +217,11 @@ class _UserListPageState extends State<UserListPage> {
                                   user['membership'] == true
                                       ? 'Active'
                                       : 'Inactive',
+                                  style: TextStyle(
+                                    color: user['membership'] == true
+                                        ? Colors.green
+                                        : Colors.red,
+                                  ),
                                 ),
                               ),
                             ],
