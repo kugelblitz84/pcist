@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pcist/secret.dart';
+import 'updateUserProfile.dart';
 
 class UserDashboard extends StatelessWidget {
   UserDashboard({super.key});
@@ -58,7 +59,9 @@ class UserDashboard extends StatelessWidget {
                           top: 0,
                           left: 0,
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.to(() => UpdateUserProfile());
+                            },
                             icon: Icon(Icons.settings),
                           ),
                         ),

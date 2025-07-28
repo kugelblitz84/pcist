@@ -226,6 +226,49 @@ class Ontapprocesses {
     }
   }
 
+  static Future<void> UpdateUserProfile({
+    required String? token,
+    required String? slug,
+    required String name,
+    required String phone,
+    required String gender,
+    required String tshirt,
+    required String batch,
+    required String dept,
+    required String cfhandle,
+    required String atchandle,
+    required String cchandle,
+  }) async {
+    try {
+      final response = await UserAPI.updateUserProfile(
+        token: token ?? "",
+        name: name,
+        phone: phone,
+        gender: gender,
+        tshirt: tshirt,
+        batch: batch,
+        dept: dept,
+        cfhandle: cfhandle,
+        atchandle: atchandle,
+        cchandle: cchandle,
+        slug: slug ?? "21060",
+      );
+      if (response == null) {
+        print("error in response");
+        return;
+      }
+      final data = jsonDecode(response.body);
+      if (data['code'] == 200) {
+        UserConfig.initialiseUser();
+        Get.snackbar("Success", "Updated profile successfully");
+      } else {
+        Get.snackbar("Error", "could not update profile");
+      }
+    } catch (e) {
+      print("Eror in the ontap class $e");
+    }
+  }
+
   static Future<void> addEvent(
     String eventName,
     String eventType,
