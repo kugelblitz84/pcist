@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:pcist/authProcesses/tokenProcess.dart';
+import 'package:pcist/config/socket.dart';
 import 'package:pcist/services/userApi.dart';
+import 'package:pcist/config/eventsConfig.dart';
 
 class UserConfig extends GetxController {
   static RxBool isLoading = true.obs;
@@ -21,6 +23,8 @@ class UserConfig extends GetxController {
       final tokenData = await Tokenprocess.readToken();
 
       final response = await UserAPI.getUserData(tokenData["slug"] ?? "21010");
+      await Eventsconfig.initializeEvents();
+      await SocketConfig.connect();
       // print(
       //     'initalize user class response from get userdata: ${response.statusCode}');
       if (response.runtimeType == bool) {
@@ -39,7 +43,7 @@ class UserConfig extends GetxController {
         isLoading.value = false;
       }
     } catch (e) {
-      print('error');
+      print('error in the initializeuser function');
       retryLater();
     }
   }

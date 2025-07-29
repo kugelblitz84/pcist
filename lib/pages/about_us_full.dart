@@ -7,26 +7,26 @@ class AboutUsFull extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final galleryImages = [
-      //'assets/images/eventGallery/NASA-Space-Apps-2015.jpg',
-      // 'assets/images/eventGallery/NGPC-IUPC.jpg',
-      // 'assets/images/eventGallery/ACM-ICPC-1.jpg',
-      // 'assets/images/eventGallery/12219517_10205395078617979_8315097649185331553_n.jpg',
-      // 'assets/images/eventGallery/Code-Warriors-Challenge-Runner-Up-2015.jpg',
-      // 'assets/images/eventGallery/Google-DEV-FEST-2015.jpg',
-      // 'assets/images/eventGallery/IUGPC-2018.jpg',
-      // 'assets/images/eventGallery/IUT-IUPC-2015.jpg',
-      // 'assets/images/eventGallery/NASA-Space-Apps-2015_2.jpg',
-      // 'assets/images/eventGallery/NASA-Space-Apps-2015_3.jpg',
-      // 'assets/images/eventGallery/NASA-Space-Apps-2016.jpg',
-      // 'assets/images/eventGallery/NASA-Space-Apps-2017.jpg',
-      // 'assets/images/eventGallery/National-Hackathon-2014.jpg',
-      // 'assets/images/eventGallery/NCPC-2015.jpg',
-      // 'assets/images/eventGallery/NCPC-2018.jpg',
-      // 'assets/images/eventGallery/NGPC-2017.jpg',
-      // 'assets/images/eventGallery/NGPC-2018-Position-18th.jpg',
-      // 'assets/images/eventGallery/Power-Energy-Hackathon-2017.jpg',
-    ];
+    // final galleryImages = [
+    //   //'assets/images/eventGallery/NASA-Space-Apps-2015.jpg',
+    //   // 'assets/images/eventGallery/NGPC-IUPC.jpg',
+    //   // 'assets/images/eventGallery/ACM-ICPC-1.jpg',
+    //   // 'assets/images/eventGallery/12219517_10205395078617979_8315097649185331553_n.jpg',
+    //   // 'assets/images/eventGallery/Code-Warriors-Challenge-Runner-Up-2015.jpg',
+    //   // 'assets/images/eventGallery/Google-DEV-FEST-2015.jpg',
+    //   // 'assets/images/eventGallery/IUGPC-2018.jpg',
+    //   // 'assets/images/eventGallery/IUT-IUPC-2015.jpg',
+    //   // 'assets/images/eventGallery/NASA-Space-Apps-2015_2.jpg',
+    //   // 'assets/images/eventGallery/NASA-Space-Apps-2015_3.jpg',
+    //   // 'assets/images/eventGallery/NASA-Space-Apps-2016.jpg',
+    //   // 'assets/images/eventGallery/NASA-Space-Apps-2017.jpg',
+    //   // 'assets/images/eventGallery/National-Hackathon-2014.jpg',
+    //   // 'assets/images/eventGallery/NCPC-2015.jpg',
+    //   // 'assets/images/eventGallery/NCPC-2018.jpg',
+    //   // 'assets/images/eventGallery/NGPC-2017.jpg',
+    //   // 'assets/images/eventGallery/NGPC-2018-Position-18th.jpg',
+    //   // 'assets/images/eventGallery/Power-Energy-Hackathon-2017.jpg',
+    // ];
 
     return Scaffold(
       body: ListView(
@@ -185,25 +185,25 @@ class AboutUsFull extends StatelessWidget {
     );
   }
 
-  Widget _buildGalleryGrid(List<String> images) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: images.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          childAspectRatio: 1.5,
-        ),
-        itemBuilder: (context, index) {
-          return GalleryImage(path: images[index]);
-        },
-      ),
-    );
-  }
+  // Widget _buildGalleryGrid(List<String> images) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 10),
+  //     child: GridView.builder(
+  //       shrinkWrap: true,
+  //       physics: const NeverScrollableScrollPhysics(),
+  //       itemCount: images.length,
+  //       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+  //         crossAxisCount: 2,
+  //         mainAxisSpacing: 10,
+  //         crossAxisSpacing: 10,
+  //         childAspectRatio: 1.5,
+  //       ),
+  //       itemBuilder: (context, index) {
+  //         return GalleryImage(path: images[index]);
+  //       },
+  //     ),
+  //   );
+  // }
 }
 
 class GalleryImage extends StatelessWidget {

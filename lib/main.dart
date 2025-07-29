@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pcist/config/eventsConfig.dart';
 import 'package:pcist/config/userConfig.dart';
 import 'package:pcist/pages/MainPage.dart';
 import 'package:pcist/pages/about_us_full.dart';
@@ -15,13 +14,12 @@ import 'package:pcist/firebase_options.dart';
 import 'package:pcist/config/firebase.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:pcist/pages/admin%20pages/userListPage.dart';
-import 'package:pcist/secret.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  print(LoggedInUserData.role);
+  //print(LoggedInUserData.role);
   runApp(pcIST());
 }
 
@@ -37,7 +35,6 @@ class pcIST extends StatelessWidget {
   Widget build(BuildContext context) {
     FirebaseNotifications.initialize(context);
     UserConfig.initialiseUser();
-    Eventsconfig.initializeEvents();
     return GetMaterialApp(
       title: "pcIST",
       debugShowCheckedModeBanner: false,
