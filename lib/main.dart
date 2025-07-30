@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pcist/config/userConfig.dart';
 import 'package:pcist/pages/MainPage.dart';
 import 'package:pcist/pages/about_us_full.dart';
+import 'package:pcist/pages/admin%20pages/chatpage.dart';
 import 'package:pcist/pages/login.dart';
 import 'package:pcist/pages/signup.dart';
 import 'package:pcist/pages/admin%20pages/userDashBoard.dart';
@@ -56,6 +57,7 @@ class pcIST extends StatelessWidget {
         GetPage(name: '/setEvent', page: () => SetEventPage()),
         GetPage(name: '/AboutUsFull', page: () => AboutUsFull()),
         GetPage(name: '/userListPage', page: () => UserListPage()),
+        GetPage(name: '/chat', page: () => ChatPage()),
       ],
       home: MainPage(),
     );

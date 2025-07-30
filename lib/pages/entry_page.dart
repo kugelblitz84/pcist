@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:get/get.dart';
+import 'package:pcist/config/userConfig.dart';
 //import 'package:pcist/widgets/fade_slide_in.dart';
 
 class EntryPage extends StatelessWidget {
@@ -33,14 +34,15 @@ class EntryPage extends StatelessWidget {
           ),
         ),
         SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-          child: Text(
-            "Get Started", //this text is fine.
-            style: TextStyle(color: Colors.white),
+        if (!UserConfig.isSignedIn.value)
+          ElevatedButton(
+            onPressed: () => Get.toNamed('/login'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+            child: Text(
+              "Get Started", //this text is fine.
+              style: TextStyle(color: Colors.white),
+            ),
           ),
-        ),
         SizedBox(height: Get.height * 0.45),
         Bounce(
           infinite: true,

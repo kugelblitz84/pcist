@@ -54,51 +54,109 @@ class _EditUserByAdminState extends State<EditUserByAdmin> {
   }
 
   void toggleMembership(bool newValue) async {
-    try {
-      final uri = Uri.http(
-        Secret.siteLink,
-        '/api/v1/user/update-membership-status/$_id',
+    if (newValue) {
+      // Ask for duration in months if enabling membership
+      int? selectedMonths = await showDialog<int>(
+        context: context,
+        builder: (context) {
+          int? selected;
+          return AlertDialog(
+            title: const Text("Select Membership Duration"),
+            content: StatefulBuilder(
+              builder: (context, setState) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(3, (index) {
+                  int month = index + 1;
+                  return RadioListTile<int>(
+                    title: Text("$month Month${month > 1 ? 's' : ''}"),
+                    value: month,
+                    groupValue: selected,
+                    onChanged: (value) {
+                      setState(() => selected = value);
+                    },
+                  );
+                }),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, null),
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, selected),
+                child: const Text("Confirm"),
+              ),
+            ],
+          );
+        },
       );
-      final tokenData = await Tokenprocess.readToken();
-      final token = tokenData['authToken'];
-      final slug = tokenData['slug'];
-      final header = {
-        "Content-type": "application/json",
-        "authorization": "Bearer $token",
-      };
-      final body = jsonEncode({"slug": slug, "membership": newValue});
-      final response = await http.post(uri, headers: header, body: body);
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        setState(() {
-          membership = newValue;
+
+      // Cancel if no selection
+      if (selectedMonths == null) return;
+
+      try {
+        final uri = Uri.http(
+          Secret.siteLink,
+          '/api/v1/user/update-membership-status/$_id',
+        );
+        final tokenData = await Tokenprocess.readToken();
+        final token = tokenData['authToken'];
+        final slug = tokenData['slug'];
+        final header = {
+          "Content-type": "application/json",
+          "authorization": "Bearer $token",
+        };
+
+        final body = jsonEncode({
+          "slug": slug,
+          "membership": "true",
+          "durationInMonths": selectedMonths, // Send this to backend
         });
-      } else {
-        setState(() {
-          membership = !newValue;
-        });
-        Get.snackbar("Error", "Something went wrong");
+
+        final response = await http.post(uri, headers: header, body: body);
+
+        if (response.statusCode == 200) {
+          setState(() => membership = true);
+        } else {
+          Get.snackbar("Error", "Something went wrong ${response.statusCode}");
+        }
+      } catch (e) {
+        setState(() => membership = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error updating membership")),
+        );
       }
+    } else {
+      // Directly disable without prompt
+      try {
+        final uri = Uri.http(
+          Secret.siteLink,
+          '/api/v1/user/update-membership-status/$_id',
+        );
+        final tokenData = await Tokenprocess.readToken();
+        final token = tokenData['authToken'];
+        final slug = tokenData['slug'];
+        final header = {
+          "Content-type": "application/json",
+          "authorization": "Bearer $token",
+        };
 
-      // Send updated status to backend (implement this in your API service)
+        final body = jsonEncode({"slug": slug, "membership": false});
 
-      // final res = await UserAPI.updateMembership(widget.slug, membership);
-      // if (res.statusCode != 200) {
-      //   // Rollback on failure
-      //   setState(() {
-      //     membership = !newValue;
-      //   });
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     const SnackBar(content: Text("Failed to update membership")),
-      //   );
-      // }
-    } catch (e) {
-      setState(() {
-        membership = !newValue;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Error updating membership")),
-      );
+        final response = await http.post(uri, headers: header, body: body);
+
+        if (response.statusCode == 200) {
+          setState(() => membership = false);
+        } else {
+          Get.snackbar("Error", "Something went wrong ${response.statusCode}");
+        }
+      } catch (e) {
+        setState(() => membership = true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error updating membership")),
+        );
+      }
     }
   }
 

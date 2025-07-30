@@ -4,6 +4,7 @@ import 'package:pcist/authProcesses/tokenProcess.dart';
 import 'dart:convert';
 import 'package:pcist/secret.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart'; // for formatting date
 import 'editUserByAdmin.dart';
 
 class UserListPage extends StatefulWidget {
@@ -90,6 +91,11 @@ class _UserListPageState extends State<UserListPage> {
                           }
                         },
                       ),
+                      const SizedBox(width: 10),
+                      IconButton(
+                        onPressed: fetchUsers,
+                        icon: Icon(Icons.refresh),
+                      ),
                       const Spacer(),
                       IconButton(
                         icon: const Icon(Icons.arrow_back),
@@ -108,7 +114,7 @@ class _UserListPageState extends State<UserListPage> {
                   ),
                 ),
 
-                // Table header with deep orange background
+                // Table header
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.deepOrange,
@@ -143,7 +149,7 @@ class _UserListPageState extends State<UserListPage> {
                         ),
                       ),
                       Expanded(
-                        flex: 2,
+                        flex: 3,
                         child: Text(
                           'Membership',
                           style: TextStyle(
@@ -156,7 +162,7 @@ class _UserListPageState extends State<UserListPage> {
                   ),
                 ),
 
-                // User list with thin borders
+                // User list
                 Expanded(
                   child: ListView.builder(
                     itemCount: currentUsers.length,
@@ -165,6 +171,22 @@ class _UserListPageState extends State<UserListPage> {
                       String nameDisplay = user['name'] ?? 'Unnamed';
                       if (user['role'] == 2) {
                         nameDisplay += " (admin)";
+                      }
+
+                      bool isMember = user['membership'] == true;
+                      String membershipExpiry = '';
+
+                      if (user['membershipExpiresAt'] != null) {
+                        try {
+                          DateTime expiryDate = DateTime.parse(
+                            user['membershipExpiresAt'],
+                          );
+                          membershipExpiry = DateFormat(
+                            'dd MMM yyyy',
+                          ).format(expiryDate);
+                        } catch (e) {
+                          membershipExpiry = 'Invalid date';
+                        }
                       }
 
                       return InkWell(
@@ -212,16 +234,28 @@ class _UserListPageState extends State<UserListPage> {
                                 ),
                               ),
                               Expanded(
-                                flex: 2,
-                                child: Text(
-                                  user['membership'] == true
-                                      ? 'Active'
-                                      : 'Inactive',
-                                  style: TextStyle(
-                                    color: user['membership'] == true
-                                        ? Colors.green
-                                        : Colors.red,
-                                  ),
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      isMember ? 'Active' : 'Inactive',
+                                      style: TextStyle(
+                                        color: isMember
+                                            ? Colors.green
+                                            : Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    if (isMember && membershipExpiry.isNotEmpty)
+                                      Text(
+                                        'Expires on $membershipExpiry',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
                             ],

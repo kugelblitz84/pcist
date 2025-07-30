@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pcist/secret.dart';
 //import 'package:pcist/pages/homePage.dart';
 import 'Constructio.dart';
 import 'package:pcist/config/userConfig.dart';
@@ -22,7 +23,7 @@ class _appBarState extends State<appBar> {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
-        height: 70,
+        height: 78,
         width: Get.width,
         child: Row(
           children: [
@@ -47,8 +48,22 @@ class _appBarState extends State<appBar> {
                     Construction_text(),
                     Obx(
                       () => Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          if (UserConfig.isSignedIn.value == true &&
+                              LoggedInUserData.role == 2)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15.0),
+                              child: IconButton(
+                                iconSize: 30,
+                                onPressed: () {
+                                  Get.toNamed('/chat');
+                                  // handle message button tap
+                                },
+                                icon: Icon(Icons.message, color: Colors.white),
+                              ),
+                            ),
+                          Spacer(), // Push everything else to the right
+
                           if (UserConfig.isSignedIn.value == false)
                             GestureDetector(
                               onTap: () => Get.toNamed('/login'),
@@ -103,7 +118,7 @@ class _appBarState extends State<appBar> {
                                 if (res != true) {
                                   Get.snackbar(
                                     'Error',
-                                    "Unknown error occured",
+                                    "Unknown error occurred",
                                   );
                                 }
                               },

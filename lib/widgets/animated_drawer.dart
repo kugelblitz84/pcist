@@ -83,20 +83,20 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
                       fun: () => widget.callback(2),
                     ),
                   ),
-                  FadeSlideIn(
-                    delay: Duration(milliseconds: 120),
-                    child: DrawerTile(
-                      title: 'Contest tracker',
-                      fun: () => widget.callback(3),
-                    ),
-                  ),
-                  FadeSlideIn(
-                    delay: Duration(milliseconds: 160),
-                    child: DrawerTile(
-                      title: 'Contact',
-                      fun: () => widget.callback(4),
-                    ),
-                  ),
+                  // FadeSlideIn(
+                  //   delay: Duration(milliseconds: 120),
+                  //   child: DrawerTile(
+                  //     title: 'Contest tracker',
+                  //     fun: () => widget.callback(3),
+                  //   ),
+                  // ),
+                  // FadeSlideIn(
+                  //   delay: Duration(milliseconds: 160),
+                  //   child: DrawerTile(
+                  //     title: 'Contact',
+                  //     fun: () => widget.callback(4),
+                  //   ),
+                  // ),
                 ],
               )
             : null,
