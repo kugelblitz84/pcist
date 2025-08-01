@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/secret.dart';
 import 'updateUserProfile.dart';
 
@@ -171,21 +172,50 @@ class UserDashboard extends StatelessWidget {
                     // ),
                     if (isAdmin) ...[
                       const SizedBox(height: 12),
-                      ElevatedButton(
-                        onPressed: () {
-                          Get.toNamed("/setEvent");
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrange,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
+                      Row(
+                        //spacing: ,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Ontapprocesses.UploadToGallery();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepOrange,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 12,
+                              ),
+                            ),
+                            child: const Text(
+                              "Upload to gallery",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          "Start New Event",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
+                          //SizedBox(width: 17),
+                          Spacer(),
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.toNamed("/setEvent");
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepOrange,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 12,
+                              ),
+                            ),
+                            child: const Text(
+                              "Start New Event",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(

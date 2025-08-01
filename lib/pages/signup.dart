@@ -17,14 +17,15 @@ class SignUp extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-            gradient: const LinearGradient(
-          colors: [
-            Color.fromARGB(144, 148, 201, 241),
-            Color.fromARGB(143, 248, 146, 87)
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        )),
+          gradient: const LinearGradient(
+            colors: [
+              Color.fromARGB(144, 148, 201, 241),
+              Color.fromARGB(143, 248, 146, 87),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
         //color: Colors.black,
         child: Center(
           child: SingleChildScrollView(
@@ -34,11 +35,15 @@ class SignUp extends StatelessWidget {
                 color: const Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(
-                    color: const Color.fromARGB(255, 211, 119, 44), width: 4),
+                  color: const Color.fromARGB(255, 211, 119, 44),
+                  width: 4,
+                ),
               ),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 45),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 45,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -69,8 +74,9 @@ class SignUp extends StatelessWidget {
                             decoration: InputDecoration(
                               focusColor: Colors.deepOrange,
                               focusedBorder: UnderlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.deepOrange),
+                                borderSide: BorderSide(
+                                  color: Colors.deepOrange,
+                                ),
                               ),
                               labelText: 'Class Roll',
                               floatingLabelStyle: TextStyle(
@@ -153,12 +159,14 @@ class SignUp extends StatelessWidget {
                       decoration: InputDecoration(
                         focusColor: Colors.deepOrange,
                         focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.deepOrange)),
+                          borderSide: BorderSide(color: Colors.deepOrange),
+                        ),
                         labelText: 'Email',
                         floatingLabelStyle: TextStyle(
-                            color: Colors.deepOrange,
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.deepOrange,
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold,
+                        ),
                         border: const UnderlineInputBorder(),
                       ),
                     ),
@@ -168,57 +176,76 @@ class SignUp extends StatelessWidget {
                       decoration: InputDecoration(
                         focusColor: Colors.deepOrange,
                         focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.deepOrange)),
+                          borderSide: BorderSide(color: Colors.deepOrange),
+                        ),
                         labelText: 'Password',
                         floatingLabelStyle: TextStyle(
-                            color: Colors.deepOrange,
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.deepOrange,
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold,
+                        ),
                         border: const UnderlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 25),
                     ElevatedButton(
-                      onPressed: () async { // signup process
-                        
+                      onPressed: () async {
+                        // signup process
+
                         Ontapprocesses.SignupProcess(
-                            _emailController.text,
-                            _passwordController.text,
-                            _classrollController.text);
+                          _emailController.text,
+                          _passwordController.text,
+                          _classrollController.text,
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8))),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
                         backgroundColor: Colors.black,
                         minimumSize: const Size(double.infinity, 45),
                       ),
-                      child: const Text("Proceed",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18)),
+                      child: const Text(
+                        "Proceed",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () => Get.back(),
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8))),
-                        backgroundColor:
-                            const Color.fromARGB(255, 199, 199, 199),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
+                        backgroundColor: const Color.fromARGB(
+                          255,
+                          199,
+                          199,
+                          199,
+                        ),
                         minimumSize: const Size(double.infinity, 45),
                       ),
-                      child: const Text("Back",
-                          style: TextStyle(
-                              color: Colors.deepOrange,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 19)),
+                      child: const Text(
+                        "Back",
+                        style: TextStyle(
+                          color: Colors.deepOrange,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 19,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Home  |  "),
+                        GestureDetector(
+                          onTap: () => Get.back(),
+                          child: Text("Home  |  "),
+                        ),
                         GestureDetector(
                           onTap: () => Get.offNamed('/login'),
                           child: Text(
@@ -227,7 +254,7 @@ class SignUp extends StatelessWidget {
                           ),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),

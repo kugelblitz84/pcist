@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pcist/config/userConfig.dart';
 
 class AboutUsFull extends StatelessWidget {
   const AboutUsFull({super.key});
@@ -47,16 +48,18 @@ class AboutUsFull extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-              child: const Text(
-                "Get Started",
-                style: TextStyle(color: Colors.white),
+          if (!UserConfig.isSignedIn.value) ...[
+            Center(
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                child: const Text(
+                  "Get Started",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

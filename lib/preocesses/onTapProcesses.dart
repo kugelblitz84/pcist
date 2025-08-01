@@ -1,5 +1,7 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, avoid_print
 //import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pcist/config/userConfig.dart';
 import 'package:pcist/secret.dart';
 import 'package:pcist/services/eventApi.dart';
@@ -277,11 +279,12 @@ class Ontapprocesses {
     String description,
     List<File?> images,
     bool needMemberShip,
+    String registrationDeadline, // ✅ New parameter
   ) async {
     try {
       final tokenData = await Tokenprocess.readToken();
       final token = tokenData['authToken'], slug = tokenData['slug'];
-      //print("token: $token, slug: $slug");
+
       final response = await EventApi.addEvent(
         eventName: eventName,
         eventType: eventType,
@@ -292,8 +295,9 @@ class Ontapprocesses {
         token: token ?? "",
         slug: slug ?? "",
         needMemberShip: needMemberShip,
+        registrationDeadline: registrationDeadline, // ✅ Sent to API
       );
-      //print(response.body);
+
       final res = jsonDecode(response.body);
       print(response.statusCode);
       print(res['message']);
@@ -305,6 +309,55 @@ class Ontapprocesses {
     } catch (e) {
       Get.snackbar("Ontap class Error: ", "$e");
       print("$e");
+    }
+  }
+
+  static Future<void> registerForEvent(
+    String eventId,
+    Map<String, dynamic> data,
+    String eventType,
+  ) async {
+    try {
+      final response = await EventApi.registerForEvents(
+        eventId,
+        data,
+        eventType,
+      );
+      if (response.statusCode == 200) {
+        Get.snackbar('Success', 'Registration successful');
+      } else {
+        final responseBody = json.decode(response.body);
+        Get.snackbar('Error', responseBody['message'] ?? 'Registration failed');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  static Future<void> UploadToGallery() async {
+    try {
+      final picker = ImagePicker();
+      final pickedFiles = await picker.pickMultiImage();
+      //List<File> images = [];
+      if (pickedFiles.isNotEmpty) {
+        final images = pickedFiles.map((image) => File(image.path)).toList();
+        if (images.isNotEmpty) {
+          //print("$images, $pickedFiles");
+          final response = await EventApi.uploadImagesToGallery(images);
+          if (response.statusCode == 200) {
+            Get.snackbar("Success", "Uploaded  images to gallery");
+          } else {
+            print(response.statusCode);
+            Get.snackbar("Failed!", "Something went wrong");
+          }
+        } else {
+          print("images empty");
+        }
+      } else {
+        print("picked files empty");
+      }
+    } catch (err) {
+      print("error in the ontap class: $err");
     }
   }
 }

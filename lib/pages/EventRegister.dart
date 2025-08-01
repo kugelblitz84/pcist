@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/secret.dart'; // Assumes Event model is here
 
 class EventRegister extends StatelessWidget {
@@ -7,7 +8,9 @@ class EventRegister extends StatelessWidget {
   EventRegister({super.key, required this.event});
 
   final Color accent = Colors.deepOrange;
-
+  final _singleMember = TextEditingController();
+  List<String> memberEmails = ["", "", ""];
+  final _teamName = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,6 +121,7 @@ class EventRegister extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               TextField(
+                controller: _singleMember,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: accent),
@@ -138,6 +142,7 @@ class EventRegister extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               TextField(
+                controller: _teamName,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: accent),
@@ -157,8 +162,9 @@ class EventRegister extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              for (int i = 1; i <= 3; i++) ...[
+              for (int i = 0; i < 3; i++) ...[
                 TextField(
+                  onChanged: (value) => memberEmails[i] = value,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderSide: BorderSide(color: accent),
@@ -166,7 +172,7 @@ class EventRegister extends StatelessWidget {
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: accent, width: 2),
                     ),
-                    hintText: 'Email of Contestant $i',
+                    hintText: 'Email of Contestant ${i + 1}',
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -188,7 +194,16 @@ class EventRegister extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
+                  final data = event.eventType == 'solo'
+                      ? {"Name": _singleMember.text}
+                      : {"teamName": _teamName.text, "members": memberEmails};
                   // TODO: Handle submission
+
+                  Ontapprocesses.registerForEvent(
+                    event.id ?? "",
+                    data,
+                    event.eventType ?? "",
+                  );
                 },
                 child: const Text(
                   "Submit Registration",

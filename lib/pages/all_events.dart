@@ -123,6 +123,28 @@ class _AllEventsPageState extends State<AllEventsPage> {
                                   ),
                                 ],
                               ),
+
+                              // 🔶 Registration Deadline Row
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.schedule,
+                                    size: 20,
+                                    color: Colors.deepOrange,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    event.registrationDeadline != null
+                                        ? "Register by: ${DateFormat('dd MMM yyyy').format(event.registrationDeadline!)}"
+                                        : "No deadline",
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
                               const SizedBox(height: 4),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -147,14 +169,8 @@ class _AllEventsPageState extends State<AllEventsPage> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.deepOrange,
                                       foregroundColor: Colors.black,
-                                      // side: const BorderSide(
-                                      //   width: 1,
-                                      //   color: Colors.black,
-                                      // ), // 🔲 black border
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          16,
-                                        ), // optional: rounded corners
+                                        borderRadius: BorderRadius.circular(16),
                                       ),
                                     ),
                                     onPressed: () {
@@ -162,14 +178,7 @@ class _AllEventsPageState extends State<AllEventsPage> {
                                     },
                                     child: const Text(
                                       "Register",
-                                      style: TextStyle(
-                                        color: Color.fromARGB(
-                                          255,
-                                          255,
-                                          255,
-                                          255,
-                                        ),
-                                      ),
+                                      style: TextStyle(color: Colors.white),
                                     ),
                                   ),
                                 ],
@@ -178,8 +187,7 @@ class _AllEventsPageState extends State<AllEventsPage> {
                               Text(
                                 (event.description != null &&
                                         event.description!.length > 15)
-                                    ? event.description!.substring(0, 15) +
-                                          "....."
+                                    ? "${event.description!.substring(0, 15)}....."
                                     : event.description ?? '',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,

@@ -15,7 +15,7 @@ class FirebaseNotifications {
         .then((val) => print("subscribed to topic for global notofications"));
     // Print FCM token
     String token = await messaging.getToken() ?? "";
-    print("FCM Token: $token");
+    //print("FCM Token: $token");
     Tokenprocess.storeToken(key: 'fcmToken', token: token);
     // Handle foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {

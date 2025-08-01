@@ -17,12 +17,14 @@ class _SetEventPageState extends State<SetEventPage> {
   final TextEditingController _eventNameController = TextEditingController();
   final TextEditingController _eventTypeController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _registrationDeadlineController =
+      TextEditingController();
 
   String? _selectedLocation;
   bool _needMembership = false;
-  List<File> _eventImages = []; // ✅ initialized to empty list
+  List<File> _eventImages = [];
 
   Future<void> _pickImages() async {
     final picker = ImagePicker();
@@ -76,7 +78,6 @@ class _SetEventPageState extends State<SetEventPage> {
                       ? 'Please select an event type'
                       : null,
                 ),
-
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _dateController,
@@ -95,9 +96,9 @@ class _SetEventPageState extends State<SetEventPage> {
                         return Theme(
                           data: Theme.of(context).copyWith(
                             colorScheme: const ColorScheme.light(
-                              primary: Colors.deepOrange, // header background
-                              onPrimary: Colors.white, // header text color
-                              onSurface: Colors.black, // body text color
+                              primary: Colors.deepOrange,
+                              onPrimary: Colors.white,
+                              onSurface: Colors.black,
                             ),
                             dialogBackgroundColor: Colors.white,
                           ),
@@ -140,25 +141,49 @@ class _SetEventPageState extends State<SetEventPage> {
                       },
                     );
 
-                    setState(() {
-                      _timeController.text = TimeOfDay(
-                        hour: pickedTime!.hour,
-                        minute: pickedTime.minute,
-                      ).format(context);
-                    });
-                    // if (pickedTime != null) {
-                    //   final now = "DateTime.now()";
-                    //   final formattedTime = TimeOfDay(
-                    //     hour: pickedTime.hour,
-                    //     minute: pickedTime.minute,
-                    //   ).format(context); // Formats to hh:mm a
-                    //   setState(() {
-                    //     _timeController.text = formattedTime;
-                    //   });
-                    // }
+                    if (pickedTime != null) {
+                      setState(() {
+                        _timeController.text = pickedTime.format(context);
+                      });
+                    }
                   },
                 ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _registrationDeadlineController,
+                  decoration: const InputDecoration(
+                    labelText: 'Registration Deadline (mm/dd/yyyy)',
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  readOnly: true,
+                  onTap: () async {
+                    final pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: const ColorScheme.light(
+                              primary: Colors.deepOrange,
+                              onPrimary: Colors.white,
+                              onSurface: Colors.black,
+                            ),
+                            dialogBackgroundColor: Colors.white,
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
 
+                    if (pickedDate != null) {
+                      _registrationDeadlineController.text = DateFormat(
+                        'MM/dd/yyyy',
+                      ).format(pickedDate);
+                    }
+                  },
+                ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
                   value: _selectedLocation,
@@ -256,6 +281,7 @@ class _SetEventPageState extends State<SetEventPage> {
                         _descriptionController.text,
                         _eventImages,
                         _needMembership,
+                        _registrationDeadlineController.text, // 👈 Added
                       );
                     },
                     child: const Text(

@@ -29,6 +29,7 @@ class Event {
   String? eventName;
   String? eventType;
   DateTime? date;
+  DateTime? registrationDeadline;
   String? location;
   String? description;
   List<String> imageUrls = [];
@@ -40,6 +41,7 @@ class Event {
     required this.eventName,
     required this.eventType,
     required this.date,
+    required this.registrationDeadline,
     required this.description,
     required this.imageUrls,
     required this.location,
@@ -56,6 +58,9 @@ class Event {
       eventName: json['eventName'],
       eventType: isTeamEvent ? 'team' : 'solo',
       date: DateTime.tryParse(json['date'] ?? ''),
+      registrationDeadline: DateTime.tryParse(
+        json['registrationDeadline'] ?? '',
+      ),
       location: json['location'],
       description: json['description'],
       imageUrls: List<String>.from(

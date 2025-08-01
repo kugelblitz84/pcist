@@ -11,14 +11,15 @@ class PassResetPage extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-            gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(144, 148, 201, 241),
-            Color.fromARGB(143, 248, 146, 87)
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        )),
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(144, 148, 201, 241),
+              Color.fromARGB(143, 248, 146, 87),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
         //color: Colors.black,
         child: Center(
           child: Container(
@@ -27,7 +28,9 @@ class PassResetPage extends StatelessWidget {
               color: const Color.fromARGB(255, 255, 255, 255),
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
-                  color: const Color.fromARGB(255, 211, 119, 44), width: 4),
+                color: const Color.fromARGB(255, 211, 119, 44),
+                width: 4,
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 45),
@@ -57,7 +60,7 @@ class PassResetPage extends StatelessWidget {
                       Expanded(
                         child: TextField(
                           controller: _mailController,
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
                           decoration: InputDecoration(
                             focusColor: Colors.deepOrange,
                             focusedBorder: UnderlineInputBorder(
@@ -80,35 +83,44 @@ class PassResetPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () async {
                       await Ontapprocesses.sendForGotPassMail(
-                          mail: _mailController.text);
+                        mail: _mailController.text,
+                      );
                       LoggedInUserData.email = _mailController.text;
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
                       backgroundColor: Colors.black,
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text("Send Code",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18)),
+                    child: const Text(
+                      "Send Code",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () => Get.back(),
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
                       backgroundColor: const Color.fromARGB(255, 199, 199, 199),
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text("Back",
-                        style: TextStyle(
-                            color: Colors.deepOrange,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 19)),
+                    child: const Text(
+                      "Back",
+                      style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                 ],
@@ -131,14 +143,15 @@ class setNewPassPage extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-            gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(144, 148, 201, 241),
-            Color.fromARGB(143, 248, 146, 87)
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        )),
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(144, 148, 201, 241),
+              Color.fromARGB(143, 248, 146, 87),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
         //color: Colors.black,
         child: Center(
           child: Container(
@@ -147,7 +160,9 @@ class setNewPassPage extends StatelessWidget {
               color: const Color.fromARGB(255, 255, 255, 255),
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
-                  color: const Color.fromARGB(255, 211, 119, 44), width: 4),
+                color: const Color.fromARGB(255, 211, 119, 44),
+                width: 4,
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 45),
@@ -202,9 +217,7 @@ class setNewPassPage extends StatelessWidget {
                       border: const UnderlineInputBorder(),
                     ),
                   ),
-                  SizedBox(
-                    height: 5,
-                  ),
+                  SizedBox(height: 5),
                   TextField(
                     controller: _pass,
                     keyboardType: TextInputType.number,
@@ -229,12 +242,14 @@ class setNewPassPage extends StatelessWidget {
                     decoration: InputDecoration(
                       focusColor: Colors.deepOrange,
                       focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.deepOrange)),
+                        borderSide: BorderSide(color: Colors.deepOrange),
+                      ),
                       labelText: 'Re-type Password',
                       floatingLabelStyle: TextStyle(
-                          color: Colors.deepOrange,
-                          fontSize: 19,
-                          fontWeight: FontWeight.bold),
+                        color: Colors.deepOrange,
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                      ),
                       border: const UnderlineInputBorder(),
                     ),
                   ),
@@ -243,40 +258,51 @@ class setNewPassPage extends StatelessWidget {
                     onPressed: () async {
                       if (_pass.text == _reEnterPass.text) {
                         Ontapprocesses.setNewPass(
-                            mail: LoggedInUserData.email ?? "",
-                            code: _code.text,
-                            newPass: _pass.text);
+                          mail: LoggedInUserData.email ?? "",
+                          code: _code.text,
+                          newPass: _pass.text,
+                        );
                       } else {
                         Get.snackbar(
-                            "Error", "The two passwords do not match!!");
+                          "Error",
+                          "The two passwords do not match!!",
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
                       backgroundColor: Colors.black,
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text("Login",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18)),
+                    child: const Text(
+                      "Login",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () => Get.back(),
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
                       backgroundColor: const Color.fromARGB(255, 199, 199, 199),
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text("Back",
-                        style: TextStyle(
-                            color: Colors.deepOrange,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 19)),
+                    child: const Text(
+                      "Back",
+                      style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   GestureDetector(

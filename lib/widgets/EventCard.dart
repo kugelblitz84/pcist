@@ -2,22 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:pcist/pages/EventRegister.dart';
 import 'package:pcist/secret.dart';
 import 'package:get/get.dart';
+// import 'package:intl/intl.dart';
 
 class EventCard extends StatelessWidget {
-  // final String title;
-  // final String date;
-  // //final String time;
-  // final String location;
-  // //final String displayDate;
   final Event data;
-  const EventCard({
-    super.key,
-    required this.data,
-    //required this.displayDate,
-  });
+  const EventCard({super.key, required this.data});
+
+  bool isDeadlineOver(DateTime deadlineDate) {
+    try {
+      //final parsedDeadline = DateFormat('MM/dd/yyyy').parse(deadlineDate);
+      final now = DateTime.now();
+      return now.isAfter(deadlineDate.add(const Duration(days: 1)));
+    } catch (e) {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final bool deadlineOver =
+        data.registrationDeadline != null &&
+        isDeadlineOver(data.registrationDeadline!);
+
     return Container(
       margin: const EdgeInsets.all(8),
       width: double.infinity,
@@ -42,7 +48,7 @@ class EventCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${data.eventName} (${data.eventType})" ?? "Untitled",
+                  "${data.eventName} (${data.eventType})",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -55,15 +61,12 @@ class EventCard extends StatelessWidget {
                     const Icon(
                       Icons.calendar_today,
                       size: 14,
-                      color: Color.fromARGB(255, 255, 255, 255),
+                      color: Colors.white,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       data.date.toString(),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
+                      style: const TextStyle(fontSize: 14, color: Colors.white),
                     ),
                   ],
                 ),
@@ -73,11 +76,11 @@ class EventCard extends StatelessWidget {
                     const Icon(
                       Icons.location_on,
                       size: 14,
-                      color: Color.fromARGB(255, 255, 255, 255),
+                      color: Colors.white,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      data.location ?? "Please contact an admin for loaction",
+                      data.location ?? "Please contact an admin for location",
                       style: const TextStyle(
                         fontSize: 14,
                         color: Color.fromARGB(255, 248, 248, 248),
@@ -85,33 +88,49 @@ class EventCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 4),
+                if (data.registrationDeadline != null)
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.hourglass_bottom,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Deadline: ${data.registrationDeadline!}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // OutlinedButton(
-                    //   onPressed: () {
-                    //     // Navigate to event details
-                    //   },
-                    //   style: OutlinedButton.styleFrom(
-                    //     side: const BorderSide(color: Colors.deepOrange),
-                    //     foregroundColor: Colors.deepOrange,
-                    //   ),
-                    //   child: const Text('View Details'),
-                    // ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Handle registration
-                        Get.to(EventRegister(event: data));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepOrange,
-                      ),
-                      child: const Text(
-                        'Register',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
+                    deadlineOver
+                        ? const Text(
+                            "Registration Closed",
+                            style: TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : ElevatedButton(
+                            onPressed: () {
+                              Get.to(EventRegister(event: data));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepOrange,
+                            ),
+                            child: const Text(
+                              'Register',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                   ],
                 ),
               ],
