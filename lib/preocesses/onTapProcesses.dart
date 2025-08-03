@@ -1,13 +1,16 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, avoid_print
 //import 'package:flutter/widgets.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pcist/config/eventsConfig.dart';
 import 'package:pcist/config/userConfig.dart';
+import 'package:pcist/pages/eventPages/all_events.dart';
 import 'package:pcist/secret.dart';
 import 'package:pcist/services/eventApi.dart';
 import 'package:pcist/services/userApi.dart';
 import 'package:pcist/authProcesses/tokenProcess.dart';
-import 'package:pcist/pages/passResetPage.dart';
+import 'package:pcist/pages/authPages/passResetPage.dart';
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'dart:io';
@@ -39,7 +42,7 @@ class Ontapprocesses {
           //   }
           // });
 
-          await Get.offNamed('/dashBoard');
+          await Get.offNamed('/');
 
           // final dataResponse = await UserAPI.getUserData(slug);
           // final data = jsonDecode(dataResponse.body);
@@ -72,10 +75,10 @@ class Ontapprocesses {
     final response = await UserAPI.register(roll, email, pass);
     final res = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      Get.snackbar(
-        'ontap class: ',
-        res['message'] + ' ' + res['status'].toString(),
-      );
+      // Get.snackbar(
+      //   'ontap class: ',
+      //   res['message'] + ' ' + res['status'].toString(),
+      // );
       //Get.snackbar('status: ', res['status']);
       if (res['status'] == true) {
         //registration successfull , now verify email using otp and store token
@@ -103,7 +106,7 @@ class Ontapprocesses {
       final secureData = await Tokenprocess.readToken();
       final token = secureData['authToken'] ?? "",
           slug = secureData['slug'] ?? "";
-      print("ontap process class slug: $slug");
+      //print("ontap process class slug: $slug");
       final response = await UserAPI.verifyOTP(code, token, slug);
       final res = jsonDecode(response.body);
       Get.snackbar('', res['message']);
@@ -147,10 +150,10 @@ class Ontapprocesses {
       );
 
       final res = jsonDecode(response.body);
-      print("response: $res");
+      //print("response: $res");
       Get.snackbar('', res['message']);
       if (res['status'] == true) {
-        Get.snackbar('debug error', '✅ ${res['message']}');
+        //Get.snackbar('debug error', '✅ ${res['message']}');
         UserAPI.SetUserDatafromJson({
           'classroll':
               LoggedInUserData.classroll, //set during the signup process.
@@ -193,7 +196,7 @@ class Ontapprocesses {
     try {
       await Tokenprocess.eraseToken();
       await UserConfig.logOutUser();
-      return true;
+      Get.offAllNamed('/');
     } catch (e) {
       return e;
     }
@@ -331,6 +334,26 @@ class Ontapprocesses {
       }
     } catch (e) {
       Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  static Future<void> deleteEvent({required String id}) async {
+    try {
+      final response = await EventApi.deleteEvent(id: id);
+      Get.back();
+      Get.back();
+
+      if (response.statusCode == 200) {
+        Get.snackbar("Success!", "event deleted successfully");
+        await Eventsconfig.initializeEvents();
+        Get.off(AllEventsPage());
+      } else if (response.statusCode == 404) {
+        Get.snackbar("Failed!", "Event not found");
+      } else {
+        throw (response.statusCode);
+      }
+    } catch (err) {
+      print("Error in the ontap class: $err");
     }
   }
 

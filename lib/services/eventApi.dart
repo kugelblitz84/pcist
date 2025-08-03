@@ -156,6 +156,23 @@ class EventApi {
       print("error in the event api class: $err");
     }
   }
+
+  static Future<dynamic> deleteEvent({required String id}) async {
+    try {
+      final tokenData = await Tokenprocess.readToken();
+      final token = tokenData['authToken'], slug = tokenData['slug'];
+      final uri = Uri.http(Secret.siteLink, '/api/v1/event/delete_event/$id');
+      final headers = {
+        "Content-type": "application/json",
+        'Authorization': 'Bearer $token',
+      };
+      final body = jsonEncode({'slug': slug});
+      final response = await http.post(uri, headers: headers, body: body);
+      return response;
+    } catch (e) {
+      print("error in the event api class: $e");
+    }
+  }
 }
 
 MediaType getMediaType(String filePath) {

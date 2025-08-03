@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pcist/pages/entry_page.dart';
 import 'package:pcist/pages/about_us.dart';
-import 'package:pcist/pages/events.dart';
+import 'package:pcist/pages/eventPages/events.dart';
 //import 'package:get/get.dart';
 import 'package:pcist/widgets/appBar.dart';
 import 'package:pcist/widgets/animated_drawer.dart';
@@ -47,60 +47,67 @@ class HomePageState extends State<HomePage> {
         //SizedBox(height: 10),
         // appbar
         // CustomAppBar(),
-        appBar(callback: callBackToggleDrawer),
+        appBar(callback: callBackToggleDrawer, open: drawerOpen),
         //body
         Expanded(
-          child: Stack(
-            children: [
-              //back ground image
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 600),
-                switchInCurve: Curves.linear,
-                switchOutCurve: Curves.linear,
-                child: LayoutBuilder(
-                  key: ValueKey<String>(images[_pageOffset]),
-                  builder: (context, constraints) {
-                    return Image.asset(
-                      images[_pageOffset],
-                      fit: BoxFit.cover,
-                      width: constraints.maxWidth,
-                      height: constraints.maxHeight,
-                    );
-                  },
+          child: GestureDetector(
+            onTap: () {
+              if (drawerOpen) {
+                callBackToggleDrawer();
+              }
+            },
+            child: Stack(
+              children: [
+                //back ground image
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 600),
+                  switchInCurve: Curves.linear,
+                  switchOutCurve: Curves.linear,
+                  child: LayoutBuilder(
+                    key: ValueKey<String>(images[_pageOffset]),
+                    builder: (context, constraints) {
+                      return Image.asset(
+                        images[_pageOffset],
+                        fit: BoxFit.cover,
+                        width: constraints.maxWidth,
+                        height: constraints.maxHeight,
+                      );
+                    },
+                  ),
                 ),
-              ),
-              // dark filter
-              SizedBox.expand(
-                child: Container(color: Colors.black.withAlpha(170)),
-              ),
-              //scrollable pages
-              PageView(
-                controller: _pageController,
-                scrollDirection: Axis.vertical,
-                pageSnapping: true,
-                children: [
-                  FadeSlideIn(
-                    delay: Duration(milliseconds: 400),
-                    child: EntryPage(),
-                  ),
-                  FadeSlideIn(
-                    delay: Duration(milliseconds: 400),
-                    child: AboutUs(),
-                  ),
-                  FadeSlideIn(
-                    delay: Duration(milliseconds: 400),
-                    child: Events(),
-                  ),
-                ],
-              ),
-              Positioned(
-                right: 0,
-                child: AnimatedDrawer(
-                  isOpen: drawerOpen,
-                  callback: callbackJumpToPage,
+                // dark filter
+                SizedBox.expand(
+                  child: Container(color: Colors.black.withAlpha(170)),
                 ),
-              ),
-            ],
+                //scrollable pages
+                PageView(
+                  controller: _pageController,
+                  scrollDirection: Axis.vertical,
+                  pageSnapping: true,
+                  children: [
+                    FadeSlideIn(
+                      delay: Duration(milliseconds: 400),
+                      child: EntryPage(),
+                    ),
+                    FadeSlideIn(
+                      delay: Duration(milliseconds: 400),
+                      child: AboutUs(),
+                    ),
+                    FadeSlideIn(
+                      delay: Duration(milliseconds: 400),
+                      child: Events(),
+                    ),
+                  ],
+                ),
+                Positioned(
+                  right: 0,
+                  child: AnimatedDrawer(
+                    isOpen: drawerOpen,
+                    callback: callbackJumpToPage,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],

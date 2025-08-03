@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pcist/pages/EventRegister.dart';
+import 'package:pcist/pages/eventPages/EventRegister.dart';
 import 'package:pcist/secret.dart';
 import 'package:get/get.dart';
 // import 'package:intl/intl.dart';
@@ -12,7 +12,7 @@ class EventCard extends StatelessWidget {
     try {
       //final parsedDeadline = DateFormat('MM/dd/yyyy').parse(deadlineDate);
       final now = DateTime.now();
-      return now.isAfter(deadlineDate.add(const Duration(days: 1)));
+      return now.isAfter(deadlineDate.add(const Duration(days: 0)));
     } catch (e) {
       return false;
     }

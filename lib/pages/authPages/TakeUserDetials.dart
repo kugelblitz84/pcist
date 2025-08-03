@@ -47,7 +47,7 @@ class MemberFormPage extends StatelessWidget {
           gradient: LinearGradient(
             colors: [
               Color.fromARGB(144, 148, 201, 241),
-              Color.fromARGB(143, 248, 146, 87),
+              Color.fromARGB(143, 248, 146, 87)
             ],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
@@ -61,9 +61,7 @@ class MemberFormPage extends StatelessWidget {
               color: Colors.white.withAlpha(5),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: const Color.fromARGB(255, 211, 119, 44),
-                width: 3.5,
-              ),
+                  color: const Color.fromARGB(255, 211, 119, 44), width: 3.5),
               boxShadow: [
                 BoxShadow(
                   color: Colors.deepOrange.withOpacity(0.2),
@@ -106,61 +104,55 @@ class MemberFormPage extends StatelessWidget {
                             decoration: _textFieldDecoration("Batch"),
                           ),
                           const SizedBox(height: 15),
-                          Obx(
-                            () => DropdownButtonFormField<String>(
-                              value: selectedGender.value.isEmpty
-                                  ? null
-                                  : selectedGender.value,
-                              decoration: _textFieldDecoration("Gender"),
-                              items: genders.map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (value) =>
-                                  selectedGender.value = value!,
-                            ),
-                          ),
+                          Obx(() => DropdownButtonFormField<String>(
+                                value: selectedGender.value.isEmpty
+                                    ? null
+                                    : selectedGender.value,
+                                decoration: _textFieldDecoration("Gender"),
+                                items: genders.map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (value) =>
+                                    selectedGender.value = value!,
+                              )),
                           const SizedBox(height: 15),
-                          Obx(
-                            () => DropdownButtonFormField<String>(
-                              value: selectedShirtSize.value.isEmpty
-                                  ? null
-                                  : selectedShirtSize.value,
-                              decoration: _textFieldDecoration("Shirt Size"),
-                              items: shirtSizes.map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (value) =>
-                                  selectedShirtSize.value = value!,
-                            ),
-                          ),
+                          Obx(() => DropdownButtonFormField<String>(
+                                value: selectedShirtSize.value.isEmpty
+                                    ? null
+                                    : selectedShirtSize.value,
+                                decoration: _textFieldDecoration("Shirt Size"),
+                                items: shirtSizes.map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (value) =>
+                                    selectedShirtSize.value = value!,
+                              )),
                           const SizedBox(height: 15),
-                          Obx(
-                            () => DropdownButtonFormField<String>(
-                              value: selectedDept.value.isEmpty
-                                  ? null
-                                  : selectedDept.value,
-                              decoration: _textFieldDecoration("Department"),
-                              items: departments.map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (value) => selectedDept.value = value!,
-                            ),
-                          ),
+                          Obx(() => DropdownButtonFormField<String>(
+                                value: selectedDept.value.isEmpty
+                                    ? null
+                                    : selectedDept.value,
+                                decoration: _textFieldDecoration("Department"),
+                                items: departments.map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (value) =>
+                                    selectedDept.value = value!,
+                              )),
                           const SizedBox(height: 15),
                           TextField(
                             controller: _cfCon,
-                            decoration: _textFieldDecoration(
-                              "Codeforces Handle",
-                            ),
+                            decoration:
+                                _textFieldDecoration("Codeforces Handle"),
                           ),
                           const SizedBox(height: 15),
                           TextField(
@@ -182,54 +174,45 @@ class MemberFormPage extends StatelessWidget {
                       final token = await Tokenprocess.readToken();
                       // handle form submission
                       await Ontapprocesses.setUserDetails(
-                        token: token['authToken'] ?? "",
-                        name: _nameCon.text,
-                        phone: _phoneCon.text,
-                        gender: selectedGender.string,
-                        shirt: selectedShirtSize.string,
-                        batch: _batchCon.text,
-                        dept: selectedDept.string,
-                        cfhandle: _cfCon.text.isEmpty ? "" : _cfCon.text,
-                        atchandle: _atcCon.text.isEmpty ? "" : _atcCon.text,
-                        cchandle: _ccCon.text.isEmpty ? "" : _ccCon.text,
-                        slug: token['slug'] ?? "",
-                      );
-                      Get.offAllNamed('/');
+                          token: token['authToken'] ?? "",
+                          name: _nameCon.text,
+                          phone: _phoneCon.text,
+                          gender: selectedGender.string,
+                          shirt: selectedShirtSize.string,
+                          batch: _batchCon.text,
+                          dept: selectedDept.string,
+                          cfhandle: _cfCon.text.isEmpty ? "" : _cfCon.text,
+                          atchandle: _atcCon.text.isEmpty ? "" : _atcCon.text,
+                          cchandle: _ccCon.text.isEmpty ? "" : _ccCon.text,
+                          slug: token['slug'] ?? "");
+                      Get.offAll(HomePage());
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
+                          borderRadius: BorderRadius.all(Radius.circular(12))),
                       backgroundColor: Colors.black,
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: const Text(
-                      "Proceed",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
+                    child: const Text("Proceed",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () => Get.back(),
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
+                          borderRadius: BorderRadius.all(Radius.circular(12))),
                       backgroundColor: Color.fromARGB(255, 240, 240, 240),
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: const Text(
-                      "Back",
-                      style: TextStyle(
-                        color: Colors.deepOrange,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
+                    child: const Text("Back",
+                        style: TextStyle(
+                            color: Colors.deepOrange,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -241,13 +224,12 @@ class MemberFormPage extends StatelessWidget {
                         child: const Text(
                           "Login",
                           style: TextStyle(
-                            color: Colors.deepOrange,
-                            fontWeight: FontWeight.bold,
-                          ),
+                              color: Colors.deepOrange,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),

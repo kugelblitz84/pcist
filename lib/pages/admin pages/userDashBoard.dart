@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pcist/authProcesses/tokenProcess.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/secret.dart';
+import 'package:pcist/services/userApi.dart';
 import 'updateUserProfile.dart';
 
 class UserDashboard extends StatelessWidget {
@@ -82,7 +84,6 @@ class UserDashboard extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 12),
                     Text(
                       fullName,
@@ -92,6 +93,36 @@ class UserDashboard extends StatelessWidget {
                         color: Colors.black87,
                       ),
                     ),
+                    if (!LoggedInUserData.isEmailVerified) ...[
+                      SizedBox(height: 15),
+                      Center(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            SizedBox(width: Get.width * 0.145),
+                            Text("User not verified "),
+                            GestureDetector(
+                              child: Text(
+                                "Verify now?",
+                                style: TextStyle(color: Colors.deepOrange),
+                              ),
+                              onTap: () async {
+                                final tokenData =
+                                    await Tokenprocess.readToken();
+                                final token = tokenData['authToken'],
+                                    slug = tokenData['slug'];
+                                UserAPI.sendVerificationMail(
+                                  token ?? "",
+                                  slug ?? "",
+                                );
+                                Get.toNamed('/OtpPage');
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+
                     const Divider(height: 30, thickness: 1.2),
                     infoRow(
                       label: "Class Roll",
@@ -218,21 +249,60 @@ class UserDashboard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          Get.toNamed("/userListPage");
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
+                      Row(
+                        //spacing: ,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.toNamed('/userListPage');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                0,
+                                0,
+                                0,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 12,
+                              ),
+                            ),
+                            child: const Text(
+                              "Manage Members",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          "Manage Members",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
+                          //SizedBox(width: 17),
+                          Spacer(),
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.toNamed("/allEvents");
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                0,
+                                0,
+                                0,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 13,
+                                vertical: 12,
+                              ),
+                            ),
+                            child: const Text(
+                              "Manage Events",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ],

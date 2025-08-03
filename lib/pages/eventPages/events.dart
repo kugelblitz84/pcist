@@ -26,7 +26,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:pcist/config/eventsConfig.dart';
-import 'package:pcist/pages/all_events.dart';
+import 'package:pcist/pages/eventPages/all_events.dart';
 import 'package:pcist/widgets/EventCard.dart';
 import 'package:pcist/widgets/fade_slide_in.dart';
 import 'package:get/get.dart';

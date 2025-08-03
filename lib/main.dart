@@ -4,10 +4,10 @@ import 'package:pcist/config/userConfig.dart';
 import 'package:pcist/pages/MainPage.dart';
 import 'package:pcist/pages/about_us_full.dart';
 import 'package:pcist/pages/admin%20pages/chatpage.dart';
-import 'package:pcist/pages/login.dart';
-import 'package:pcist/pages/signup.dart';
+import 'package:pcist/pages/authPages/login.dart';
+import 'package:pcist/pages/authPages/signup.dart';
 import 'package:pcist/pages/admin%20pages/userDashBoard.dart';
-import 'package:pcist/pages/OTPpage.dart';
+import 'package:pcist/pages/authPages/OTPpage.dart';
 import 'package:pcist/pages/TakeUserDetials.dart';
 import 'package:pcist/pages/admin%20pages/SetEventPage.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,6 +15,7 @@ import 'package:pcist/firebase_options.dart';
 import 'package:pcist/config/firebase.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:pcist/pages/admin%20pages/userListPage.dart';
+import 'package:pcist/pages/eventPages/all_events.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,6 +59,7 @@ class pcIST extends StatelessWidget {
         GetPage(name: '/AboutUsFull', page: () => AboutUsFull()),
         GetPage(name: '/userListPage', page: () => UserListPage()),
         GetPage(name: '/chat', page: () => ChatPage()),
+        GetPage(name: '/allEvents', page: () => AllEventsPage()),
       ],
       home: MainPage(),
     );

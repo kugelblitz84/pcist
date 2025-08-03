@@ -84,10 +84,7 @@ class UserAPI {
     String slug,
   ) async {
     try {
-      final uri = Uri.http(
-        Secret.siteLink,
-        '/api/v1/user/send-verification-email',
-      );
+      final uri = Uri.http(Secret.siteLink, '/api/v1/user/verify-user');
       final header = {
         "Content-type": "application/json",
         "authorization": "Bearer $token",

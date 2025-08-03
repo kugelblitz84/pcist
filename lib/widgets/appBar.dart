@@ -9,14 +9,15 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 class appBar extends StatefulWidget {
   final VoidCallback callback;
-  appBar({super.key, required this.callback});
+  late bool open;
+  appBar({super.key, required this.callback, required this.open});
 
   @override
   State<appBar> createState() => _appBarState();
 }
 
 class _appBarState extends State<appBar> {
-  bool drawerOpen = false;
+  //bool drawerOpen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -114,13 +115,7 @@ class _appBarState extends State<appBar> {
                                 ),
                               ),
                               onTap: () async {
-                                final res = await Ontapprocesses.logOut();
-                                if (res != true) {
-                                  Get.snackbar(
-                                    'Error',
-                                    "Unknown error occurred",
-                                  );
-                                }
+                                await Ontapprocesses.logOut();
                               },
                             ),
                           ],
@@ -128,7 +123,7 @@ class _appBarState extends State<appBar> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                drawerOpen = !drawerOpen;
+                                //drawerOpen = !drawerOpen;
                                 widget.callback();
                               });
                             },
@@ -156,10 +151,10 @@ class _appBarState extends State<appBar> {
                                         child: child,
                                       ),
                                   child: Icon(
-                                    drawerOpen
+                                    widget.open
                                         ? LucideIcons.x
                                         : LucideIcons.menu,
-                                    key: ValueKey<bool>(drawerOpen),
+                                    key: ValueKey<bool>(widget.open),
                                     size: 18,
                                     color: Colors.white,
                                   ),
