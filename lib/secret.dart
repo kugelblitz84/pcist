@@ -35,6 +35,7 @@ class Event {
   List<String> imageUrls = [];
   bool? needMembership;
   List<String> registeredMembers = [];
+  List<RegisteredTeam> registeredTeams = [];
 
   Event({
     required this.id,
@@ -47,6 +48,7 @@ class Event {
     required this.location,
     required this.needMembership,
     required this.registeredMembers,
+    required this.registeredTeams,
   });
 
   factory Event.setDataFromJson(Map<String, dynamic> json) {
@@ -70,13 +72,35 @@ class Event {
 
       // Handle member/teams accordingly
       registeredMembers: isTeamEvent
-          ? [] // team events won't have flat registered members
+          ? []
           : List<String>.from(
-              (json['registeredMembers'] ?? []).map((m) => m['userId']),
+              (json['registeredMembers'] ?? []).map((m) => m['Name']),
             ),
+      registeredTeams: isTeamEvent
+          ? List<RegisteredTeam>.from(
+              (json['registeredTeams'] ?? []).map(
+                (teamData) => RegisteredTeam.fromJson(teamData),
+              ),
+            )
+          : [],
     );
   }
 }
+
+class RegisteredTeam {
+  String teamName;
+  List<String> members;
+
+  RegisteredTeam({required this.teamName, required this.members});
+
+  factory RegisteredTeam.fromJson(Map<String, dynamic> json) {
+    return RegisteredTeam(
+      teamName: json['teamName'],
+      members: List<String>.from((json['members'] ?? []).map((m) => m['Name'])),
+    );
+  }
+}
+
 
 
 // {

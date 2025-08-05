@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:pcist/config/eventsConfig.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:pcist/pages/eventPages/EventRegister.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/secret.dart';
+import 'viewEventParticipation.dart';
 
 class AllEventsPage extends StatefulWidget {
   const AllEventsPage({super.key});
@@ -128,7 +131,10 @@ class _AllEventsPageState extends State<AllEventsPage> {
                                         ),
                                         builder: (context) =>
                                             FractionallySizedBox(
-                                              heightFactor: 0.7,
+                                              heightFactor:
+                                                  LoggedInUserData.role == 2
+                                                  ? 0.7
+                                                  : 0.2,
                                               child: EventOptionsPopup(
                                                 event: event,
                                               ),
@@ -339,13 +345,15 @@ class _EventOptionsPopupState extends State<EventOptionsPopup> {
 
   @override
   Widget build(BuildContext context) {
+    final int role = LoggedInUserData.role ?? 1;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Drag Handle
+            // Drag handle
             Center(
               child: Container(
                 height: 4,
@@ -359,116 +367,141 @@ class _EventOptionsPopupState extends State<EventOptionsPopup> {
             ),
 
             // Title
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                "Edit Event Details",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              child: (role == 2)
+                  ? Text(
+                      "Edit Event Details",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  : Text(widget.event.eventName ?? ""),
             ),
             const SizedBox(height: 24),
 
-            // 📆 Deadline
-            Row(
-              children: [
-                const Icon(Icons.date_range, color: Colors.deepOrange),
-                const SizedBox(width: 10),
-                const Text("Deadline:", style: TextStyle(fontSize: 16)),
-                const Spacer(),
-                TextButton.icon(
-                  onPressed: _pickDeadline,
-                  icon: const Icon(
-                    Icons.edit_calendar,
-                    color: Colors.deepOrange,
-                  ),
-                  label: Text(
-                    _selectedDeadline != null
-                        ? DateFormat('dd MMM yyyy').format(_selectedDeadline!)
-                        : 'Select Date',
-                    style: const TextStyle(color: Colors.black87),
-                  ),
-                ),
-              ],
+            // Show Registered Teams/Members (for all roles)
+            ElevatedButton.icon(
+              onPressed: () {
+                Get.to(ViewParticipationPage(event: widget.event));
+              },
+              icon: Icon(
+                widget.event.eventType == 'solo' ? Icons.people : Icons.groups,
+              ),
+              label: Text(
+                widget.event.eventType == 'solo'
+                    ? "Show Registered Members"
+                    : "Show Registered Teams",
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepOrange,
+                foregroundColor: Colors.white,
+              ),
             ),
+
             const SizedBox(height: 20),
 
-            // 📝 Description
-            Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                "Description",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            if (role == 2) ...[
+              // Only show the edit controls for role 2
+              Row(
+                children: [
+                  const Icon(Icons.date_range, color: Colors.deepOrange),
+                  const SizedBox(width: 10),
+                  const Text("Deadline:", style: TextStyle(fontSize: 16)),
+                  const Spacer(),
+                  TextButton.icon(
+                    onPressed: _pickDeadline,
+                    icon: const Icon(
+                      Icons.edit_calendar,
+                      color: Colors.deepOrange,
+                    ),
+                    label: Text(
+                      _selectedDeadline != null
+                          ? DateFormat('dd MMM yyyy').format(_selectedDeadline!)
+                          : 'Select Date',
+                      style: const TextStyle(color: Colors.black87),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _descriptionController,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                hintText: "Enter event description...",
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
+              const SizedBox(height: 20),
+
+              Align(
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  "Description",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-
-            // 📍 Location
-            Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                "Location",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _descriptionController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  hintText: "Enter event description...",
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              value: _location,
-              items: ["Auditorium", "Lab 1", "Lab 2"]
-                  .map(
-                    (location) => DropdownMenuItem(
-                      value: location,
-                      child: Text(location),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  _location = value!;
-                });
-              },
-              decoration: const InputDecoration(labelText: 'Select Location'),
-            ),
-            const SizedBox(height: 30),
+              const SizedBox(height: 24),
 
-            // Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _handleUpdate,
-                    icon: const Icon(Icons.save),
-                    label: const Text("Update"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  "Location",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                value: _location,
+                items: ["Auditorium", "Lab 1", "Lab 2"]
+                    .map(
+                      (location) => DropdownMenuItem(
+                        value: location,
+                        child: Text(location),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _location = value!;
+                  });
+                },
+                decoration: const InputDecoration(labelText: 'Select Location'),
+              ),
+              const SizedBox(height: 30),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _handleUpdate,
+                      icon: const Icon(Icons.save),
+                      label: const Text("Update"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: _handleDelete,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
+                  const SizedBox(width: 10),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: _handleDelete,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+            ],
           ],
         ),
       ),
