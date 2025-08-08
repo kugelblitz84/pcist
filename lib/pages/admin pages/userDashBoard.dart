@@ -63,7 +63,58 @@ class UserDashboard extends StatelessWidget {
                           left: 0,
                           child: IconButton(
                             onPressed: () {
-                              Get.to(() => UpdateUserProfile());
+                              if (LoggedInUserData.isEmailVerified) {
+                                Get.to(() => UpdateUserProfile());
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    backgroundColor: const Color.fromARGB(
+                                      255,
+                                      255,
+                                      255,
+                                      255,
+                                    ), // Orange
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                      side: const BorderSide(
+                                        color: Colors.deepOrange, // Blue border
+                                        width: 2,
+                                      ),
+                                    ),
+                                    title: const Text(
+                                      "Email Not Verified",
+                                      style: TextStyle(
+                                        color: Colors.deepOrange, // Dark text
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    content: const Text(
+                                      "Please verify your email to update your profile.",
+                                      style: TextStyle(
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          backgroundColor:
+                                              Colors.deepOrange, // Blue
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                        ),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        child: const Text("OK"),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
                             },
                             icon: Icon(Icons.settings),
                           ),

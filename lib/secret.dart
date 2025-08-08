@@ -1,5 +1,7 @@
 class Secret {
-  static final siteLink = 'pcist-backend-21023948f2fe.herokuapp.com';
+  static final production = "pcist-backend-21023948f2fe.herokuapp.com";
+  static final development = "192.168.0.103:4000";
+  static final siteLink = development;
 }
 
 class LoggedInUserData {

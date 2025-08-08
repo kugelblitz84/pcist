@@ -21,11 +21,11 @@ class Ontapprocesses {
   static Future<void> LoginProcess(String roll, String pass) async {
     try {
       final response = await UserAPI.login(roll, pass);
-      print("response: ${response.statusCode}");
+      //print("response: ${response.statusCode}");
       final res = jsonDecode(response.body);
       if (response.statusCode == 200) {
         // Get.snackbar('debug error',"stat code: ${statCode}"); ////////
-        Get.snackbar('', res['message'] + " success : ${res['status']}");
+        //Get.snackbar('', res['message'] + " success : ${res['status']}");
         final token = res['token'];
         final slug = res['slug'];
         // Get.snackbar('', res['message']);
@@ -42,7 +42,7 @@ class Ontapprocesses {
           //   }
           // });
 
-          await Get.offNamed('/');
+          await Get.offAllNamed('/');
 
           // final dataResponse = await UserAPI.getUserData(slug);
           // final data = jsonDecode(dataResponse.body);
@@ -154,7 +154,7 @@ class Ontapprocesses {
       Get.snackbar('', res['message']);
       if (res['status'] == true) {
         //Get.snackbar('debug error', '✅ ${res['message']}');
-        UserAPI.SetUserDatafromJson({
+        await UserAPI.SetUserDatafromJson({
           'classroll':
               LoggedInUserData.classroll, //set during the signup process.
           'email': LoggedInUserData.email, //set during the signup process.
@@ -163,11 +163,14 @@ class Ontapprocesses {
           'gender': gender,
           'tshirt': shirt,
           'batch': batch,
+          'isEmailVerified': true,
           'dept': dept,
           'cfhandle': cfhandle,
           'atchandle': atchandle,
           'cchandle': cchandle,
         });
+        UserConfig.isSignedIn.value = true;
+        Get.offAllNamed('/');
       } else {
         Get.snackbar('debug error', '⚠️ Failed: ${res['message']}');
       }
