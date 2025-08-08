@@ -97,7 +97,7 @@ class Ontapprocesses {
         ); //get to the otp page to receive the code from user and verify
       }
     } else {
-      Get.snackbar('', res['message']);
+      Get.snackbar('Failed', "Email already in use");
     }
   }
 

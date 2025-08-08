@@ -46,7 +46,7 @@ class UserAPI {
 
     // print("inside uri");
     uri = Uri.http(Secret.siteLink, '/api/v1/user/get-user-data');
-    print("uri made");
+    //print("uri made");
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({"slug": slug});
 

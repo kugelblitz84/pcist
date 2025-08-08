@@ -1,5 +1,5 @@
 class Secret {
-  static final siteLink = '192.168.0.103:4000';
+  static final siteLink = 'pcist-backend-21023948f2fe.herokuapp.com';
 }
 
 class LoggedInUserData {
@@ -52,7 +52,6 @@ class Event {
   });
 
   factory Event.setDataFromJson(Map<String, dynamic> json) {
-    // Determine if it's a solo or team event
     final isTeamEvent = json.containsKey('registeredTeams');
 
     return Event(
@@ -69,8 +68,6 @@ class Event {
         (json['images'] ?? []).map((image) => image['url']),
       ),
       needMembership: json['needMembership'] ?? false,
-
-      // Handle member/teams accordingly
       registeredMembers: isTeamEvent
           ? []
           : List<String>.from(
