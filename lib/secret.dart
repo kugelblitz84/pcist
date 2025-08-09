@@ -5,6 +5,7 @@ class Secret {
 }
 
 class LoggedInUserData {
+  static String? id;
   static String? classroll;
   static String? email;
   static String? verificationCode;

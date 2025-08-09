@@ -179,6 +179,8 @@ class UserAPI {
   static Future<void> SetUserDatafromJson(Map<String, dynamic> json) async {
     //String name = json['name'];
     print("user api class set user data from json called : $json");
+    LoggedInUserData.id = json['_id']?.toString();
+    LoggedInUserData.classroll = json['classroll']?.toString();
     LoggedInUserData.role = json['role'];
     LoggedInUserData.classroll = json['classroll']?.toString();
     LoggedInUserData.email = json['email']?.toString();
