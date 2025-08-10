@@ -1,7 +1,7 @@
 class Secret {
   static final production = "pcist-backend-21023948f2fe.herokuapp.com";
   static final development = "192.168.0.103:4000";
-  static final siteLink = development;
+  static final siteLink = production; // Change to development for local testing
 }
 
 class LoggedInUserData {
