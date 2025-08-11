@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pcist/config/eventsConfig.dart';
 import 'package:pcist/config/userConfig.dart';
 import 'package:pcist/pages/eventPages/all_events.dart';
+import 'package:pcist/preocesses/notificationProcoes.dart';
 import 'package:pcist/secret.dart';
 import 'package:pcist/services/eventApi.dart';
 import 'package:pcist/services/userApi.dart';
@@ -309,6 +310,12 @@ class Ontapprocesses {
       print(res['message']);
       if (response.statusCode == 200) {
         Get.snackbar("Success", res['message']);
+        notificationProcess.sendGlobalNotification(
+          title: "New event available",
+          message: description,
+          token: token ?? "",
+          slug: slug ?? "",
+        );
       } else {
         Get.snackbar("Failed", res['message']);
       }
