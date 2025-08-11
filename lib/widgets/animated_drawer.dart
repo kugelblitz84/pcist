@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/widgets/fade_slide_in.dart';
 
 //import 'package:get/get.dart';
@@ -81,6 +82,13 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
                     child: DrawerTile(
                       title: 'Events',
                       fun: () => widget.callback(2),
+                    ),
+                  ),
+                  FadeSlideIn(
+                    delay: Duration(milliseconds: 80),
+                    child: DrawerTile(
+                      title: 'Log Out',
+                      fun: () => Ontapprocesses.logOut(),
                     ),
                   ),
                   // FadeSlideIn(

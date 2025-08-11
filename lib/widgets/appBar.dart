@@ -6,6 +6,8 @@ import 'Constructio.dart';
 import 'package:pcist/config/userConfig.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:pcist/pages/notfiications_pages.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class appBar extends StatefulWidget {
   final VoidCallback callback;
@@ -18,6 +20,10 @@ class appBar extends StatefulWidget {
 
 class _appBarState extends State<appBar> {
   //bool drawerOpen = false;
+  Future<bool> _hasUnread() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool("hasUnread") ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +37,13 @@ class _appBarState extends State<appBar> {
             // Logo section
             Expanded(
               flex: 1,
-              child: Container(
-                color: Colors.white,
-                child: Image.asset(
-                  'assets/images/download.png',
-                  fit: BoxFit.fill,
+              child: SafeArea(
+                child: Container(
+                  color: Colors.white,
+                  child: Image.asset(
+                    'assets/images/download.png',
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
             ),
@@ -107,17 +115,57 @@ class _appBarState extends State<appBar> {
                             ),
                             SizedBox(width: 10),
                             GestureDetector(
-                              child: Text(
-                                'Logout',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
                               onTap: () async {
-                                await Ontapprocesses.logOut();
+                                await Get.to(() => const NotificationsPage());
+                                setState(
+                                  () {},
+                                ); // Refresh to hide red dot after reading
                               },
+                              child: Stack(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.notifications,
+                                      color: Colors.white,
+                                      size: 28,
+                                    ),
+                                  ),
+                                  FutureBuilder<bool>(
+                                    future: _hasUnread(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.data == true) {
+                                        return Positioned(
+                                          right: 6,
+                                          top: 6,
+                                          child: Container(
+                                            width: 10,
+                                            height: 10,
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      return const SizedBox();
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
+                            // GestureDetector(
+                            //   child: Text(
+                            //     'Logout',
+                            //     style: TextStyle(
+                            //       fontSize: 16,
+                            //       color: Colors.white,
+                            //     ),
+                            //   ),
+                            //   onTap: () async {
+                            //     await Ontapprocesses.logOut();
+                            //   },
+                            // ),
                           ],
                           SizedBox(width: 17),
                           GestureDetector(

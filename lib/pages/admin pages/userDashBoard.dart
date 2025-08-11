@@ -5,6 +5,7 @@ import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/secret.dart';
 import 'package:pcist/services/userApi.dart';
 import 'updateUserProfile.dart';
+import 'package:get/get.dart';
 
 class UserDashboard extends StatelessWidget {
   UserDashboard({super.key});
@@ -253,103 +254,102 @@ class UserDashboard extends StatelessWidget {
                     //   ),
                     // ),
                     if (isAdmin) ...[
-                      const SizedBox(height: 12),
                       Row(
-                        //spacing: ,
                         children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Ontapprocesses.UploadToGallery();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepOrange,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 12,
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Ontapprocesses.UploadToGallery();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepOrange,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal:
+                                      Get.width * 0.02, // 2% of screen width
+                                  vertical:
+                                      Get.height *
+                                      0.015, // 1.5% of screen height
+                                ),
                               ),
-                            ),
-                            child: const Text(
-                              "Upload to gallery",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
+                              child: Text(
+                                "Upload to gallery",
+                                style: TextStyle(
+                                  fontSize:
+                                      Get.width * 0.04, // 4% of screen width
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
-                          //SizedBox(width: 17),
-                          Spacer(),
-                          ElevatedButton(
-                            onPressed: () {
-                              Get.toNamed("/setEvent");
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepOrange,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 12,
+                          SizedBox(
+                            width: Get.width * 0.02,
+                          ), // spacing between buttons
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Get.toNamed("/setEvent");
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepOrange,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: Get.width * 0.02,
+                                  vertical: Get.height * 0.015,
+                                ),
                               ),
-                            ),
-                            child: const Text(
-                              "Start New Event",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
+                              child: Text(
+                                "Start New Event",
+                                style: TextStyle(
+                                  fontSize: Get.width * 0.04,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: Get.height * 0.015),
                       Row(
-                        //spacing: ,
                         children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Get.toNamed('/userListPage');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                0,
-                                0,
-                                0,
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Get.toNamed('/userListPage');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: Get.width * 0.02,
+                                  vertical: Get.height * 0.015,
+                                ),
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
-                                vertical: 12,
-                              ),
-                            ),
-                            child: const Text(
-                              "Manage Members",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
+                              child: Text(
+                                "Manage Members",
+                                style: TextStyle(
+                                  fontSize: Get.width * 0.038,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
-                          //SizedBox(width: 17),
-                          Spacer(),
-                          ElevatedButton(
-                            onPressed: () {
-                              Get.toNamed("/allEvents");
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                0,
-                                0,
-                                0,
+                          SizedBox(width: Get.width * 0.02),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Get.toNamed("/allEvents");
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: Get.width * 0.02,
+                                  vertical: Get.height * 0.015,
+                                ),
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 13,
-                                vertical: 12,
-                              ),
-                            ),
-                            child: const Text(
-                              "Manage Events",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
+                              child: Text(
+                                "Manage Events",
+                                style: TextStyle(
+                                  fontSize: Get.width * 0.04,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
