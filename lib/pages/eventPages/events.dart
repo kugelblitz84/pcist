@@ -72,7 +72,6 @@ class _EventsState extends State<Events> {
                 'No Upcoming Events',
                 style: TextStyle(
                   fontSize: 18,
-                  fontFamily: 'monospace',
                   decoration: TextDecoration.none,
                   color: Colors.white,
                 ),

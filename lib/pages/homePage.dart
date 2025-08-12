@@ -47,6 +47,7 @@ class HomePageState extends State<HomePage> {
         //SizedBox(height: 10),
         // appbar
         // CustomAppBar(),
+        SizedBox(height: 23),
         appBar(callback: callBackToggleDrawer, open: drawerOpen),
         //body
         Expanded(

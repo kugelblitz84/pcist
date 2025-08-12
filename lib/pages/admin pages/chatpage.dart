@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pcist/authProcesses/tokenProcess.dart';
-import 'package:pcist/config/userConfig.dart';
+//import 'package:pcist/config/userConfig.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pcist/config/socket.dart';
 import 'package:pcist/secret.dart'; // adjust path if needed
@@ -141,87 +141,111 @@ class _ChatPageState extends State<ChatPage> {
     _saveMessages();
   }
 
-  Future<void> _loadMessages() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = prefs.getString('chatMessages');
-    if (data != null) {
-      setState(() {
-        messages = List<Map<String, dynamic>>.from(jsonDecode(data));
-      });
-    }
-  }
-
   Future<void> _saveMessages() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('chatMessages', jsonEncode(messages));
   }
 
   Widget _buildMessage(Map<String, dynamic> msg) {
-    bool isMe = msg['senderName'] == LoggedInUserData.name;
+    bool isMe = msg['senderId'] == LoggedInUserData.id;
+
+    // Parse and format sentAt timestamp string, if it's in ISO8601 format
+    String formattedTime;
+    try {
+      DateTime dateTime = DateTime.parse(msg['sentAt']);
+      formattedTime = DateFormat('dd-MM-yyyy hh:mm a').format(dateTime);
+    } catch (e) {
+      formattedTime = msg['sentAt'].toString(); // fallback to raw string
+    }
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       child: Column(
         crossAxisAlignment: isMe
             ? CrossAxisAlignment.end
             : CrossAxisAlignment.start,
         children: [
-          if (!isMe)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 2),
-              child: Text(
-                msg['senderName'],
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: Colors.black87,
-                ),
-              ),
+          // Sender name always visible, in a smaller, lighter font
+          Text(
+            msg['senderName'],
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+              color: Colors.grey[700],
             ),
+          ),
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: isMe
                 ? MainAxisAlignment.end
                 : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (!isMe) const SizedBox(width: 8),
-              Container(
-                constraints: BoxConstraints(maxWidth: 280),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: isMe
-                      ? const Color.fromARGB(255, 240, 101, 58)
-                      : const Color.fromARGB(235, 100, 100, 100),
-                  borderRadius: const BorderRadius.all(Radius.circular(15)),
+              if (!isMe)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.grey[400],
+                    child: Text(
+                      msg['senderName']
+                          .toString()
+                          .substring(0, 2)
+                          .toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
-                child: Text(
-                  msg['text'],
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isMe
+                        ? const Color.fromARGB(255, 240, 101, 58)
+                        : const Color.fromARGB(235, 100, 100, 100),
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(15),
+                      topRight: const Radius.circular(15),
+                      bottomLeft: Radius.circular(isMe ? 15 : 0),
+                      bottomRight: Radius.circular(isMe ? 0 : 15),
+                    ),
+                  ),
+                  child: Text(
+                    msg['text'],
+                    style: const TextStyle(color: Colors.white, fontSize: 15),
+                  ),
                 ),
               ),
               if (isMe)
                 Padding(
-                  padding: const EdgeInsets.all(3.0),
+                  padding: const EdgeInsets.only(left: 8),
                   child: CircleAvatar(
-                    radius: 14,
+                    radius: 16,
                     backgroundColor: Colors.black54,
                     child: Text(
                       msg['senderName']
                           .toString()
                           .substring(0, 2)
                           .toUpperCase(),
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 2),
-          Padding(
-            padding: EdgeInsets.only(left: isMe ? 0 : 38, right: isMe ? 8 : 0),
-            child: Text(
-              msg['sentAt'],
-              style: const TextStyle(fontSize: 10, color: Colors.black45),
-            ),
+          const SizedBox(height: 4),
+          Text(
+            formattedTime,
+            style: const TextStyle(fontSize: 10, color: Colors.black45),
           ),
         ],
       ),

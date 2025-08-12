@@ -4,26 +4,35 @@ import 'package:get/get.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'passResetPage.dart';
 
-class LoginPage extends StatelessWidget {
-  int _classRoll = 0;
-  String classroll = "", password = "";
-  final TextEditingController _classrollController = TextEditingController(),
-      _passwordController = TextEditingController();
+class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  int _classRoll = 0;
+
+  String classroll = "", password = "";
+
+  final TextEditingController _classrollController = TextEditingController(),
+      _passwordController = TextEditingController();
+  String loginText = "Login";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-            gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(144, 148, 201, 241),
-            Color.fromARGB(143, 248, 146, 87)
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        )),
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(144, 148, 201, 241),
+              Color.fromARGB(143, 248, 146, 87),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
         //color: Colors.black,
         child: Center(
           child: Container(
@@ -32,7 +41,9 @@ class LoginPage extends StatelessWidget {
               color: const Color.fromARGB(255, 255, 255, 255),
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
-                  color: const Color.fromARGB(255, 211, 119, 44), width: 4),
+                color: const Color.fromARGB(255, 211, 119, 44),
+                width: 4,
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 45),
@@ -161,47 +172,65 @@ class LoginPage extends StatelessWidget {
                     decoration: InputDecoration(
                       focusColor: Colors.deepOrange,
                       focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.deepOrange)),
+                        borderSide: BorderSide(color: Colors.deepOrange),
+                      ),
                       labelText: 'Password',
                       floatingLabelStyle: TextStyle(
-                          color: Colors.deepOrange,
-                          fontSize: 19,
-                          fontWeight: FontWeight.bold),
+                        color: Colors.deepOrange,
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                      ),
                       border: const UnderlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 25),
                   ElevatedButton(
                     onPressed: () async {
-                      Ontapprocesses.LoginProcess(
-                          _classrollController.text, _passwordController.text);
+                      setState(() {
+                        loginText = "Logging in...";
+                      });
+                      await Ontapprocesses.LoginProcess(
+                        _classrollController.text,
+                        _passwordController.text,
+                      );
+                      setState(() {
+                        loginText = "Login";
+                      });
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
                       backgroundColor: Colors.black,
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text("Login",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18)),
+                    child: Text(
+                      loginText,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () => Get.back(),
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
                       backgroundColor: const Color.fromARGB(255, 199, 199, 199),
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text("Back",
-                        style: TextStyle(
-                            color: Colors.deepOrange,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 19)),
+                    child: const Text(
+                      "Back",
+                      style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   GestureDetector(

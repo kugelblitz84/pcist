@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:pcist/config/userConfig.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/widgets/fade_slide_in.dart';
 
@@ -32,7 +34,7 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
     );
     size = Tween<double>(
       begin: 0,
-      end: 300,
+      end: UserConfig.isSignedIn.value ? 250 : 200,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
   }
 
@@ -60,53 +62,56 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
         color: Colors.black,
         height: size.value,
         width: 170,
-        child: size.value >= 300
-            ? Column(
-                children: [
-                  FadeSlideIn(
-                    delay: Duration(milliseconds: 0),
-                    child: DrawerTile(
-                      title: 'Home',
-                      fun: () => widget.callback(0),
+        child: size.value >= (UserConfig.isSignedIn.value ? 250 : 200)
+            ? Obx(() {
+                return Column(
+                  children: [
+                    FadeSlideIn(
+                      delay: Duration(milliseconds: 0),
+                      child: DrawerTile(
+                        title: 'Home',
+                        fun: () => widget.callback(0),
+                      ),
                     ),
-                  ),
-                  FadeSlideIn(
-                    delay: Duration(milliseconds: 40),
-                    child: DrawerTile(
-                      title: 'About Us',
-                      fun: () => widget.callback(1),
+                    FadeSlideIn(
+                      delay: Duration(milliseconds: 50),
+                      child: DrawerTile(
+                        title: 'About Us',
+                        fun: () => widget.callback(1),
+                      ),
                     ),
-                  ),
-                  FadeSlideIn(
-                    delay: Duration(milliseconds: 80),
-                    child: DrawerTile(
-                      title: 'Events',
-                      fun: () => widget.callback(2),
+                    FadeSlideIn(
+                      delay: Duration(milliseconds: 100),
+                      child: DrawerTile(
+                        title: 'Events',
+                        fun: () => widget.callback(2),
+                      ),
                     ),
-                  ),
-                  FadeSlideIn(
-                    delay: Duration(milliseconds: 80),
-                    child: DrawerTile(
-                      title: 'Log Out',
-                      fun: () => Ontapprocesses.logOut(),
-                    ),
-                  ),
-                  // FadeSlideIn(
-                  //   delay: Duration(milliseconds: 120),
-                  //   child: DrawerTile(
-                  //     title: 'Contest tracker',
-                  //     fun: () => widget.callback(3),
-                  //   ),
-                  // ),
-                  // FadeSlideIn(
-                  //   delay: Duration(milliseconds: 160),
-                  //   child: DrawerTile(
-                  //     title: 'Contact',
-                  //     fun: () => widget.callback(4),
-                  //   ),
-                  // ),
-                ],
-              )
+                    if (UserConfig.isSignedIn.value)
+                      FadeSlideIn(
+                        delay: Duration(milliseconds: 150),
+                        child: DrawerTile(
+                          title: 'Log Out',
+                          fun: () => Ontapprocesses.logOut(),
+                        ),
+                      ),
+                    // FadeSlideIn(
+                    //   delay: Duration(milliseconds: 120),
+                    //   child: DrawerTile(
+                    //     title: 'Contest tracker',
+                    //     fun: () => widget.callback(3),
+                    //   ),
+                    // ),
+                    // FadeSlideIn(
+                    //   delay: Duration(milliseconds: 160),
+                    //   child: DrawerTile(
+                    //     title: 'Contact',
+                    //     fun: () => widget.callback(4),
+                    //   ),
+                    // ),
+                  ],
+                );
+              })
             : null,
       ),
     );

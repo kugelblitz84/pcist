@@ -33,6 +33,7 @@ class AboutUsFull extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 10),
         children: [
+          const SizedBox(height: 13),
           _buildHeader(),
           _buildIntroText(),
           _buildWhatWeOffer(),

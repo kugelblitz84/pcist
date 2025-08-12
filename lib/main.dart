@@ -39,6 +39,12 @@ class pcIST extends StatelessWidget {
     UserConfig.initialiseUser();
     return GetMaterialApp(
       title: "pcIST",
+      theme: ThemeData(
+        fontFamily: 'Outfit',
+        // textTheme: Theme.of(context).textTheme.apply(
+        //   fontWeightDelta: 2, // makes the default weight bolder
+        // ),
+      ),
       debugShowCheckedModeBanner: false,
       getPages: [
         GetPage(name: '/', page: () => MainPage()),

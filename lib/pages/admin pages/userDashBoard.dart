@@ -275,7 +275,7 @@ class UserDashboard extends StatelessWidget {
                                 "Upload to gallery",
                                 style: TextStyle(
                                   fontSize:
-                                      Get.width * 0.04, // 4% of screen width
+                                      Get.width * 0.039, // 4% of screen width
                                   color: Colors.white,
                                 ),
                               ),
@@ -299,7 +299,7 @@ class UserDashboard extends StatelessWidget {
                               child: Text(
                                 "Start New Event",
                                 style: TextStyle(
-                                  fontSize: Get.width * 0.04,
+                                  fontSize: Get.width * 0.039,
                                   color: Colors.white,
                                 ),
                               ),
@@ -347,7 +347,7 @@ class UserDashboard extends StatelessWidget {
                               child: Text(
                                 "Manage Events",
                                 style: TextStyle(
-                                  fontSize: Get.width * 0.04,
+                                  fontSize: Get.width * 0.039,
                                   color: Colors.white,
                                 ),
                               ),

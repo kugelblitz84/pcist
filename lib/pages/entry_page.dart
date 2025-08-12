@@ -20,7 +20,7 @@ class _EntryPageState extends State<EntryPage> {
       children: [
         SizedBox(height: 40),
         const Text(
-          'Welcome to PCIST \n Where Innovation Meets Code!', //this text has a weird font and underline
+          'Welcome to PCIST - Where Innovation Meets Code!', //this text has a weird font and underline
           style: TextStyle(
             color: Colors.white,
             fontSize: 30,
@@ -35,6 +35,7 @@ class _EntryPageState extends State<EntryPage> {
             style: TextStyle(
               color: const Color.fromARGB(255, 255, 254, 254),
               fontSize: 15,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ),

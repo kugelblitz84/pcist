@@ -27,197 +27,123 @@ class _appBarState extends State<appBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: SizedBox(
-        height: 78,
-        width: Get.width,
-        child: Row(
-          children: [
-            // Logo section
-            Expanded(
-              flex: 1,
-              child: SafeArea(
-                child: Container(
-                  color: Colors.white,
-                  child: Image.asset(
-                    'assets/images/download.png',
-                    fit: BoxFit.fill,
-                  ),
-                ),
+    return Container(
+      height: 60,
+      color: Colors.black, // App bar background
+      //padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Logo
+          SizedBox(
+            height: 60, // same as app bar height
+            width: 60, // match width proportionally to height
+            child: Image.asset(
+              'assets/images/download.png',
+              fit: BoxFit.cover, // fills without border, may crop edges
+            ),
+          ),
+          if (LoggedInUserData.role == 2) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 5),
+              child: IconButton(
+                onPressed: () => Get.toNamed('/chat'),
+                icon: Icon(Icons.message),
+                color: Colors.white,
               ),
             ),
-            // Menu and options
-            Expanded(
-              flex: 6,
-              child: Container(
-                color: Colors.black,
-                child: Column(
-                  children: [
-                    Construction_text(),
-                    Obx(
-                      () => Row(
-                        children: [
-                          if (UserConfig.isSignedIn.value == true &&
-                              LoggedInUserData.role == 2)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 15.0),
-                              child: IconButton(
-                                iconSize: 30,
-                                onPressed: () {
-                                  Get.toNamed('/chat');
-                                  // handle message button tap
-                                },
-                                icon: Icon(Icons.message, color: Colors.white),
-                              ),
-                            ),
-                          Spacer(), // Push everything else to the right
-
-                          if (UserConfig.isSignedIn.value == false)
-                            GestureDetector(
-                              onTap: () => Get.toNamed('/login'),
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 7.0),
-                                child: Text(
-                                  'Login',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          SizedBox(width: 17),
-                          if (UserConfig.isSignedIn.value == false)
-                            GestureDetector(
-                              onTap: () => Get.toNamed('/signup'),
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 7.0),
-                                child: Text(
-                                  'Register',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          if (UserConfig.isSignedIn.value == true) ...[
-                            GestureDetector(
-                              child: Text(
-                                'Profile',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              onTap: () => Get.toNamed('/dashBoard'),
-                            ),
-                            SizedBox(width: 10),
-                            GestureDetector(
-                              onTap: () async {
-                                await Get.to(() => const NotificationsPage());
-                                setState(
-                                  () {},
-                                ); // Refresh to hide red dot after reading
-                              },
-                              child: Stack(
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.notifications,
-                                      color: Colors.white,
-                                      size: 28,
-                                    ),
-                                  ),
-                                  FutureBuilder<bool>(
-                                    future: _hasUnread(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.data == true) {
-                                        return Positioned(
-                                          right: 6,
-                                          top: 6,
-                                          child: Container(
-                                            width: 10,
-                                            height: 10,
-                                            decoration: BoxDecoration(
-                                              color: Colors.red,
-                                              shape: BoxShape.circle,
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                      return const SizedBox();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // GestureDetector(
-                            //   child: Text(
-                            //     'Logout',
-                            //     style: TextStyle(
-                            //       fontSize: 16,
-                            //       color: Colors.white,
-                            //     ),
-                            //   ),
-                            //   onTap: () async {
-                            //     await Ontapprocesses.logOut();
-                            //   },
-                            // ),
-                          ],
-                          SizedBox(width: 17),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                //drawerOpen = !drawerOpen;
-                                widget.callback();
-                              });
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: 5,
-                                right: 5,
-                                bottom: 5,
-                              ),
-                              child: Container(
-                                height: 30,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 1,
-                                  ),
-                                ),
-                                child: AnimatedSwitcher(
-                                  duration: Duration(milliseconds: 300),
-                                  transitionBuilder: (child, animation) =>
-                                      ScaleTransition(
-                                        scale: animation,
-                                        child: child,
-                                      ),
-                                  child: Icon(
-                                    widget.open
-                                        ? LucideIcons.x
-                                        : LucideIcons.menu,
-                                    key: ValueKey<bool>(widget.open),
-                                    size: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            const SizedBox(width: 15),
           ],
+          Spacer(),
+          // Menu Items
+          Obx(() {
+            return Row(
+              children: [
+                if (UserConfig.isSignedIn.value == false) ...[
+                  _navText('Login', '/login'),
+                  const SizedBox(width: 15),
+                  _navText('Register', '/signup'),
+                ] else ...[
+                  _navText('Profile', '/dashBoard'),
+                  const SizedBox(width: 10),
+                  _notificationIcon(),
+                ],
+
+                const SizedBox(width: 15),
+
+                // Drawer toggle
+                _menuButton(),
+              ],
+            );
+          }),
+          SizedBox(width: 15),
+        ],
+      ),
+    );
+  }
+
+  // Navigation Text Helper
+  Widget _navText(String text, String route) {
+    return GestureDetector(
+      onTap: () => Get.toNamed(route),
+      child: Text(
+        text,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+      ),
+    );
+  }
+
+  // Notification Icon Helper
+  Widget _notificationIcon() {
+    return GestureDetector(
+      onTap: () async {
+        await Get.to(() => const NotificationsPage());
+        setState(() {});
+      },
+      child: Stack(
+        children: [
+          const Icon(Icons.notifications, color: Colors.white, size: 26),
+          FutureBuilder<bool>(
+            future: _hasUnread(),
+            builder: (context, snapshot) {
+              if (snapshot.data == true) {
+                return Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Menu Button Helper
+  Widget _menuButton() {
+    return GestureDetector(
+      onTap: () => widget.callback(),
+      child: Container(
+        height: 30,
+        width: 30,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 1),
+        ),
+        child: Icon(
+          widget.open ? LucideIcons.x : LucideIcons.menu,
+          size: 18,
+          color: Colors.white,
         ),
       ),
     );
