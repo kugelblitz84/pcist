@@ -173,6 +173,47 @@ class EventApi {
       print("error in the event api class: $e");
     }
   }
+
+  static Future<dynamic> updateEvent({
+    required String id,
+    String? eventName,
+    String? date,
+    String? description,
+    String? location,
+    String? registrationDeadline,
+  }) async {
+    try {
+      final tokenData = await Tokenprocess.readToken();
+      final token = tokenData['authToken'];
+      final slug = tokenData['slug'];
+
+      final uri = Uri.http(Secret.siteLink, '/api/v1/event/update_event/$id');
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      final Map<String, dynamic> body = {};
+      if (eventName != null) body['eventName'] = eventName;
+      if (date != null) body['date'] = date;
+      if (description != null) body['description'] = description;
+      if (location != null) body['location'] = location;
+      if (registrationDeadline != null)
+        body['registrationDeadline'] = registrationDeadline;
+
+      // always include slug per backend requirement
+      body['slug'] = slug;
+
+      final response = await http.put(
+        uri,
+        headers: headers,
+        body: json.encode(body),
+      );
+      return response;
+    } catch (e) {
+      print("error in updateEvent: $e");
+    }
+  }
 }
 
 MediaType getMediaType(String filePath) {

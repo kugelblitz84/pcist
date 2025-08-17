@@ -1,9 +1,8 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:pcist/config/eventsConfig.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
+import 'package:pcist/services/eventApi.dart';
 import 'package:pcist/pages/eventPages/EventRegister.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/secret.dart';
@@ -313,11 +312,41 @@ class _EventOptionsPopupState extends State<EventOptionsPopup> {
   }
 
   void _handleUpdate() {
-    // TODO: Implement update logic using the values:
-    // _descriptionController.text
-    // _locationController.text
-    // _selectedDeadline
-    Navigator.pop(context);
+    // Collect fields and call EventApi.updateEvent
+    final String? id = widget.event.id;
+    final String? description = _descriptionController.text;
+    final String? location = _location;
+    final String? registrationDeadline = _selectedDeadline != null
+        ? DateFormat('yyyy-MM-dd').format(_selectedDeadline!)
+        : null;
+
+    if (id == null || id.isEmpty) {
+      Get.snackbar('Error', 'Invalid event id');
+      return;
+    }
+
+    EventApi.updateEvent(
+          id: id,
+          description: description,
+          location: location,
+          registrationDeadline: registrationDeadline,
+        )
+        .then((response) {
+          if (response != null && response.statusCode == 200) {
+            Get.snackbar('Success', 'Event updated successfully');
+            // Optionally refresh events list
+            Eventsconfig.initializeEvents();
+          } else {
+            Get.snackbar('Error', 'Failed to update event');
+            print(
+              'Update event failed: ${response?.statusCode} ${response?.body}',
+            );
+          }
+        })
+        .catchError((err) {
+          Get.snackbar('Error', 'Failed to update event: $err');
+        })
+        .whenComplete(() => Navigator.pop(context));
   }
 
   void _handleDelete() {
