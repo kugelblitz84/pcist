@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pcist/pages/entry_page.dart';
 import 'package:pcist/pages/about_us.dart';
+import 'package:pcist/pages/eventPages/contestTrackerPage.dart';
 import 'package:pcist/pages/eventPages/events.dart';
 //import 'package:get/get.dart';
 import 'package:pcist/widgets/appBar.dart';
@@ -21,6 +22,7 @@ class HomePageState extends State<HomePage> {
     'assets/images/hero-CNNTwE-V.jpg',
     'assets/images/aboutImage-B-sl_FO2.jpg',
     'assets/images/DJI_0312 (1).jpg',
+    'assets/images/5594016.jpg',
   ];
   final PageController _pageController = PageController();
   @override
@@ -97,6 +99,10 @@ class HomePageState extends State<HomePage> {
                     FadeSlideIn(
                       delay: Duration(milliseconds: 400),
                       child: Events(),
+                    ),
+                    FadeSlideIn(
+                      delay: Duration(milliseconds: 400),
+                      child: ContestTrackerPage(), // new page
                     ),
                   ],
                 ),

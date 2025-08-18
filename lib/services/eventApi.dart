@@ -214,6 +214,68 @@ class EventApi {
       print("error in updateEvent: $e");
     }
   }
+
+  // static Future<dynamic> getContestTrackerData() async {
+  //   const String url = "https://clist.by/api/v4/contest";
+  //   const Map<String, String> headers = {
+  //     'Authorization':
+  //         'ApiKey nasemul1:4a82ced2ed8fd144608f0276b068514ccc56dd60',
+  //     'Content-Type': 'application/json',
+  //   };
+
+  //   try {
+  //     final response = await http.get(Uri.parse(url), headers: headers);
+
+  //     if (response.statusCode == 200) {
+  //       return json.decode(response.body); // parsed JSON
+  //     } else {
+  //       throw Exception(
+  //         'Failed to fetch contests: ${response.statusCode} ${response.reasonPhrase}',
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching contests: $e');
+  //   }
+  // }
+}
+
+class TrackedContests {
+  // Static variable to store cached contests
+  static dynamic _cachedContests;
+
+  /// Fetch contest data only if not cached yet
+  static Future<dynamic> getContestTrackerData() async {
+    if (_cachedContests != null) {
+      return _cachedContests; // return cached data
+    }
+
+    const String url = "https://clist.by/api/v4/contest";
+    const Map<String, String> headers = {
+      'Authorization':
+          'ApiKey nasemul1:4a82ced2ed8fd144608f0276b068514ccc56dd60',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        _cachedContests = json.decode(response.body); // cache the data
+        return _cachedContests;
+      } else {
+        throw Exception(
+          'Failed to fetch contests: ${response.statusCode} ${response.reasonPhrase}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error fetching contests: $e');
+    }
+  }
+
+  /// Optional: clear cache if needed
+  static void clearCache() {
+    _cachedContests = null;
+  }
 }
 
 MediaType getMediaType(String filePath) {

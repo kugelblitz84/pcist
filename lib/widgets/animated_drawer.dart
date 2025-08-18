@@ -34,7 +34,7 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
     );
     size = Tween<double>(
       begin: 0,
-      end: UserConfig.isSignedIn.value ? 250 : 200,
+      end: UserConfig.isSignedIn.value ? 300 : 250,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
   }
 
@@ -62,7 +62,7 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
         color: Colors.black,
         height: size.value,
         width: 170,
-        child: size.value >= (UserConfig.isSignedIn.value ? 250 : 200)
+        child: size.value >= (UserConfig.isSignedIn.value ? 300 : 250)
             ? Obx(() {
                 return Column(
                   children: [
@@ -87,6 +87,13 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
                         fun: () => widget.callback(2),
                       ),
                     ),
+                    FadeSlideIn(
+                      delay: Duration(milliseconds: 200),
+                      child: DrawerTile(
+                        title: 'Contest tracker',
+                        fun: () => widget.callback(3),
+                      ),
+                    ),
                     if (UserConfig.isSignedIn.value)
                       FadeSlideIn(
                         delay: Duration(milliseconds: 150),
@@ -95,13 +102,7 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
                           fun: () => Ontapprocesses.logOut(),
                         ),
                       ),
-                    // FadeSlideIn(
-                    //   delay: Duration(milliseconds: 120),
-                    //   child: DrawerTile(
-                    //     title: 'Contest tracker',
-                    //     fun: () => widget.callback(3),
-                    //   ),
-                    // ),
+
                     // FadeSlideIn(
                     //   delay: Duration(milliseconds: 160),
                     //   child: DrawerTile(

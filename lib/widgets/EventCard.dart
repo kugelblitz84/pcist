@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pcist/pages/eventPages/EventRegister.dart';
 import 'package:pcist/secret.dart';
 import 'package:get/get.dart';
-// import 'package:intl/intl.dart';
+import 'package:intl/intl.dart'; // import intl
 
 class EventCard extends StatelessWidget {
   final Event data;
@@ -10,12 +10,16 @@ class EventCard extends StatelessWidget {
 
   bool isDeadlineOver(DateTime deadlineDate) {
     try {
-      //final parsedDeadline = DateFormat('MM/dd/yyyy').parse(deadlineDate);
       final now = DateTime.now();
-      return now.isAfter(deadlineDate.add(const Duration(days: 0)));
+      return now.isAfter(deadlineDate);
     } catch (e) {
       return false;
     }
+  }
+
+  String formatDateTime(DateTime dateTime) {
+    // Format: "dd MMM yyyy, hh:mm a" -> e.g., "18 Aug 2025, 02:30 PM"
+    return DateFormat('dd MMM yyyy, hh:mm a').format(dateTime);
   }
 
   @override
@@ -65,7 +69,9 @@ class EventCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      data.date.toString(),
+                      formatDateTime(
+                        data.date ?? DateTime.now(),
+                      ), // formatted date & time
                       style: const TextStyle(fontSize: 14, color: Colors.white),
                     ),
                   ],
@@ -99,7 +105,7 @@ class EventCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        "Deadline: ${data.registrationDeadline!}",
+                        "Deadline: ${formatDateTime(data.registrationDeadline!)}",
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.white,
