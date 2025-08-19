@@ -208,9 +208,9 @@ class _AllEventsPageState extends State<AllEventsPage> {
                                   ),
                                   Spacer(),
                                   if (event.registrationDeadline != null &&
-                                      isDeadlineOver(
+                                      !isDeadlineOver(
                                         event.registrationDeadline!,
-                                      ))
+                                      )) // 👈 fixed
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.deepOrange,
@@ -232,13 +232,15 @@ class _AllEventsPageState extends State<AllEventsPage> {
                                   else
                                     Container(
                                       height: 50,
-                                      width: 90,
-                                      child: Text(
-                                        "Registration date over",
+                                      width: 120,
+                                      alignment: Alignment.center,
+                                      child: const Text(
+                                        "Registration Closed",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.deepOrange,
                                         ),
+                                        textAlign: TextAlign.center,
                                       ),
                                     ),
                                 ],
