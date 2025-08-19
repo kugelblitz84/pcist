@@ -4,13 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 
-class SignUp extends StatelessWidget {
+class SignUp extends StatefulWidget {
   SignUp({super.key});
+
+  @override
+  State<SignUp> createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
   int _classRoll = 0;
+  String prcd = "Register";
   String classroll = "", password = "", email = "";
+
   final _classrollController = TextEditingController(),
       _emailController = TextEditingController(),
       _passwordController = TextEditingController();
+
   //final TextEditingController _controller = TextEditingController(text: '');
   @override
   Widget build(BuildContext context) {
@@ -191,7 +200,7 @@ class SignUp extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () async {
                         // signup process
-
+                        setState(() => prcd = "Registering..");
                         Ontapprocesses.SignupProcess(
                           _emailController.text,
                           _passwordController.text,
@@ -205,8 +214,8 @@ class SignUp extends StatelessWidget {
                         backgroundColor: Colors.black,
                         minimumSize: const Size(double.infinity, 45),
                       ),
-                      child: const Text(
-                        "Proceed",
+                      child: Text(
+                        prcd,
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
