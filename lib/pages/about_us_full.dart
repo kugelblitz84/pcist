@@ -8,27 +8,6 @@ class AboutUsFull extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final galleryImages = [
-    //   //'assets/images/eventGallery/NASA-Space-Apps-2015.jpg',
-    //   // 'assets/images/eventGallery/NGPC-IUPC.jpg',
-    //   // 'assets/images/eventGallery/ACM-ICPC-1.jpg',
-    //   // 'assets/images/eventGallery/12219517_10205395078617979_8315097649185331553_n.jpg',
-    //   // 'assets/images/eventGallery/Code-Warriors-Challenge-Runner-Up-2015.jpg',
-    //   // 'assets/images/eventGallery/Google-DEV-FEST-2015.jpg',
-    //   // 'assets/images/eventGallery/IUGPC-2018.jpg',
-    //   // 'assets/images/eventGallery/IUT-IUPC-2015.jpg',
-    //   // 'assets/images/eventGallery/NASA-Space-Apps-2015_2.jpg',
-    //   // 'assets/images/eventGallery/NASA-Space-Apps-2015_3.jpg',
-    //   // 'assets/images/eventGallery/NASA-Space-Apps-2016.jpg',
-    //   // 'assets/images/eventGallery/NASA-Space-Apps-2017.jpg',
-    //   // 'assets/images/eventGallery/National-Hackathon-2014.jpg',
-    //   // 'assets/images/eventGallery/NCPC-2015.jpg',
-    //   // 'assets/images/eventGallery/NCPC-2018.jpg',
-    //   // 'assets/images/eventGallery/NGPC-2017.jpg',
-    //   // 'assets/images/eventGallery/NGPC-2018-Position-18th.jpg',
-    //   // 'assets/images/eventGallery/Power-Energy-Hackathon-2017.jpg',
-    // ];
-
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -40,8 +19,8 @@ class AboutUsFull extends StatelessWidget {
           const SizedBox(height: 30),
           _buildTitle("EVENTS GALLERY"),
           const SizedBox(height: 10),
-          //_buildGalleryGrid(galleryImages),
-          const SizedBox(height: 40),
+          // _buildGalleryGrid(galleryImages),
+          const SizedBox(height: 24),
           const Center(
             child: Text(
               "Join us to learn, practice, and grow together",
@@ -49,7 +28,7 @@ class AboutUsFull extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          if (!UserConfig.isSignedIn.value) ...[
+          if (!UserConfig.isSignedIn.value)
             Center(
               child: ElevatedButton(
                 onPressed: () {},
@@ -60,7 +39,8 @@ class AboutUsFull extends StatelessWidget {
                 ),
               ),
             ),
-          ],
+          const SizedBox(height: 24),
+          _buildFooter(),
         ],
       ),
     );
@@ -116,8 +96,7 @@ class AboutUsFull extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.all(16),
       child: Text(
-        "Founded in 2007, pcIST is a thriving programming club committed to fostering a community of passionate coders and technology enthusiasts. Based at the Institute of Science and Technology, Dhanmondi, we strive to equip students with the essential skills, knowledge, and confidence to excel in the ever-evolving world of programming and technology. At pcIST, we believe in learning through experience. We organize a diverse range of activities, including hands-on coding workshops, competitive programming contests, technical seminars, and exciting tech fests. These initiatives create a dynamic environment where students can enhance their problem-solving skills, collaborate with like-minded peers, and stay ahead of emerging technologies. Whether you're a beginner taking your first steps into programming or an experienced coder looking to sharpen your skills, pcIST welcomes you to be a part of this journey of innovation and growth. "
-        "Together, we code, compete, and create the future!",
+        "Founded in 2007, pcIST is a thriving programming club committed to fostering a community of passionate coders and technology enthusiasts. Based at the Institute of Science and Technology, Dhanmondi, we strive to equip students with the essential skills, knowledge, and confidence to excel in the ever-evolving world of programming and technology. At pcIST, we believe in learning through experience. We organize a diverse range of activities, including hands-on coding workshops, competitive programming contests, technical seminars, and exciting tech fests. These initiatives create a dynamic environment where students can enhance their problem-solving skills, collaborate with like-minded peers, and stay ahead of emerging technologies. Whether you're a beginner taking your first steps into programming or an experienced coder looking to sharpen your skills, pcIST welcomes you to be a part of this journey of innovation and growth. Together, we code, compete, and create the future!",
         style: TextStyle(fontSize: 16),
       ),
     );
@@ -189,25 +168,90 @@ class AboutUsFull extends StatelessWidget {
     );
   }
 
-  // Widget _buildGalleryGrid(List<String> images) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 10),
-  //     child: GridView.builder(
-  //       shrinkWrap: true,
-  //       physics: const NeverScrollableScrollPhysics(),
-  //       itemCount: images.length,
-  //       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-  //         crossAxisCount: 2,
-  //         mainAxisSpacing: 10,
-  //         crossAxisSpacing: 10,
-  //         childAspectRatio: 1.5,
-  //       ),
-  //       itemBuilder: (context, index) {
-  //         return GalleryImage(path: images[index]);
-  //       },
-  //     ),
-  //   );
-  // }
+  Widget _buildFooter() {
+    Widget contactRow({
+      required IconData icon,
+      required String label,
+      required String value,
+    }) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: Colors.deepOrange, size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      color: Colors.black,
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'CONTACT',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(height: 2, width: 100, color: Colors.deepOrange),
+              const SizedBox(height: 16),
+              contactRow(
+                icon: Icons.phone,
+                label: 'Phone',
+                value: '+880 123 456 789',
+              ),
+              contactRow(
+                icon: Icons.email,
+                label: 'Email',
+                value: 'info@club.com',
+              ),
+              contactRow(
+                icon: Icons.location_on,
+                label: 'Address',
+                value: '123 Club Street, Dhaka, Bangladesh',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class GalleryImage extends StatelessWidget {
