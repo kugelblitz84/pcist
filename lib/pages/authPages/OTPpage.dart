@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
+import 'package:get/get.dart';
 //import 'package:get/get.dart';
 
 class OTPpage extends StatelessWidget {
@@ -9,6 +10,19 @@ class OTPpage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final w = Get.width;
+    final h = Get.height;
+    final scaleW = w / 390.0;
+    final scaleH = h / 844.0;
+    final double scale = (scaleW < scaleH ? scaleW : scaleH)
+        .clamp(0.8, 1.25)
+        .toDouble();
+    final double boxWidth = (w * 0.9).clamp(300.0, 520.0);
+    final double headingSize = (18 * scale).clamp(16.0, 22.0);
+    final double subHeadingSize = (14 * scale).clamp(12.0, 18.0);
+    final double buttonFontSize = (17 * scale).clamp(15.0, 21.0);
+    final double horizontalPad = (30 * scale).clamp(18.0, 40.0);
+    final double verticalPad = (30 * scale).clamp(16.0, 36.0);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -23,8 +37,11 @@ class OTPpage extends StatelessWidget {
         ),
         child: Center(
           child: Container(
-            width: 350,
-            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+            width: boxWidth,
+            padding: EdgeInsets.symmetric(
+              vertical: verticalPad,
+              horizontal: horizontalPad,
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
@@ -53,19 +70,22 @@ class OTPpage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   "Email Verification",
                   style: TextStyle(
                     color: Colors.deepOrange,
-                    fontSize: 18,
+                    fontSize: headingSize,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 10),
-                const Text(
+                Text(
                   "Enter the 6-digit code sent to your email",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                  style: TextStyle(
+                    fontSize: subHeadingSize,
+                    color: Colors.black87,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 TextField(
@@ -73,9 +93,9 @@ class OTPpage extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   maxLength: 6,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     letterSpacing: 2,
-                    fontSize: 20,
+                    fontSize: (20 * scale).clamp(16.0, 24.0),
                     fontWeight: FontWeight.bold,
                   ),
                   decoration: InputDecoration(
@@ -84,10 +104,13 @@ class OTPpage extends StatelessWidget {
                     fillColor: Colors.white,
                     hintText: 'Enter PIN',
                     hintStyle: TextStyle(
-                        color: Colors.grey.shade400,
-                        fontWeight: FontWeight.w500),
+                      color: Colors.grey.shade400,
+                      fontWeight: FontWeight.w500,
+                    ),
                     contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 10),
+                      vertical: 10,
+                      horizontal: 10,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(6),
                       borderSide: BorderSide(
@@ -114,36 +137,45 @@ class OTPpage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepOrange,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     minimumSize: const Size(double.infinity, 45),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Verify",
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontSize: buttonFontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Didn't receive the code? "),
+                    Text(
+                      "Didn't receive the code? ",
+                      style: TextStyle(
+                        fontSize: (14 * scale).clamp(12.0, 16.0),
+                      ),
+                    ),
                     GestureDetector(
                       onTap: () {
                         // Call resend logic here
                         print("Resend Code");
                       },
-                      child: const Text(
+                      child: Text(
                         "Resend",
                         style: TextStyle(
-                            color: Colors.deepOrange,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.deepOrange,
+                          fontWeight: FontWeight.bold,
+                          fontSize: (14 * scale).clamp(12.0, 16.0),
+                        ),
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),

@@ -24,13 +24,15 @@ class _AboutUsState extends State<AboutUs> {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Column(
       children: [
         // Video Section
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            height: 200,
+            height: isLandscape ? 140 : 200,
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
@@ -54,22 +56,26 @@ class _AboutUsState extends State<AboutUs> {
               Text(
                 "About Us",
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: isLandscape ? 20 : 24,
                   fontWeight: FontWeight.bold,
                   color: const Color.fromARGB(255, 255, 255, 255),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: isLandscape ? 6 : 10),
               Text(
                 "Founded in 2007, pcIST is a thriving programming club dedicated to nurturing the next generation of tech enthusiasts. "
                 "Based in Institute of Science and Technology, Dhanmondi, we are passionate about empowering students with the skills "
                 "and knowledge they need to excel in the world of programming and technology...",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: isLandscape ? 14 : 16,
                   color: const Color.fromARGB(255, 255, 253, 253),
                 ),
+                maxLines: isLandscape ? 5 : null,
+                overflow: isLandscape
+                    ? TextOverflow.ellipsis
+                    : TextOverflow.visible,
               ),
-              SizedBox(height: 10),
+              SizedBox(height: isLandscape ? 6 : 10),
               ElevatedButton(
                 onPressed: () {
                   // Navigate to the full About Us page or expand text
@@ -81,13 +87,14 @@ class _AboutUsState extends State<AboutUs> {
             ],
           ),
         ),
+        Spacer(),
         // Alumni Section Title
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
             "Alumni from IST are working in these companies",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: isLandscape ? 18 : 20,
               fontWeight: FontWeight.bold,
               color: const Color.fromARGB(221, 255, 254, 254),
             ),
@@ -98,11 +105,15 @@ class _AboutUsState extends State<AboutUs> {
           items: companyLogos.map((logo) {
             return Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Image.asset(logo, fit: BoxFit.contain, height: 70),
+              child: Image.asset(
+                logo,
+                fit: BoxFit.contain,
+                height: isLandscape ? 56 : 70,
+              ),
             );
           }).toList(),
           options: CarouselOptions(
-            height: 75,
+            height: isLandscape ? 64 : 75,
             autoPlay: true,
             autoPlayInterval: Duration(seconds: 2),
             enlargeCenterPage: true,
@@ -133,6 +144,7 @@ class _AboutUsState extends State<AboutUs> {
             );
           }).toList(),
         ),
+        if (isLandscape) const SizedBox(height: 4),
       ],
     );
   }

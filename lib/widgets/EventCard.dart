@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:pcist/pages/eventPages/EventRegister.dart';
 import 'package:pcist/secret.dart';
 import 'package:get/get.dart';
@@ -28,6 +29,36 @@ class EventCard extends StatelessWidget {
         data.registrationDeadline != null &&
         isDeadlineOver(data.registrationDeadline!);
 
+    Widget infoChip(
+      IconData icon,
+      String text, {
+      TextStyle? style,
+      double? maxWidth,
+    }) {
+      final textWidget = Text(
+        text,
+        style: style,
+        overflow: maxWidth != null
+            ? TextOverflow.ellipsis
+            : TextOverflow.visible,
+        softWrap: maxWidth == null,
+      );
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: Colors.white),
+          const SizedBox(width: 4),
+          if (maxWidth != null)
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: textWidget,
+            )
+          else
+            textWidget,
+        ],
+      );
+    }
+
     return Container(
       margin: const EdgeInsets.all(8),
       width: double.infinity,
@@ -43,80 +74,40 @@ class EventCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide =
+              constraints.maxWidth >= 600 ||
+              MediaQuery.of(context).orientation == Orientation.landscape;
+          final titleStyle = const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          );
+          final infoStyle = TextStyle(
+            fontSize: isWide ? 13 : 14,
+            color: const Color.fromARGB(255, 248, 248, 248),
+          );
+          final runSpacing = isWide ? 6.0 : 4.0;
+          final spacing = isWide ? 16.0 : 12.0;
+
+          return Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  "${data.eventName} (${data.eventType})",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 6),
+                // Title and action on the same row to save vertical space
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.calendar_today,
-                      size: 14,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      formatDateTime(
-                        data.date ?? DateTime.now(),
-                      ), // formatted date & time
-                      style: const TextStyle(fontSize: 14, color: Colors.white),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on,
-                      size: 14,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      data.location ?? "Please contact an admin for location",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color.fromARGB(255, 248, 248, 248),
+                    Expanded(
+                      child: Text(
+                        "${data.eventName} (${data.eventType})",
+                        style: titleStyle,
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                if (data.registrationDeadline != null)
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.hourglass_bottom,
-                        size: 14,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "Deadline: ${formatDateTime(data.registrationDeadline!)}",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                    const SizedBox(width: 12),
                     deadlineOver
                         ? const Text(
                             "Registration Closed",
@@ -131,6 +122,12 @@ class EventCard extends StatelessWidget {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.deepOrange,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              minimumSize: const Size(0, 0),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: const Text(
                               'Register',
@@ -139,10 +136,91 @@ class EventCard extends StatelessWidget {
                           ),
                   ],
                 ),
+                SizedBox(height: isWide ? 8 : 10),
+
+                // In wide/landscape, place info in a Wrap to utilize width
+                if (isWide)
+                  Wrap(
+                    spacing: spacing,
+                    runSpacing: runSpacing,
+                    children: [
+                      infoChip(
+                        Icons.calendar_today,
+                        formatDateTime(data.date ?? DateTime.now()),
+                        style: infoStyle,
+                      ),
+                      infoChip(
+                        Icons.location_on,
+                        data.location ?? "Please contact an admin for location",
+                        style: infoStyle,
+                        maxWidth: math.min(constraints.maxWidth * 0.5, 420),
+                      ),
+                      if (data.registrationDeadline != null)
+                        infoChip(
+                          Icons.hourglass_bottom,
+                          "Deadline: ${formatDateTime(data.registrationDeadline!)}",
+                          style: infoStyle,
+                        ),
+                    ],
+                  )
+                else ...[
+                  // Portrait/smaller widths: keep vertical, but compact
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_today,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        formatDateTime(data.date ?? DateTime.now()),
+                        style: infoStyle,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          data.location ??
+                              "Please contact an admin for location",
+                          style: infoStyle,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (data.registrationDeadline != null) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.hourglass_bottom,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          "Deadline: ${formatDateTime(data.registrationDeadline!)}",
+                          style: infoStyle,
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
               ],
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

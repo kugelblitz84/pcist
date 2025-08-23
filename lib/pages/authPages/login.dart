@@ -19,8 +19,23 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _classrollController = TextEditingController(),
       _passwordController = TextEditingController();
   String loginText = "Login";
+  bool _showPassword = false;
   @override
   Widget build(BuildContext context) {
+    final w = Get.width;
+    final h = Get.height;
+    final scaleW = w / 390.0;
+    final scaleH = h / 844.0;
+    final double scale = (scaleW < scaleH ? scaleW : scaleH)
+        .clamp(0.8, 1.25)
+        .toDouble();
+    final double boxWidth = (w * 0.9).clamp(300.0, 520.0);
+    final double headingSize = (18 * scale).clamp(16.0, 22.0);
+    final double labelSize = (19 * scale).clamp(15.0, 22.0);
+    final double buttonFontSize = (18 * scale).clamp(16.0, 22.0);
+    final double backFontSize = (19 * scale).clamp(16.0, 22.0);
+    final double horizontalPad = (45 * scale).clamp(22.0, 60.0);
+    final double verticalPad = (20 * scale).clamp(12.0, 30.0);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -36,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
         //color: Colors.black,
         child: Center(
           child: Container(
-            width: 350,
+            width: boxWidth,
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 255, 255, 255),
               borderRadius: BorderRadius.circular(15),
@@ -46,24 +61,33 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 45),
+              padding: EdgeInsets.symmetric(
+                vertical: verticalPad,
+                horizontal: horizontalPad,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/logos/download.png', height: 60),
+                      Image.asset(
+                        'assets/logos/download.png',
+                        height: (60 * scale).clamp(44.0, 68.0),
+                      ),
                       const SizedBox(width: 20),
-                      Image.asset('assets/images/download.png', height: 60),
+                      Image.asset(
+                        'assets/images/download.png',
+                        height: (60 * scale).clamp(44.0, 68.0),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     "Login Your Account", //this text is fine
                     style: TextStyle(
                       color: Colors.deepOrange,
-                      fontSize: 18,
+                      fontSize: headingSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -95,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                             labelText: 'Class Roll',
                             floatingLabelStyle: TextStyle(
                               color: Colors.deepOrange,
-                              fontSize: 19,
+                              fontSize: labelSize,
                               fontWeight: FontWeight.bold,
                             ),
                             border: const UnderlineInputBorder(),
@@ -169,6 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 15),
                   TextField(
                     controller: _passwordController,
+                    obscureText: !_showPassword,
                     decoration: InputDecoration(
                       focusColor: Colors.deepOrange,
                       focusedBorder: UnderlineInputBorder(
@@ -177,10 +202,23 @@ class _LoginPageState extends State<LoginPage> {
                       labelText: 'Password',
                       floatingLabelStyle: TextStyle(
                         color: Colors.deepOrange,
-                        fontSize: 19,
+                        fontSize: labelSize,
                         fontWeight: FontWeight.bold,
                       ),
                       border: const UnderlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.deepOrange,
+                        ),
+                        onPressed: () =>
+                            setState(() => _showPassword = !_showPassword),
+                        tooltip: _showPassword
+                            ? 'Hide password'
+                            : 'Show password',
+                      ),
                     ),
                   ),
                   const SizedBox(height: 25),
@@ -209,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: buttonFontSize,
                       ),
                     ),
                   ),
@@ -223,12 +261,12 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor: const Color.fromARGB(255, 199, 199, 199),
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Back",
                       style: TextStyle(
                         color: Colors.deepOrange,
                         fontWeight: FontWeight.bold,
-                        fontSize: 19,
+                        fontSize: backFontSize,
                       ),
                     ),
                   ),
@@ -237,7 +275,10 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () => Get.offNamed('/signup'),
                     child: Text(
                       "Create a new account",
-                      style: TextStyle(color: Colors.deepOrange),
+                      style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontSize: (14 * scale).clamp(12.0, 16.0),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 5),

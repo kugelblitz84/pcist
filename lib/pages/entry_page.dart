@@ -15,31 +15,33 @@ class EntryPage extends StatefulWidget {
 class _EntryPageState extends State<EntryPage> {
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(height: 40),
-        const Text(
+        SizedBox(height: isLandscape ? 16 : 40),
+        Text(
           'Welcome to PCIST - Where Innovation Meets Code!', //this text has a weird font and underline
           style: TextStyle(
             color: Colors.white,
-            fontSize: 30,
+            fontSize: isLandscape ? 22 : 30,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 10),
+        SizedBox(height: isLandscape ? 6 : 10),
         Center(
-          child: const Text(
+          child: Text(
             'Join us to learn, practice, and grow together!', //this text has a weird font and underline
             style: TextStyle(
               color: const Color.fromARGB(255, 255, 254, 254),
-              fontSize: 15,
+              fontSize: isLandscape ? 14 : 15,
               fontWeight: FontWeight.w400,
             ),
           ),
         ),
-        SizedBox(height: 20),
+        SizedBox(height: isLandscape ? 12 : 20),
         if (!UserConfig.isSignedIn.value)
           ElevatedButton(
             onPressed: () => Get.toNamed('/login'),
@@ -49,7 +51,8 @@ class _EntryPageState extends State<EntryPage> {
               style: TextStyle(color: Colors.white),
             ),
           ),
-        SizedBox(height: Get.height * 0.45),
+        // Push the chevron to the bottom without forcing overflow in landscape
+        const Spacer(),
         Bounce(
           infinite: true,
           child: Icon(LucideIcons.chevronDown, color: Colors.white, size: 32),

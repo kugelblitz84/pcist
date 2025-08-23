@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pcist/authProcesses/tokenProcess.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
-import 'package:pcist/pages/homePage.dart';
 //import 'package:pcist/services/userApi.dart';
 
 class MemberFormPage extends StatelessWidget {
@@ -25,22 +24,40 @@ class MemberFormPage extends StatelessWidget {
   final List<String> shirtSizes = ['S', 'M', 'L', 'XL', 'XXL'];
   final List<String> departments = ['CSE', 'EEE', 'BBA', 'ENG', 'Other'];
 
-  InputDecoration _textFieldDecoration(String label) {
+  InputDecoration _textFieldDecoration(String label, double labelFontSize) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: Colors.black87),
+      labelStyle: TextStyle(color: Colors.black87, fontSize: labelFontSize),
       focusedBorder: const OutlineInputBorder(
         borderSide: BorderSide(color: Colors.deepOrange, width: 2.5),
       ),
       enabledBorder: const OutlineInputBorder(
         borderSide: BorderSide(color: Colors.black, width: 2.5),
       ),
-      floatingLabelStyle: const TextStyle(color: Colors.deepOrange),
+      floatingLabelStyle: TextStyle(
+        color: Colors.deepOrange,
+        fontSize: labelFontSize,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final w = Get.width;
+    final h = Get.height;
+    final scaleW = w / 390.0;
+    final scaleH = h / 844.0;
+    final double scale = (scaleW < scaleH ? scaleW : scaleH)
+        .clamp(0.8, 1.25)
+        .toDouble();
+    final double boxWidth = (w * 0.92).clamp(320.0, 620.0);
+    // Height: aim for ~70% of screen on tall devices
+    final double boxHeight = (h * 0.7).clamp(520.0, 720.0);
+    final double titleSize = (20 * scale).clamp(18.0, 24.0);
+    final double labelSize = (16 * scale).clamp(14.0, 20.0);
+    final double buttonFontSize = (18 * scale).clamp(16.0, 22.0);
+    final double padH = (30 * scale).clamp(18.0, 40.0);
+    final double padV = (25 * scale).clamp(16.0, 34.0);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -55,8 +72,8 @@ class MemberFormPage extends StatelessWidget {
         ),
         child: Center(
           child: Container(
-            width: 370,
-            height: 600,
+            width: boxWidth,
+            height: boxHeight,
             decoration: BoxDecoration(
               color: Colors.white.withAlpha(5),
               borderRadius: BorderRadius.circular(20),
@@ -74,14 +91,14 @@ class MemberFormPage extends StatelessWidget {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 30),
+              padding: EdgeInsets.symmetric(vertical: padV, horizontal: padH),
               child: Column(
                 children: [
-                  const Text(
+                  Text(
                     "Member Information",
                     style: TextStyle(
                       color: Colors.deepOrange,
-                      fontSize: 20,
+                      fontSize: titleSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -92,18 +109,24 @@ class MemberFormPage extends StatelessWidget {
                         children: [
                           TextField(
                             controller: _nameCon,
-                            decoration: _textFieldDecoration("Name"),
+                            decoration: _textFieldDecoration("Name", labelSize),
                           ),
                           const SizedBox(height: 15),
                           TextField(
                             controller: _phoneCon,
                             keyboardType: TextInputType.phone,
-                            decoration: _textFieldDecoration("Phone"),
+                            decoration: _textFieldDecoration(
+                              "Phone",
+                              labelSize,
+                            ),
                           ),
                           const SizedBox(height: 15),
                           TextField(
                             controller: _batchCon,
-                            decoration: _textFieldDecoration("Batch"),
+                            decoration: _textFieldDecoration(
+                              "Batch",
+                              labelSize,
+                            ),
                           ),
                           const SizedBox(height: 15),
                           Obx(
@@ -111,7 +134,10 @@ class MemberFormPage extends StatelessWidget {
                               value: selectedGender.value.isEmpty
                                   ? null
                                   : selectedGender.value,
-                              decoration: _textFieldDecoration("Gender"),
+                              decoration: _textFieldDecoration(
+                                "Gender",
+                                labelSize,
+                              ),
                               items: genders.map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
@@ -128,7 +154,10 @@ class MemberFormPage extends StatelessWidget {
                               value: selectedShirtSize.value.isEmpty
                                   ? null
                                   : selectedShirtSize.value,
-                              decoration: _textFieldDecoration("Shirt Size"),
+                              decoration: _textFieldDecoration(
+                                "Shirt Size",
+                                labelSize,
+                              ),
                               items: shirtSizes.map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
@@ -145,7 +174,10 @@ class MemberFormPage extends StatelessWidget {
                               value: selectedDept.value.isEmpty
                                   ? null
                                   : selectedDept.value,
-                              decoration: _textFieldDecoration("Department"),
+                              decoration: _textFieldDecoration(
+                                "Department",
+                                labelSize,
+                              ),
                               items: departments.map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
@@ -160,17 +192,24 @@ class MemberFormPage extends StatelessWidget {
                             controller: _cfCon,
                             decoration: _textFieldDecoration(
                               "Codeforces Handle",
+                              labelSize,
                             ),
                           ),
                           const SizedBox(height: 15),
                           TextField(
                             controller: _atcCon,
-                            decoration: _textFieldDecoration("AtCoder Handle"),
+                            decoration: _textFieldDecoration(
+                              "AtCoder Handle",
+                              labelSize,
+                            ),
                           ),
                           const SizedBox(height: 15),
                           TextField(
                             controller: _ccCon,
-                            decoration: _textFieldDecoration("CodeChef Handle"),
+                            decoration: _textFieldDecoration(
+                              "CodeChef Handle",
+                              labelSize,
+                            ),
                           ),
                           const SizedBox(height: 25),
                         ],
@@ -204,12 +243,12 @@ class MemberFormPage extends StatelessWidget {
                       backgroundColor: Colors.black,
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Proceed",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: buttonFontSize,
                       ),
                     ),
                   ),
@@ -223,12 +262,12 @@ class MemberFormPage extends StatelessWidget {
                       backgroundColor: Color.fromARGB(255, 240, 240, 240),
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Back",
                       style: TextStyle(
                         color: Colors.deepOrange,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: buttonFontSize,
                       ),
                     ),
                   ),

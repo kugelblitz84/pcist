@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pcist/secret.dart';
 //import 'package:pcist/pages/homePage.dart';
-import 'Constructio.dart';
 import 'package:pcist/config/userConfig.dart';
-import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:pcist/pages/notfiications_pages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class appBar extends StatefulWidget {
   final VoidCallback callback;
-  late bool open;
+  final bool open;
   appBar({super.key, required this.callback, required this.open});
 
   @override
@@ -44,17 +42,24 @@ class _appBarState extends State<appBar> {
               fit: BoxFit.cover, // fills without border, may crop edges
             ),
           ),
-          if (LoggedInUserData.role == 2) ...[
-            Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: IconButton(
-                onPressed: () => Get.toNamed('/chat'),
-                icon: Icon(Icons.message),
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 15),
-          ],
+          Obx(() {
+            final showChat =
+                UserConfig.isSignedIn.value && (LoggedInUserData.role == 2);
+            if (!showChat) return const SizedBox.shrink();
+            return Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 5),
+                  child: IconButton(
+                    onPressed: () => Get.toNamed('/chat'),
+                    icon: const Icon(Icons.message),
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 15),
+              ],
+            );
+          }),
           Spacer(),
           // Menu Items
           Obx(() {

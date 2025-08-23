@@ -39,34 +39,42 @@ class Events extends StatefulWidget {
 }
 
 class _EventsState extends State<Events> {
-  final eventsList = Eventsconfig.allEvents.take(3).toList();
-
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final isLandscape = media.orientation == Orientation.landscape;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: const Text(
+          child: Text(
             'UPCOMING EVENTS',
             style: TextStyle(
-              color: Color.fromARGB(255, 255, 255, 255),
-              fontSize: 22,
+              color: const Color.fromARGB(255, 255, 255, 255),
+              fontSize: isLandscape ? 18 : 22,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Divider(color: Colors.deepOrange, thickness: 2),
+          child: Divider(
+            color: Colors.deepOrange,
+            thickness: isLandscape ? 1.5 : 2,
+          ),
         ),
 
         //const SizedBox(height: 10),
         Obx(() {
           if (Eventsconfig.eventsLoaded.value == false) {
             return CircularProgressIndicator();
-          } else if (eventsList.isEmpty) {
+          }
+
+          final rawEvents = Eventsconfig.allEvents;
+          final displayList = rawEvents.take(3).toList(growable: false);
+
+          if (displayList.isEmpty) {
             return Center(
               child: Text(
                 'No Upcoming Events',
@@ -78,22 +86,16 @@ class _EventsState extends State<Events> {
               ),
             );
           } else {
-            return SizedBox(
-              height: Get.height * 0.7,
-              child: Column(
-                children: eventsList
-                    .map(
-                      (event) => FadeSlideIn(
-                        child: EventCard(
-                          data: event,
-                          // title: event.eventName.toString(),
-                          // date: event.date.toString(),
-                          // location: event.location.toString(),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
+            // Use a simple Column to avoid inner vertical scrolling that would conflict with the PageView.
+            return Column(
+              children: displayList
+                  .map(
+                    (event) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: FadeSlideIn(child: EventCard(data: event)),
+                    ),
+                  )
+                  .toList(),
             );
           }
         }),
@@ -116,7 +118,7 @@ class _EventsState extends State<Events> {
         //   time: '10:30 PM',
         //   location: 'IST LAB 2',
         // ),
-        const SizedBox(height: 15),
+        SizedBox(height: isLandscape ? 8 : 12),
         Center(
           child: ElevatedButton(
             onPressed: () {
@@ -128,7 +130,7 @@ class _EventsState extends State<Events> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.deepOrange,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
             ),
             child: const Text(
               'View All Events',

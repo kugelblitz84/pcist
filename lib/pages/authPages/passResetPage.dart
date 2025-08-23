@@ -8,6 +8,20 @@ class PassResetPage extends StatelessWidget {
   final TextEditingController _mailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final w = Get.width;
+    final h = Get.height;
+    final scaleW = w / 390.0;
+    final scaleH = h / 844.0;
+    final double scale = (scaleW < scaleH ? scaleW : scaleH)
+        .clamp(0.8, 1.25)
+        .toDouble();
+    final double boxWidth = (w * 0.9).clamp(300.0, 520.0);
+    final double headingSize = (18 * scale).clamp(16.0, 22.0);
+    final double labelSize = (19 * scale).clamp(15.0, 22.0);
+    final double buttonFontSize = (18 * scale).clamp(16.0, 22.0);
+    final double backFontSize = (19 * scale).clamp(16.0, 22.0);
+    final double horizontalPad = (45 * scale).clamp(22.0, 60.0);
+    final double verticalPad = (20 * scale).clamp(12.0, 30.0);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -23,7 +37,7 @@ class PassResetPage extends StatelessWidget {
         //color: Colors.black,
         child: Center(
           child: Container(
-            width: 350,
+            width: boxWidth,
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 255, 255, 255),
               borderRadius: BorderRadius.circular(15),
@@ -33,24 +47,33 @@ class PassResetPage extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 45),
+              padding: EdgeInsets.symmetric(
+                vertical: verticalPad,
+                horizontal: horizontalPad,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/logos/download.png', height: 60),
+                      Image.asset(
+                        'assets/logos/download.png',
+                        height: (60 * scale).clamp(44.0, 68.0),
+                      ),
                       const SizedBox(width: 20),
-                      Image.asset('assets/images/download.png', height: 60),
+                      Image.asset(
+                        'assets/images/download.png',
+                        height: (60 * scale).clamp(44.0, 68.0),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     "Enter your E-mail",
                     style: TextStyle(
                       color: Colors.deepOrange,
-                      fontSize: 18,
+                      fontSize: headingSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -69,7 +92,7 @@ class PassResetPage extends StatelessWidget {
                             labelText: 'Email',
                             floatingLabelStyle: TextStyle(
                               color: Colors.deepOrange,
-                              fontSize: 19,
+                              fontSize: labelSize,
                               fontWeight: FontWeight.bold,
                             ),
                             border: const UnderlineInputBorder(),
@@ -94,12 +117,12 @@ class PassResetPage extends StatelessWidget {
                       backgroundColor: Colors.black,
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Send Code",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: buttonFontSize,
                       ),
                     ),
                   ),
@@ -113,12 +136,12 @@ class PassResetPage extends StatelessWidget {
                       backgroundColor: const Color.fromARGB(255, 199, 199, 199),
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Back",
                       style: TextStyle(
                         color: Colors.deepOrange,
                         fontWeight: FontWeight.bold,
-                        fontSize: 19,
+                        fontSize: backFontSize,
                       ),
                     ),
                   ),
@@ -133,13 +156,35 @@ class PassResetPage extends StatelessWidget {
   }
 }
 
-class setNewPassPage extends StatelessWidget {
+class setNewPassPage extends StatefulWidget {
   setNewPassPage({super.key});
+
+  @override
+  State<setNewPassPage> createState() => _setNewPassPageState();
+}
+
+class _setNewPassPageState extends State<setNewPassPage> {
   final _pass = TextEditingController();
   final _reEnterPass = TextEditingController();
   final _code = TextEditingController();
+  bool _showPass = false;
+  bool _showRePass = false;
   @override
   Widget build(BuildContext context) {
+    final w = Get.width;
+    final h = Get.height;
+    final scaleW = w / 390.0;
+    final scaleH = h / 844.0;
+    final double scale = (scaleW < scaleH ? scaleW : scaleH)
+        .clamp(0.8, 1.25)
+        .toDouble();
+    final double boxWidth = (w * 0.9).clamp(300.0, 520.0);
+    final double headingSize = (18 * scale).clamp(16.0, 22.0);
+    final double labelSize = (19 * scale).clamp(15.0, 22.0);
+    final double buttonFontSize = (18 * scale).clamp(16.0, 22.0);
+    final double backFontSize = (19 * scale).clamp(16.0, 22.0);
+    final double horizontalPad = (45 * scale).clamp(22.0, 60.0);
+    final double verticalPad = (20 * scale).clamp(12.0, 30.0);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -155,7 +200,7 @@ class setNewPassPage extends StatelessWidget {
         //color: Colors.black,
         child: Center(
           child: Container(
-            width: 350,
+            width: boxWidth,
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 255, 255, 255),
               borderRadius: BorderRadius.circular(15),
@@ -165,24 +210,33 @@ class setNewPassPage extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 45),
+              padding: EdgeInsets.symmetric(
+                vertical: verticalPad,
+                horizontal: horizontalPad,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/logos/download.png', height: 60),
+                      Image.asset(
+                        'assets/logos/download.png',
+                        height: (60 * scale).clamp(44.0, 68.0),
+                      ),
                       const SizedBox(width: 20),
-                      Image.asset('assets/images/download.png', height: 60),
+                      Image.asset(
+                        'assets/images/download.png',
+                        height: (60 * scale).clamp(44.0, 68.0),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     "Login Your Account",
                     style: TextStyle(
                       color: Colors.deepOrange,
-                      fontSize: 18,
+                      fontSize: headingSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -211,7 +265,7 @@ class setNewPassPage extends StatelessWidget {
                       labelText: 'Enter Code',
                       floatingLabelStyle: TextStyle(
                         color: Colors.deepOrange,
-                        fontSize: 19,
+                        fontSize: labelSize,
                         fontWeight: FontWeight.bold,
                       ),
                       border: const UnderlineInputBorder(),
@@ -220,7 +274,7 @@ class setNewPassPage extends StatelessWidget {
                   SizedBox(height: 5),
                   TextField(
                     controller: _pass,
-                    keyboardType: TextInputType.number,
+                    obscureText: !_showPass,
                     decoration: InputDecoration(
                       focusColor: Colors.deepOrange,
                       focusedBorder: UnderlineInputBorder(
@@ -229,16 +283,25 @@ class setNewPassPage extends StatelessWidget {
                       labelText: 'Enter New Password',
                       floatingLabelStyle: TextStyle(
                         color: Colors.deepOrange,
-                        fontSize: 19,
+                        fontSize: labelSize,
                         fontWeight: FontWeight.bold,
                       ),
                       border: const UnderlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showPass ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.deepOrange,
+                        ),
+                        onPressed: () => setState(() => _showPass = !_showPass),
+                        tooltip: _showPass ? 'Hide password' : 'Show password',
+                      ),
                     ),
                   ),
 
                   const SizedBox(height: 5),
                   TextField(
                     controller: _reEnterPass,
+                    obscureText: !_showRePass,
                     decoration: InputDecoration(
                       focusColor: Colors.deepOrange,
                       focusedBorder: UnderlineInputBorder(
@@ -247,15 +310,33 @@ class setNewPassPage extends StatelessWidget {
                       labelText: 'Re-type Password',
                       floatingLabelStyle: TextStyle(
                         color: Colors.deepOrange,
-                        fontSize: 19,
+                        fontSize: labelSize,
                         fontWeight: FontWeight.bold,
                       ),
                       border: const UnderlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showRePass ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.deepOrange,
+                        ),
+                        onPressed: () =>
+                            setState(() => _showRePass = !_showRePass),
+                        tooltip: _showRePass
+                            ? 'Hide password'
+                            : 'Show password',
+                      ),
                     ),
                   ),
                   const SizedBox(height: 25),
                   ElevatedButton(
                     onPressed: () async {
+                      if (_pass.text.length < 8) {
+                        Get.snackbar(
+                          'Weak password',
+                          'Password must be at least 8 characters long.',
+                        );
+                        return;
+                      }
                       if (_pass.text == _reEnterPass.text) {
                         Ontapprocesses.setNewPass(
                           mail: LoggedInUserData.email ?? "",
@@ -276,12 +357,12 @@ class setNewPassPage extends StatelessWidget {
                       backgroundColor: Colors.black,
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Login",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: buttonFontSize,
                       ),
                     ),
                   ),
@@ -295,12 +376,12 @@ class setNewPassPage extends StatelessWidget {
                       backgroundColor: const Color.fromARGB(255, 199, 199, 199),
                       minimumSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Back",
                       style: TextStyle(
                         color: Colors.deepOrange,
                         fontWeight: FontWeight.bold,
-                        fontSize: 19,
+                        fontSize: backFontSize,
                       ),
                     ),
                   ),
@@ -309,7 +390,10 @@ class setNewPassPage extends StatelessWidget {
                     onTap: () => Get.offNamed('/signup'),
                     child: Text(
                       "Create a new account",
-                      style: TextStyle(color: Colors.deepOrange),
+                      style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontSize: (14 * scale).clamp(12.0, 16.0),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 5),

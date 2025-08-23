@@ -33,8 +33,7 @@ class UserConfig extends GetxController {
         print('error in response');
         retryLater();
       } else if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        await UserAPI.SetUserDatafromJson(data);
+        await UserAPI.SetUserDatafromJson(jsonDecode(response.body));
         //print("initialized userdata");
         _retryTimer?.cancel();
         isSignedIn.value = true;
@@ -60,7 +59,7 @@ class UserConfig extends GetxController {
       final body = jsonEncode({'slug': slug});
       final response = await http.post(uri, headers: headers, body: body);
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        jsonDecode(response.body);
         // Process the chat data as needed
         print('Chats fetched successfully:');
         chatLoaded.value = true;
@@ -83,6 +82,28 @@ class UserConfig extends GetxController {
 
   static Future<void> logOutUser() async {
     isSignedIn.value = false;
+    chatLoaded.value = false;
+    // Clear global user snapshot to avoid stale role showing
+    LoggedInUserData.id = null;
+    LoggedInUserData.classroll = null;
+    LoggedInUserData.email = null;
+    LoggedInUserData.verificationCode = null;
+    LoggedInUserData.isEmailVerified = false;
+    LoggedInUserData.forgotPasswordCode = null;
+    LoggedInUserData.phone = null;
+    LoggedInUserData.profileImage = null;
+    LoggedInUserData.name = null;
+    LoggedInUserData.gender = null;
+    LoggedInUserData.tshirt = null;
+    LoggedInUserData.batch = null;
+    LoggedInUserData.dept = null;
+    LoggedInUserData.role = null;
+    LoggedInUserData.membership = false;
+    LoggedInUserData.cfhandle = null;
+    LoggedInUserData.atchandle = null;
+    LoggedInUserData.cchandle = null;
+    LoggedInUserData.badges = [];
+    LoggedInUserData.certificates = [];
   }
 
   @override
