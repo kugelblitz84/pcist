@@ -85,131 +85,124 @@ class _ContestTrackerPageState extends State<ContestTrackerPage> {
               child: CircularProgressIndicator(color: Colors.orangeAccent),
             )
           : _error != null
-              ? Center(
-                  child: Text(
-                    _error!,
-                    style: const TextStyle(color: Colors.white),
+          ? Center(
+              child: Text(_error!, style: const TextStyle(color: Colors.white)),
+            )
+          : _contests.isEmpty
+          ? const Center(
+              child: Text(
+                'No upcoming contests',
+                style: TextStyle(color: Colors.white),
+              ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Upcoming Contests',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                )
-              : _contests.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'No upcoming contests',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Upcoming Contests',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        ...preview.map((contest) {
-                          return Card(
-                            color: Colors.white.withOpacity(0.1),
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 9,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    contest['event'] ?? 'Unknown Contest',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Host: ${contest['host'] ?? 'Unknown'}',
-                                    style:
-                                        const TextStyle(color: Colors.white70),
-                                  ),
-                                  if (contest['n_problems'] != null)
-                                    Text(
-                                      'Problems: ${contest['n_problems']}',
-                                      style: const TextStyle(
-                                          color: Colors.white70),
-                                    ),
-                                  const SizedBox(height: 4),
-                                  if (contest['start'] != null)
-                                    Text(
-                                      'Start: ${formatDateTime(contest['start'])}',
-                                      style: const TextStyle(
-                                          color: Colors.white70),
-                                    ),
-                                  if (contest['end'] != null)
-                                    Text(
-                                      'End: ${formatDateTime(contest['end'])}',
-                                      style: const TextStyle(
-                                          color: Colors.white70),
-                                    ),
-                                  const SizedBox(height: 8),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        if (contest['href'] != null) {
-                                          openContestLink(contest['href']);
-                                        }
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.orangeAccent,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                      child: const Text('Visit Contest'),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                        const SizedBox(height: 12),
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const FullContestListPage(),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orangeAccent,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 12,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text(
-                              'View All Contests',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ),
-                      ],
+                ),
+                const SizedBox(height: 12),
+                ...preview.map((contest) {
+                  return Card(
+                    color: Colors.white.withOpacity(0.1),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 9,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            contest['event'] ?? 'Unknown Contest',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Host: ${contest['host'] ?? 'Unknown'}',
+                            style: const TextStyle(color: Colors.white70),
+                          ),
+                          if (contest['n_problems'] != null)
+                            Text(
+                              'Problems: ${contest['n_problems']}',
+                              style: const TextStyle(color: Colors.white70),
+                            ),
+                          const SizedBox(height: 4),
+                          if (contest['start'] != null)
+                            Text(
+                              'Start: ${formatDateTime(contest['start'])}',
+                              style: const TextStyle(color: Colors.white70),
+                            ),
+                          if (contest['end'] != null)
+                            Text(
+                              'End: ${formatDateTime(contest['end'])}',
+                              style: const TextStyle(color: Colors.white70),
+                            ),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (contest['href'] != null) {
+                                  openContestLink(contest['href']);
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orangeAccent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text('Visit Contest'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+                const SizedBox(height: 12),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const FullContestListPage(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orangeAccent,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'View All Contests',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
@@ -349,104 +342,105 @@ class _FullContestListPageState extends State<FullContestListPage> {
                       ),
                     )
                   : _error != null
-                      ? Center(
-                          child: Text(
-                            _error!,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        )
-                      : _contests.isEmpty
-                          ? const Center(
-                              child: Text(
-                                'No upcoming contests',
-                                style: TextStyle(color: Colors.white),
+                  ? Center(
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    )
+                  : _contests.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No upcoming contests',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                  : Builder(
+                      builder: (context) {
+                        final filtered = _applySearch(_contests);
+                        return ListView.builder(
+                          itemCount: filtered.length,
+                          itemBuilder: (context, index) {
+                            final contest = filtered[index];
+                            return Card(
+                              color: Colors.white.withOpacity(0.1),
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                            )
-                          : Builder(builder: (context) {
-                              final filtered = _applySearch(_contests);
-                              return ListView.builder(
-                                itemCount: filtered.length,
-                                itemBuilder: (context, index) {
-                                  final contest = filtered[index];
-                                  return Card(
-                                    color: Colors.white.withOpacity(0.1),
-                                    margin:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 9,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            contest['event'] ??
-                                                'Unknown Contest',
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            'Host: ${contest['host'] ?? 'Unknown'}',
-                                            style: const TextStyle(
-                                                color: Colors.white70),
-                                          ),
-                                          if (contest['n_problems'] != null)
-                                            Text(
-                                              'Problems: ${contest['n_problems']}',
-                                              style: const TextStyle(
-                                                  color: Colors.white70),
-                                            ),
-                                          const SizedBox(height: 4),
-                                          if (contest['start'] != null)
-                                            Text(
-                                              'Start: ${formatDateTime(contest['start'])}',
-                                              style: const TextStyle(
-                                                  color: Colors.white70),
-                                            ),
-                                          if (contest['end'] != null)
-                                            Text(
-                                              'End: ${formatDateTime(contest['end'])}',
-                                              style: const TextStyle(
-                                                  color: Colors.white70),
-                                            ),
-                                          const SizedBox(height: 8),
-                                          Align(
-                                            alignment: Alignment.centerRight,
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                if (contest['href'] != null) {
-                                                  openContestLink(
-                                                      contest['href']);
-                                                }
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    Colors.orangeAccent,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                ),
-                                              ),
-                                              child:
-                                                  const Text('Visit Contest'),
-                                            ),
-                                          ),
-                                        ],
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 9,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      contest['event'] ?? 'Unknown Contest',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                  );
-                                },
-                              );
-                            }),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Host: ${contest['host'] ?? 'Unknown'}',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                    if (contest['n_problems'] != null)
+                                      Text(
+                                        'Problems: ${contest['n_problems']}',
+                                        style: const TextStyle(
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    const SizedBox(height: 4),
+                                    if (contest['start'] != null)
+                                      Text(
+                                        'Start: ${formatDateTime(contest['start'])}',
+                                        style: const TextStyle(
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    if (contest['end'] != null)
+                                      Text(
+                                        'End: ${formatDateTime(contest['end'])}',
+                                        style: const TextStyle(
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    const SizedBox(height: 8),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          if (contest['href'] != null) {
+                                            openContestLink(contest['href']);
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.orangeAccent,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                        ),
+                                        child: const Text('Visit Contest'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
             ),
           ],
         ),
