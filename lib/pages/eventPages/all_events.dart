@@ -488,22 +488,43 @@ class _EventOptionsPopupState extends State<EventOptionsPopup> {
                 ),
               ),
               const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: _location,
-                items: ["Auditorium", "Lab 1", "Lab 2"]
-                    .map(
-                      (location) => DropdownMenuItem(
-                        value: location,
-                        child: Text(location),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _location = value!;
-                  });
+              Builder(
+                builder: (context) {
+                  // Base options; include current value if it's not present to avoid Dropdown assertion
+                  final List<String> baseLocations = [
+                    'Auditorium',
+                    'Lab 1',
+                    'Lab 2',
+                  ];
+                  final List<String> locationItems = List.of(baseLocations);
+                  if (_location.isNotEmpty &&
+                      !locationItems.contains(_location)) {
+                    locationItems.insert(0, _location);
+                  }
+
+                  final String? dropdownValue =
+                      locationItems.contains(_location) ? _location : null;
+
+                  return DropdownButtonFormField<String>(
+                    value: dropdownValue,
+                    items: locationItems
+                        .map(
+                          (location) => DropdownMenuItem(
+                            value: location,
+                            child: Text(location),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        if (value != null) _location = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Select Location',
+                    ),
+                  );
                 },
-                decoration: const InputDecoration(labelText: 'Select Location'),
               ),
               const SizedBox(height: 30),
 

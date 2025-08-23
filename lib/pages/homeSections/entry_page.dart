@@ -15,17 +15,28 @@ class EntryPage extends StatefulWidget {
 class _EntryPageState extends State<EntryPage> {
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    final media = MediaQuery.of(context);
+    final isLandscape = media.orientation == Orientation.landscape;
+    final w = Get.width;
+    final h = Get.height;
+    final titleSize = isLandscape
+        ? (w * 0.05).clamp(20, 26)
+        : (w * 0.075).clamp(26, 34);
+    final subtitleSize = isLandscape
+        ? (w * 0.032).clamp(12, 14)
+        : (w * 0.038).clamp(14, 16);
+    final topGap = isLandscape
+        ? (h * 0.02).clamp(12, 20)
+        : (h * 0.05).clamp(24, 48);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(height: isLandscape ? 16 : 40),
+        SizedBox(height: topGap.toDouble()),
         Text(
           'Welcome to PCIST - Where Innovation Meets Code!', //this text has a weird font and underline
           style: TextStyle(
             color: Colors.white,
-            fontSize: isLandscape ? 22 : 30,
+            fontSize: titleSize.toDouble(),
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
@@ -36,7 +47,7 @@ class _EntryPageState extends State<EntryPage> {
             'Join us to learn, practice, and grow together!', //this text has a weird font and underline
             style: TextStyle(
               color: const Color.fromARGB(255, 255, 254, 254),
-              fontSize: isLandscape ? 14 : 15,
+              fontSize: subtitleSize.toDouble(),
               fontWeight: FontWeight.w400,
             ),
           ),

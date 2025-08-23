@@ -17,6 +17,27 @@ class _EventsState extends State<Events> {
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final isLandscape = media.orientation == Orientation.landscape;
+    final w = Get.width;
+    final h = Get.height;
+    final titleSize = isLandscape
+        ? (w * 0.042).clamp(16, 20)
+        : (w * 0.055).clamp(20, 24);
+    final dividerThickness = isLandscape
+        ? (h * 0.0016).clamp(1.0, 2.0)
+        : (h * 0.0022).clamp(1.5, 2.5);
+    final vGap = isLandscape
+        ? (h * 0.012).clamp(6, 12)
+        : (h * 0.016).clamp(10, 16);
+    // Compute a safe preview count based on height to avoid overflow
+    int computePreviewCount() {
+      final base = isLandscape ? 2 : 3;
+      if (h < 520) return 1;
+      if (h < 650) return base - 1;
+      return base;
+    }
+
+    final previewCount = computePreviewCount().clamp(1, 3);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -26,7 +47,7 @@ class _EventsState extends State<Events> {
             'UPCOMING EVENTS',
             style: TextStyle(
               color: const Color.fromARGB(255, 255, 255, 255),
-              fontSize: isLandscape ? 18 : 22,
+              fontSize: titleSize.toDouble(),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -35,7 +56,7 @@ class _EventsState extends State<Events> {
           padding: const EdgeInsets.all(8.0),
           child: Divider(
             color: Colors.deepOrange,
-            thickness: isLandscape ? 1.5 : 2,
+            thickness: dividerThickness.toDouble(),
           ),
         ),
 
@@ -46,7 +67,9 @@ class _EventsState extends State<Events> {
           }
 
           final rawEvents = Eventsconfig.allEvents;
-          final displayList = rawEvents.take(3).toList(growable: false);
+          final displayList = rawEvents
+              .take(previewCount)
+              .toList(growable: false);
 
           if (displayList.isEmpty) {
             return Center(
@@ -73,7 +96,7 @@ class _EventsState extends State<Events> {
             );
           }
         }),
-        SizedBox(height: isLandscape ? 8 : 12),
+        SizedBox(height: vGap.toDouble()),
         Center(
           child: ElevatedButton(
             onPressed: () {
@@ -96,6 +119,7 @@ class _EventsState extends State<Events> {
             ),
           ),
         ),
+        SizedBox(height: vGap.toDouble()),
       ],
     );
   }
