@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
+import 'package:pcist/secret.dart';
 import 'package:get/get.dart';
 //import 'package:get/get.dart';
 
@@ -161,9 +162,16 @@ class OTPpage extends StatelessWidget {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        // Call resend logic here
-                        print("Resend Code");
+                      onTap: () async {
+                        final email = LoggedInUserData.email;
+                        if (email == null || email.isEmpty) {
+                          Get.snackbar(
+                            'Error',
+                            'No email available to resend code.',
+                          );
+                          return;
+                        }
+                        await Ontapprocesses.sendForGotPassMail(mail: email);
                       },
                       child: Text(
                         "Resend",

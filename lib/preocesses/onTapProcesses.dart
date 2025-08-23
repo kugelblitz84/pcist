@@ -1,7 +1,5 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, avoid_print
 //import 'package:flutter/widgets.dart';
-import 'package:flutter/widgets.dart';
-import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pcist/config/eventsConfig.dart';
 import 'package:pcist/config/userConfig.dart';

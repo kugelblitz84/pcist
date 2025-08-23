@@ -57,6 +57,7 @@ class _EntryPageState extends State<EntryPage> {
           infinite: true,
           child: Icon(LucideIcons.chevronDown, color: Colors.white, size: 32),
         ),
+        SizedBox(height: Get.height * 0.05),
       ],
     );
   }

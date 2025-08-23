@@ -52,6 +52,9 @@ class HomePageState extends State<HomePage> {
         //SizedBox(height: 23),
         SafeArea(
           child: appBar(callback: callBackToggleDrawer, open: drawerOpen),
+          bottom: false,
+          left: false,
+          right: false,
         ),
         //body
         Expanded(
