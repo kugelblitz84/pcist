@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pcist/pages/entry_page.dart';
-import 'package:pcist/pages/about_us.dart';
-import 'package:pcist/pages/eventPages/contestTrackerPage.dart';
-import 'package:pcist/pages/eventPages/events.dart';
+import 'package:pcist/pages/homeSections/entry_page.dart';
+import 'package:pcist/pages/homeSections/about_us.dart';
+import 'package:pcist/pages/homeSections/contestTrackerPage.dart';
+import 'package:pcist/pages/homeSections/events.dart';
 //import 'package:get/get.dart';
 import 'package:pcist/widgets/appBar.dart';
 import 'package:pcist/widgets/animated_drawer.dart';
