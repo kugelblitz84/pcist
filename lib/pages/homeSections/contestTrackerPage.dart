@@ -46,11 +46,11 @@ class _ContestTrackerPageState extends State<ContestTrackerPage> {
 
   int _computePreviewCount(double height) {
     // Calibrate preview count to typical phone heights; keep conservative on short screens
-    if (height < 480) return 2;
-    if (height < 640) return 3;
-    if (height < 720) return 4;
-    if (height < 880) return 5;
-    return 6;
+    if (height < 480) return 1;
+    if (height < 640) return 2;
+    if (height < 720) return 3;
+    if (height < 880) return 4;
+    return 5;
   }
 
   String formatDateTime(String datetime) {

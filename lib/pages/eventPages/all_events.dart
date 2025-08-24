@@ -222,7 +222,9 @@ class _AllEventsPageState extends State<AllEventsPage> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        Get.to(EventRegister(event: event));
+                                        Get.to(
+                                          () => EventRegister(event: event),
+                                        );
                                       },
                                       child: const Text(
                                         "Register",
@@ -415,7 +417,7 @@ class _EventOptionsPopupState extends State<EventOptionsPopup> {
             // Show Registered Teams/Members (for all roles)
             ElevatedButton.icon(
               onPressed: () {
-                Get.to(ViewParticipationPage(event: widget.event));
+                Get.to(() => ViewParticipationPage(event: widget.event));
               },
               icon: Icon(
                 widget.event.eventType == 'solo' ? Icons.people : Icons.groups,

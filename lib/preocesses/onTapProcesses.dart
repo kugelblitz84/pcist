@@ -336,6 +336,7 @@ class Ontapprocesses {
       );
       if (response.statusCode == 200) {
         Get.snackbar('Success', 'Registration successful');
+        Eventsconfig.initializeEvents();
       } else {
         final responseBody = json.decode(response.body);
         Get.snackbar('Error', responseBody['message'] ?? 'Registration failed');

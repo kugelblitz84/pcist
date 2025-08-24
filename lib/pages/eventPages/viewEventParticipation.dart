@@ -7,6 +7,17 @@ class ViewParticipationPage extends StatelessWidget {
 
   const ViewParticipationPage({super.key, required this.event});
 
+  String _extractMemberName(dynamic m) {
+    if (m == null) return 'Unknown';
+    if (m is String) return m;
+    if (m is Map) {
+      final dynamic v = m['Name'] ?? m['name'] ?? m['memberName'] ?? m['fullName'] ?? m['fullname'] ?? m['email'];
+      if (v == null) return 'Unknown';
+      return v.toString();
+    }
+    return m.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,11 +41,11 @@ class ViewParticipationPage extends StatelessWidget {
     return ListView.builder(
       itemCount: event.registeredMembers.length,
       itemBuilder: (context, index) {
-        final member = event.registeredMembers[index];
+    final memberName = _extractMemberName(event.registeredMembers[index]);
         return Card(
           child: ListTile(
             leading: const Icon(Icons.person),
-            title: Text(member),
+      title: Text(memberName),
           ),
         );
       },
@@ -51,10 +62,14 @@ class ViewParticipationPage extends StatelessWidget {
       itemCount: event.registeredTeams.length,
       itemBuilder: (context, index) {
         final team = event.registeredTeams[index];
-        final teamName = team.teamName ?? "Unnamed Team";
-        final members = (team.members as List<dynamic>)
-            .map((m) => m['Name'] ?? "Unknown")
-            .toList();
+  final String teamName = team.teamName;
+        final dynamic rawMembers = team.members;
+        List<String> members = const [];
+        if (rawMembers is List) {
+          members = rawMembers.map((m) => _extractMemberName(m)).toList();
+        } else if (rawMembers is Map) {
+          members = rawMembers.values.map((m) => _extractMemberName(m)).toList();
+        }
 
         return Card(
           child: ExpansionTile(
