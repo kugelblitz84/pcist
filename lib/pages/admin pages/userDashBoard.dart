@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pcist/authProcesses/tokenProcess.dart';
-import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/secret.dart';
 import 'package:pcist/services/userApi.dart';
 import 'updateUserProfile.dart';
-import 'package:get/get.dart';
 
 class UserDashboard extends StatelessWidget {
   UserDashboard({super.key});
@@ -253,109 +251,6 @@ class UserDashboard extends StatelessWidget {
                     //     style: TextStyle(fontSize: 16, color: Colors.white),
                     //   ),
                     // ),
-                    if (isAdmin) ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Ontapprocesses.UploadToGallery();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepOrange,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      Get.width * 0.02, // 2% of screen width
-                                  vertical:
-                                      Get.height *
-                                      0.015, // 1.5% of screen height
-                                ),
-                              ),
-                              child: Text(
-                                "Upload to gallery",
-                                style: TextStyle(
-                                  fontSize:
-                                      Get.width * 0.039, // 4% of screen width
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: Get.width * 0.02,
-                          ), // spacing between buttons
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Get.toNamed("/setEvent");
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepOrange,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: Get.width * 0.02,
-                                  vertical: Get.height * 0.015,
-                                ),
-                              ),
-                              child: Text(
-                                "Start New Event",
-                                style: TextStyle(
-                                  fontSize: Get.width * 0.039,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: Get.height * 0.015),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Get.toNamed('/userListPage');
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: Get.width * 0.02,
-                                  vertical: Get.height * 0.015,
-                                ),
-                              ),
-                              child: Text(
-                                "Manage Members",
-                                style: TextStyle(
-                                  fontSize: Get.width * 0.038,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: Get.width * 0.02),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Get.toNamed("/allEvents");
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: Get.width * 0.02,
-                                  vertical: Get.height * 0.015,
-                                ),
-                              ),
-                              child: Text(
-                                "Manage Events",
-                                style: TextStyle(
-                                  fontSize: Get.width * 0.039,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ],
                 ),
               ),

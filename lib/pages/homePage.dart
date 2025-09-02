@@ -182,6 +182,19 @@ class HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
+                      // Admin Features - Only show for admins
+                      if (UserConfig.isSignedIn.value &&
+                          LoggedInUserData.role == 2)
+                        FadeSlideIn(
+                          delay: const Duration(milliseconds: 0),
+                          child: _DrawerTile(
+                            title: 'Admin Features',
+                            onTap: () {
+                              _closeEndDrawer();
+                              Get.toNamed('/adminFeatures');
+                            },
+                          ),
+                        ),
                       FadeSlideIn(
                         delay: const Duration(milliseconds: 0),
                         child: _DrawerTile(

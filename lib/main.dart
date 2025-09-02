@@ -17,6 +17,7 @@ import 'package:pcist/config/firebase.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:pcist/pages/admin%20pages/userListPage.dart';
 import 'package:pcist/pages/eventPages/all_events.dart';
+import 'package:pcist/pages/admin%20pages/AdminFeatures.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,6 +68,7 @@ class pcIST extends StatelessWidget {
         GetPage(name: '/userListPage', page: () => UserListPage()),
         GetPage(name: '/chat', page: () => ChatPage()),
         GetPage(name: '/allEvents', page: () => AllEventsPage()),
+        GetPage(name: '/adminFeatures', page: () => AdminFeatures()),
         GetPage(name: '/viewProfile', page: () => ViewProfilePage()),
       ],
       home: MainPage(),
