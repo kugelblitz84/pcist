@@ -27,6 +27,76 @@ class LoggedInUserData {
   static List<String> certificates = [];
 }
 
+class RegisteredMember {
+  String? userId;
+  int? classroll;
+  String? name;
+  bool? paymentStatus;
+
+  RegisteredMember({
+    this.userId,
+    this.classroll,
+    this.name,
+    this.paymentStatus,
+  });
+
+  factory RegisteredMember.fromJson(Map<String, dynamic> json) {
+    return RegisteredMember(
+      userId: json['userId'],
+      classroll: json['classroll'],
+      name: json['Name'],
+      paymentStatus: json['paymentStatus'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'classroll': classroll,
+      'Name': name,
+      'paymentStatus': paymentStatus,
+    };
+  }
+}
+
+class RegisteredTeam {
+  String teamName;
+  List<RegisteredMember> members;
+
+  RegisteredTeam({required this.teamName, required this.members});
+
+  factory RegisteredTeam.fromJson(Map<String, dynamic> json) {
+    return RegisteredTeam(
+      teamName: json['teamName'] ?? '',
+      members: List<RegisteredMember>.from(
+        (json['members'] ?? []).map((m) => RegisteredMember.fromJson(m)),
+      ),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'teamName': teamName,
+      'members': members.map((m) => m.toJson()).toList(),
+    };
+  }
+}
+
+class EventImage {
+  String url;
+  String publicId;
+
+  EventImage({required this.url, required this.publicId});
+
+  factory EventImage.fromJson(Map<String, dynamic> json) {
+    return EventImage(url: json['url'] ?? '', publicId: json['publicId'] ?? '');
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'url': url, 'publicId': publicId};
+  }
+}
+
 class Event {
   String? id;
   String? eventName;
@@ -35,24 +105,27 @@ class Event {
   DateTime? registrationDeadline;
   String? location;
   String? description;
-  List<String> imageUrls = [];
-  bool? needMembership;
-  List<String> registeredMembers = [];
+  List<EventImage> images = [];
+  bool needMembership;
+  List<RegisteredMember> registeredMembers = [];
   List<RegisteredTeam> registeredTeams = [];
 
   Event({
-    required this.id,
-    required this.eventName,
-    required this.eventType,
-    required this.date,
-    required this.registrationDeadline,
-    required this.description,
-    required this.imageUrls,
-    required this.location,
-    required this.needMembership,
-    required this.registeredMembers,
-    required this.registeredTeams,
+    this.id,
+    this.eventName,
+    this.eventType,
+    this.date,
+    this.registrationDeadline,
+    this.location,
+    this.description,
+    this.images = const [],
+    this.needMembership = false,
+    this.registeredMembers = const [],
+    this.registeredTeams = const [],
   });
+
+  // Helper getter for backward compatibility
+  List<String> get imageUrls => images.map((img) => img.url).toList();
 
   factory Event.setDataFromJson(Map<String, dynamic> json) {
     final isTeamEvent = json.containsKey('registeredTeams');
@@ -67,14 +140,16 @@ class Event {
       ),
       location: json['location'],
       description: json['description'],
-      imageUrls: List<String>.from(
-        (json['images'] ?? []).map((image) => image['url']),
+      images: List<EventImage>.from(
+        (json['images'] ?? []).map((image) => EventImage.fromJson(image)),
       ),
       needMembership: json['needMembership'] ?? false,
       registeredMembers: isTeamEvent
           ? []
-          : List<String>.from(
-              (json['registeredMembers'] ?? []).map((m) => m['Name']),
+          : List<RegisteredMember>.from(
+              (json['registeredMembers'] ?? []).map(
+                (m) => RegisteredMember.fromJson(m),
+              ),
             ),
       registeredTeams: isTeamEvent
           ? List<RegisteredTeam>.from(
@@ -85,19 +160,22 @@ class Event {
           : [],
     );
   }
-}
 
-class RegisteredTeam {
-  String teamName;
-  List<String> members;
-
-  RegisteredTeam({required this.teamName, required this.members});
-
-  factory RegisteredTeam.fromJson(Map<String, dynamic> json) {
-    return RegisteredTeam(
-      teamName: json['teamName'],
-      members: List<String>.from((json['members'] ?? []).map((m) => m['Name'])),
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'eventName': eventName,
+      'date': date?.toIso8601String(),
+      'registrationDeadline': registrationDeadline?.toIso8601String(),
+      'location': location,
+      'description': description,
+      'images': images.map((img) => img.toJson()).toList(),
+      'needMembership': needMembership,
+      if (eventType == 'solo')
+        'registeredMembers': registeredMembers.map((m) => m.toJson()).toList(),
+      if (eventType == 'team')
+        'registeredTeams': registeredTeams.map((t) => t.toJson()).toList(),
+    };
   }
 }
 

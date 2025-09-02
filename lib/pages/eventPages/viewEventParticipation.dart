@@ -7,17 +7,6 @@ class ViewParticipationPage extends StatelessWidget {
 
   const ViewParticipationPage({super.key, required this.event});
 
-  String _extractMemberName(dynamic m) {
-    if (m == null) return 'Unknown';
-    if (m is String) return m;
-    if (m is Map) {
-      final dynamic v = m['Name'] ?? m['name'] ?? m['memberName'] ?? m['fullName'] ?? m['fullname'] ?? m['email'];
-      if (v == null) return 'Unknown';
-      return v.toString();
-    }
-    return m.toString();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,11 +30,20 @@ class ViewParticipationPage extends StatelessWidget {
     return ListView.builder(
       itemCount: event.registeredMembers.length,
       itemBuilder: (context, index) {
-    final memberName = _extractMemberName(event.registeredMembers[index]);
+        final member = event.registeredMembers[index];
+        final memberName = member.name ?? 'Unknown';
+        final classroll = member.classroll?.toString() ?? 'N/A';
+        final paymentStatus = member.paymentStatus ?? false;
+
         return Card(
           child: ListTile(
             leading: const Icon(Icons.person),
-      title: Text(memberName),
+            title: Text(memberName),
+            subtitle: Text('Class Roll: $classroll'),
+            trailing: Icon(
+              paymentStatus ? Icons.payment : Icons.payment_outlined,
+              color: paymentStatus ? Colors.green : Colors.orange,
+            ),
           ),
         );
       },
@@ -62,24 +60,30 @@ class ViewParticipationPage extends StatelessWidget {
       itemCount: event.registeredTeams.length,
       itemBuilder: (context, index) {
         final team = event.registeredTeams[index];
-  final String teamName = team.teamName;
-        final dynamic rawMembers = team.members;
-        List<String> members = const [];
-        if (rawMembers is List) {
-          members = rawMembers.map((m) => _extractMemberName(m)).toList();
-        } else if (rawMembers is Map) {
-          members = rawMembers.values.map((m) => _extractMemberName(m)).toList();
-        }
+        final String teamName = team.teamName;
+        final List<RegisteredMember> members = team.members;
 
         return Card(
           child: ExpansionTile(
             leading: const Icon(Icons.groups),
             title: Text(teamName),
+            subtitle: Text('${members.length} members'),
             children: members
                 .map(
-                  (memberName) => ListTile(
+                  (member) => ListTile(
                     leading: const Icon(Icons.person_outline),
-                    title: Text(memberName),
+                    title: Text(member.name ?? 'Unknown'),
+                    subtitle: Text(
+                      'Class Roll: ${member.classroll?.toString() ?? 'N/A'}',
+                    ),
+                    trailing: Icon(
+                      member.paymentStatus == true
+                          ? Icons.payment
+                          : Icons.payment_outlined,
+                      color: member.paymentStatus == true
+                          ? Colors.green
+                          : Colors.orange,
+                    ),
                   ),
                 )
                 .toList(),

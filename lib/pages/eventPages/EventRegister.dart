@@ -2,15 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/secret.dart'; // Assumes Event model is here
 
-class EventRegister extends StatelessWidget {
+class EventRegister extends StatefulWidget {
   final Event event;
 
-  EventRegister({super.key, required this.event});
+  const EventRegister({super.key, required this.event});
 
+  @override
+  State<EventRegister> createState() => _EventRegisterState();
+}
+
+class _EventRegisterState extends State<EventRegister> {
   final Color accent = Colors.deepOrange;
   final _singleMember = TextEditingController();
-  List<String> memberEmails = ["", "", ""];
+  final List<String> memberEmails = ["", "", ""];
   final _teamName = TextEditingController();
+
+  @override
+  void dispose() {
+    _singleMember.dispose();
+    _teamName.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +40,7 @@ class EventRegister extends StatelessWidget {
           children: [
             // Event Name
             Text(
-              event.eventName ?? "Untitled Event",
+              widget.event.eventName ?? "Untitled Event",
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -37,19 +50,19 @@ class EventRegister extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Images
-            if (event.imageUrls.isNotEmpty)
+            if (widget.event.imageUrls.isNotEmpty)
               SizedBox(
                 height: 200,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: event.imageUrls.length,
+                  itemCount: widget.event.imageUrls.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 10),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.network(
-                          event.imageUrls[index],
+                          widget.event.imageUrls[index],
                           width: 300,
                           fit: BoxFit.cover,
                         ),
@@ -63,7 +76,7 @@ class EventRegister extends StatelessWidget {
 
             // Description
             Text(
-              event.description ?? "No description provided.",
+              widget.event.description ?? "No description provided.",
               style: const TextStyle(fontSize: 16, color: Colors.black87),
             ),
             const SizedBox(height: 16),
@@ -78,7 +91,7 @@ class EventRegister extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  event.date.toString(),
+                  widget.event.date.toString(),
                   style: const TextStyle(color: Colors.black),
                 ),
               ],
@@ -102,7 +115,7 @@ class EventRegister extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  event.location ?? "No location",
+                  widget.event.location ?? "No location",
                   style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                 ),
               ],
@@ -111,7 +124,7 @@ class EventRegister extends StatelessWidget {
             const SizedBox(height: 30),
 
             // Registration Fields
-            if (event.eventType == "solo") ...[
+            if (widget.event.eventType == "solo") ...[
               const Text(
                 "Enter contest as",
                 style: TextStyle(
@@ -194,15 +207,15 @@ class EventRegister extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  final data = event.eventType == 'solo'
+                  final data = widget.event.eventType == 'solo'
                       ? {"Name": _singleMember.text}
                       : {"teamName": _teamName.text, "members": memberEmails};
                   // TODO: Handle submission
 
                   Ontapprocesses.registerForEvent(
-                    event.id ?? "",
+                    widget.event.id ?? "",
                     data,
-                    event.eventType ?? "",
+                    widget.event.eventType ?? "",
                   );
                 },
                 child: const Text(

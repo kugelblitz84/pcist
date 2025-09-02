@@ -417,7 +417,12 @@ class _EventOptionsPopupState extends State<EventOptionsPopup> {
             // Show Registered Teams/Members (for all roles)
             ElevatedButton.icon(
               onPressed: () {
-                Get.to(() => ViewParticipationPage(event: widget.event));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ViewParticipationPage(event: widget.event),
+                  ),
+                );
               },
               icon: Icon(
                 widget.event.eventType == 'solo' ? Icons.people : Icons.groups,
