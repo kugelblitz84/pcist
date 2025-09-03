@@ -19,6 +19,7 @@ class DownloadHelper {
     required String title,
     required String filename,
     required String filePath,
+    bool showBackButton = false,
   }) async {
     // Wait for any previous dialog to close completely
     int attempts = 0;
@@ -34,6 +35,7 @@ class DownloadHelper {
       title: title,
       filename: filename,
       filePath: filePath,
+      showBackButton: showBackButton,
     );
   }
 
@@ -85,6 +87,7 @@ class DownloadHelper {
           title: 'PAD Statement downloaded successfully!',
           filename: result['filename'] ?? filename,
           filePath: result['filePath'] ?? '',
+          showBackButton: true, // Show back button for creation page downloads
         );
       } else {
         Get.snackbar(
@@ -227,6 +230,7 @@ class DownloadHelper {
           title: 'Invoice downloaded successfully!',
           filename: result['filename'] ?? filename,
           filePath: result['filePath'] ?? '',
+          showBackButton: true, // Show back button for creation page downloads
         );
       } else {
         Get.snackbar(
