@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pcist/secret.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:pcist/services/pdfTextExtractor.dart';
 
 class CreatePadPage extends StatefulWidget {
   const CreatePadPage({super.key});
@@ -26,6 +28,8 @@ class _CreatePadPageState extends State<CreatePadPage> {
   List<PadAuthorizer> authorizers = [];
 
   bool _sendViaEmail = false;
+  bool _isExtractingText = false;
+  String? _selectedFileName;
 
   @override
   void dispose() {
@@ -47,6 +51,78 @@ class _CreatePadPageState extends State<CreatePadPage> {
   void _removeAuthorizer(int index) {
     setState(() {
       authorizers.removeAt(index);
+    });
+  }
+
+  Future<void> _pickAndExtractPdfText() async {
+    try {
+      setState(() {
+        _isExtractingText = true;
+      });
+
+      // Pick PDF file
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
+
+        if (file.path != null) {
+          setState(() {
+            _selectedFileName = file.name;
+          });
+
+          // Extract text from PDF
+          String extractedText = await PdfTextExtractor.extractTextFromPdf(
+            file.path!,
+          );
+
+          if (extractedText.isNotEmpty) {
+            setState(() {
+              _statementController.text = extractedText;
+            });
+
+            Get.snackbar(
+              'Success',
+              'PDF text extracted successfully!',
+              backgroundColor: Colors.green,
+              colorText: Colors.white,
+              snackPosition: SnackPosition.TOP,
+            );
+          } else {
+            Get.snackbar(
+              'Warning',
+              'No text could be extracted from the PDF file.',
+              backgroundColor: Colors.orange,
+              colorText: Colors.white,
+              snackPosition: SnackPosition.TOP,
+            );
+          }
+        }
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to extract text from PDF: ${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 5),
+      );
+    } finally {
+      setState(() {
+        _isExtractingText = false;
+      });
+    }
+  }
+
+  void _clearStatement() {
+    setState(() {
+      _statementController.clear();
+      _selectedFileName = null;
     });
   }
 
@@ -181,19 +257,108 @@ class _CreatePadPageState extends State<CreatePadPage> {
                     const SizedBox(height: 16),
                   ],
 
+                  // Statement section with PDF import option
+                  const Text(
+                    'Official Statement',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // PDF Import buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _isExtractingText
+                              ? null
+                              : _pickAndExtractPdfText,
+                          icon: _isExtractingText
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.picture_as_pdf),
+                          label: Text(
+                            _isExtractingText
+                                ? 'Extracting...'
+                                : 'Import from PDF',
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepOrange,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton.icon(
+                        onPressed: _statementController.text.isEmpty
+                            ? null
+                            : _clearStatement,
+                        icon: const Icon(Icons.clear),
+                        label: const Text('Clear'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  if (_selectedFileName != null) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade50,
+                        border: Border.all(color: Colors.green.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Imported from: $_selectedFileName',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.green,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 12),
+
                   // Statement
                   TextFormField(
                     controller: _statementController,
                     maxLines: 8,
                     decoration: const InputDecoration(
                       labelText: 'Official Statement *',
-                      hintText: 'Enter the official statement content here...',
+                      hintText:
+                          'Enter the official statement content here or import from PDF...',
                       border: OutlineInputBorder(),
                       alignLabelWithHint: true,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter the statement';
+                        return 'Please enter the statement or import from PDF';
                       }
                       if (value.length < 50) {
                         return 'Statement should be at least 50 characters long';

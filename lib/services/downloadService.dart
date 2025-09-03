@@ -554,6 +554,113 @@ class DownloadService {
     );
   }
 
+  // Show download success popup dialog
+  static void showDownloadSuccess({
+    required String title,
+    required String filename,
+    required String filePath,
+  }) {
+    print(
+      "Showing download success dialog for: $filename at $filePath",
+    ); // Debug logging
+
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green, size: 24),
+            const SizedBox(width: 8),
+            Text(
+              'Download Complete',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.green,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.picture_as_pdf, color: Colors.red[600], size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      filename,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "File saved to Downloads folder",
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back(); // Close dialog
+            },
+            child: Text(
+              'Close',
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              Get.back(); // Close dialog first
+              await openFile(filePath);
+            },
+            icon: const Icon(Icons.open_in_new, size: 16),
+            label: const Text('Open File'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+          ),
+          TextButton.icon(
+            onPressed: () {
+              Get.back(); // Close dialog
+              Get.toNamed("/downloadedDocuments");
+            },
+            icon: const Icon(Icons.folder_open, size: 16),
+            label: const Text('View Downloads'),
+            style: TextButton.styleFrom(foregroundColor: Colors.green),
+          ),
+        ],
+      ),
+      barrierDismissible: true,
+    );
+  }
+
   // Get all downloaded files
   static Future<List<FileSystemEntity>> getDownloadedFiles() async {
     try {

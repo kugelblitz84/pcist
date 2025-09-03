@@ -201,42 +201,48 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
                   ),
                   const SizedBox(height: 16),
 
-                  Row(
+                  Column(
                     children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _authorizerNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Authorizer Name *',
-                            hintText: 'Dr. John Doe',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.person),
+                      TextFormField(
+                        controller: _authorizerNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Authorizer Name *',
+                          hintText: 'Dr. John Doe',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.person, size: 18),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 12,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter authorizer name';
-                            }
-                            return null;
-                          },
                         ),
+                        style: const TextStyle(fontSize: 14),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter authorizer name';
+                          }
+                          return null;
+                        },
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _authorizerDesignationController,
-                          decoration: const InputDecoration(
-                            labelText: 'Designation *',
-                            hintText: 'Head of Department',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.work),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _authorizerDesignationController,
+                        decoration: const InputDecoration(
+                          labelText: 'Designation *',
+                          hintText: 'Head of Department',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.work, size: 18),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 12,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter designation';
-                            }
-                            return null;
-                          },
                         ),
+                        style: const TextStyle(fontSize: 14),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter designation';
+                          }
+                          return null;
+                        },
                       ),
                     ],
                   ),
@@ -301,11 +307,14 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
                           const SizedBox(height: 8),
                           TextFormField(
                             initialValue: product.description,
+                            maxLines: 3,
+                            minLines: 2,
                             decoration: const InputDecoration(
                               labelText: 'Description *',
                               hintText: 'Website Development',
                               border: OutlineInputBorder(),
                               prefixIcon: Icon(Icons.description),
+                              alignLabelWithHint: true,
                             ),
                             onChanged: (value) {
                               setState(() {
@@ -323,79 +332,124 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
                           Row(
                             children: [
                               Expanded(
-                                child: TextFormField(
-                                  initialValue: product.quantity.toString(),
-                                  decoration: const InputDecoration(
-                                    labelText: 'Quantity *',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.numbers),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      products[index].quantity =
-                                          int.tryParse(value) ?? 1;
-                                    });
-                                  },
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter quantity';
-                                    }
-                                    if (int.tryParse(value) == null ||
-                                        int.parse(value) <= 0) {
-                                      return 'Please enter valid quantity';
-                                    }
-                                    return null;
-                                  },
+                                flex: 1,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Quantity',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    TextFormField(
+                                      initialValue: product.quantity == 1
+                                          ? ''
+                                          : product.quantity.toString(),
+                                      decoration: const InputDecoration(
+                                        hintText: 'Enter quantity',
+                                        border: OutlineInputBorder(),
+                                        contentPadding: EdgeInsets.symmetric(
+                                          vertical: 12,
+                                          horizontal: 12,
+                                        ),
+                                      ),
+                                      style: const TextStyle(fontSize: 14),
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          products[index].quantity =
+                                              int.tryParse(value) ?? 1;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Enter quantity';
+                                        }
+                                        if (int.tryParse(value) == null ||
+                                            int.parse(value) <= 0) {
+                                          return 'Valid quantity required';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: 12),
                               Expanded(
-                                child: TextFormField(
-                                  initialValue: product.unitPrice.toString(),
-                                  decoration: const InputDecoration(
-                                    labelText: 'Unit Price (BDT) *',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.attach_money),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      products[index].unitPrice =
-                                          double.tryParse(value) ?? 0.0;
-                                    });
-                                  },
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter unit price';
-                                    }
-                                    if (double.tryParse(value) == null ||
-                                        double.parse(value) <= 0) {
-                                      return 'Please enter valid price';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  'Total: ৳${product.totalPrice.toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.deepOrange,
-                                  ),
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Unit Price (BDT)',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    TextFormField(
+                                      initialValue: product.unitPrice == 0.0
+                                          ? ''
+                                          : product.unitPrice.toString(),
+                                      decoration: const InputDecoration(
+                                        hintText: 'Enter price',
+                                        border: OutlineInputBorder(),
+                                        contentPadding: EdgeInsets.symmetric(
+                                          vertical: 12,
+                                          horizontal: 12,
+                                        ),
+                                      ),
+                                      style: const TextStyle(fontSize: 14),
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          products[index].unitPrice =
+                                              double.tryParse(value) ?? 0.0;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Enter price';
+                                        }
+                                        if (double.tryParse(value) == null ||
+                                            double.parse(value) <= 0) {
+                                          return 'Valid price required';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'Total: ৳${product.totalPrice.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepOrange,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ],
                       ),
