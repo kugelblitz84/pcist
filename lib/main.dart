@@ -18,6 +18,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:pcist/pages/admin%20pages/userListPage.dart';
 import 'package:pcist/pages/eventPages/all_events.dart';
 import 'package:pcist/pages/admin%20pages/AdminFeatures.dart';
+import 'package:pcist/pages/admin%20pages/CreatePadPage.dart';
+import 'package:pcist/pages/admin%20pages/PadHistoryPage.dart';
+import 'package:pcist/pages/admin%20pages/CreateInvoicePage.dart';
+import 'package:pcist/pages/admin%20pages/InvoiceHistoryPage.dart';
+import 'package:pcist/pages/admin%20pages/DownloadedDocumentsPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,6 +74,14 @@ class pcIST extends StatelessWidget {
         GetPage(name: '/chat', page: () => ChatPage()),
         GetPage(name: '/allEvents', page: () => AllEventsPage()),
         GetPage(name: '/adminFeatures', page: () => AdminFeatures()),
+        GetPage(name: '/createPad', page: () => CreatePadPage()),
+        GetPage(name: '/padHistory', page: () => PadHistoryPage()),
+        GetPage(name: '/createInvoice', page: () => CreateInvoicePage()),
+        GetPage(name: '/invoiceHistory', page: () => InvoiceHistoryPage()),
+        GetPage(
+          name: '/downloadedDocuments',
+          page: () => DownloadedDocumentsPage(),
+        ),
         GetPage(name: '/viewProfile', page: () => ViewProfilePage()),
       ],
       home: MainPage(),

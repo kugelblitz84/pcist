@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, avoid_print
-//import 'package:flutter/widgets.dart';
+import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pcist/config/eventsConfig.dart';
 import 'package:pcist/config/userConfig.dart';
@@ -8,11 +9,13 @@ import 'package:pcist/preocesses/notificationProcoes.dart';
 import 'package:pcist/secret.dart';
 import 'package:pcist/services/eventApi.dart';
 import 'package:pcist/services/userApi.dart';
+import 'package:pcist/services/downloadHelper.dart';
+import 'package:pcist/services/padApi.dart';
+import 'package:pcist/services/invoiceApi.dart';
 import 'package:pcist/authProcesses/tokenProcess.dart';
 import 'package:pcist/pages/authPages/passResetPage.dart';
 import 'dart:convert';
 import 'package:get/get.dart';
-import 'dart:io';
 //import 'package:path/path.dart';
 //import 'package:image_picker/image_picker.dart';
 
@@ -390,6 +393,148 @@ class Ontapprocesses {
       }
     } catch (err) {
       print("error in the ontap class: $err");
+    }
+  }
+
+  // PAD Statement methods
+  static Future<void> SendPadStatement({
+    required String receiverEmail,
+    required String subject,
+    required String statement,
+    required List<dynamic> authorizers,
+    required String contactEmail,
+    required String contactPhone,
+    required String address,
+  }) async {
+    try {
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
+      final response = await PadApi.sendPadStatement(
+        receiverEmail: receiverEmail,
+        subject: subject,
+        statement: statement,
+        authorizers: authorizers
+            .map((auth) => auth.toMap() as Map<String, String>)
+            .toList(),
+        contactEmail: contactEmail,
+        contactPhone: contactPhone,
+        address: address,
+      );
+
+      Get.back(); // Close loading dialog
+
+      if (response.statusCode == 200) {
+        Get.snackbar("Success", "PAD statement sent successfully");
+        Get.back(); // Go back to previous page
+      } else {
+        Get.snackbar("Error", "Failed to send PAD statement");
+      }
+    } catch (err) {
+      Get.back(); // Close loading dialog
+      Get.snackbar("Error", "An error occurred: $err");
+      print("PAD send error: $err");
+    }
+  }
+
+  static Future<void> DownloadPadStatement({
+    required String statement,
+    required List<dynamic> authorizers,
+    required String contactEmail,
+    required String contactPhone,
+    required String address,
+  }) async {
+    try {
+      // Use the new Dio-based download helper
+      await DownloadHelper.downloadPadStatement(
+        statement: statement,
+        authorizers: authorizers
+            .map((auth) => auth.toMap() as Map<String, String>)
+            .toList(),
+        contactEmail: contactEmail,
+        contactPhone: contactPhone,
+        address: address,
+      );
+
+      Get.back(); // Go back to previous page
+    } catch (err) {
+      Get.snackbar("Error", "An error occurred: $err");
+      print("PAD download error: $err");
+    }
+  }
+
+  // Invoice methods
+  static Future<void> SendInvoice({
+    required String receiverEmail,
+    required String subject,
+    required List<dynamic> products,
+    required String authorizerName,
+    required String authorizerDesignation,
+    required String contactEmail,
+    required String contactPhone,
+    required String address,
+  }) async {
+    try {
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
+      final response = await InvoiceApi.sendInvoice(
+        receiverEmail: receiverEmail,
+        subject: subject,
+        products: products
+            .map((product) => product.toMap() as Map<String, dynamic>)
+            .toList(),
+        authorizerName: authorizerName,
+        authorizerDesignation: authorizerDesignation,
+        contactEmail: contactEmail,
+        contactPhone: contactPhone,
+        address: address,
+      );
+
+      Get.back(); // Close loading dialog
+
+      if (response.statusCode == 200) {
+        Get.snackbar("Success", "Invoice sent successfully");
+        Get.back(); // Go back to previous page
+      } else {
+        Get.snackbar("Error", "Failed to send invoice");
+      }
+    } catch (err) {
+      Get.back(); // Close loading dialog
+      Get.snackbar("Error", "An error occurred: $err");
+      print("Invoice send error: $err");
+    }
+  }
+
+  static Future<void> DownloadInvoice({
+    required List<dynamic> products,
+    required String authorizerName,
+    required String authorizerDesignation,
+    required String contactEmail,
+    required String contactPhone,
+    required String address,
+  }) async {
+    try {
+      // Use the new Dio-based download helper
+      await DownloadHelper.downloadInvoice(
+        products: products
+            .map((product) => product.toMap() as Map<String, dynamic>)
+            .toList(),
+        authorizerName: authorizerName,
+        authorizerDesignation: authorizerDesignation,
+        contactEmail: contactEmail,
+        contactPhone: contactPhone,
+        address: address,
+      );
+
+      Get.back(); // Go back to previous page
+    } catch (err) {
+      Get.snackbar("Error", "An error occurred: $err");
+      print("Invoice download error: $err");
     }
   }
 }

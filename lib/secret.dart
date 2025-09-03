@@ -179,7 +179,188 @@ class Event {
   }
 }
 
+class PadAuthorizer {
+  String name;
+  String role;
 
+  PadAuthorizer({required this.name, required this.role});
+
+  Map<String, String> toMap() {
+    return {'name': name, 'role': role};
+  }
+
+  factory PadAuthorizer.fromMap(Map<String, dynamic> map) {
+    return PadAuthorizer(name: map['name'] ?? '', role: map['role'] ?? '');
+  }
+}
+
+class PadStatement {
+  String? id;
+  String? receiverEmail;
+  String? subject;
+  String statement;
+  List<PadAuthorizer> authorizers;
+  String contactEmail;
+  String contactPhone;
+  String address;
+  String? serial;
+  String? dateStr;
+  bool? sent;
+  String? sentAt;
+  String? downloadedAt;
+  String? createdAt;
+  String? updatedAt;
+
+  PadStatement({
+    this.id,
+    this.receiverEmail,
+    this.subject,
+    required this.statement,
+    required this.authorizers,
+    required this.contactEmail,
+    required this.contactPhone,
+    required this.address,
+    this.serial,
+    this.dateStr,
+    this.sent,
+    this.sentAt,
+    this.downloadedAt,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory PadStatement.fromMap(Map<String, dynamic> map) {
+    return PadStatement(
+      id: map['_id'],
+      receiverEmail: map['receiverEmail'],
+      subject: map['subject'],
+      statement: map['statement'] ?? '',
+      authorizers:
+          (map['authorizers'] as List<dynamic>?)
+              ?.map((auth) => PadAuthorizer.fromMap(auth))
+              .toList() ??
+          [],
+      contactEmail: map['contactEmail'] ?? '',
+      contactPhone: map['contactPhone'] ?? '',
+      address: map['address'] ?? '',
+      serial: map['serial'],
+      dateStr: map['dateStr'],
+      sent: map['sent'],
+      sentAt: map['sentAt'],
+      downloadedAt: map['downloadedAt'],
+      createdAt: map['createdAt'],
+      updatedAt: map['updatedAt'],
+    );
+  }
+}
+
+class InvoiceProduct {
+  String description;
+  int quantity;
+  double unitPrice;
+
+  InvoiceProduct({
+    required this.description,
+    required this.quantity,
+    required this.unitPrice,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'description': description,
+      'quantity': quantity,
+      'unitPrice': unitPrice,
+      'total': totalPrice, // Add the calculated total for backend compatibility
+    };
+  }
+
+  factory InvoiceProduct.fromMap(Map<String, dynamic> map) {
+    return InvoiceProduct(
+      description: map['description']?.toString() ?? '',
+      quantity: (map['quantity'] is int)
+          ? map['quantity']
+          : (map['quantity']?.toInt() ?? 0),
+      unitPrice: (map['unitPrice'] is double)
+          ? map['unitPrice']
+          : (map['unitPrice']?.toDouble() ?? 0.0),
+    );
+  }
+
+  double get totalPrice => quantity * unitPrice;
+}
+
+class Invoice {
+  String? id;
+  String? serial;
+  double? grandTotal;
+  String authorizerName;
+  String authorizerDesignation;
+  String? dateStr;
+  String? issueDateStr;
+  String? generatedDateStr;
+  bool? sentViaEmail;
+  String? receiverEmail;
+  String? downloadedAt;
+  String? createdAt;
+  String? updatedAt;
+  List<InvoiceProduct> products;
+  String contactEmail;
+  String contactPhone;
+  String address;
+
+  Invoice({
+    this.id,
+    this.serial,
+    this.grandTotal,
+    required this.authorizerName,
+    required this.authorizerDesignation,
+    this.dateStr,
+    this.issueDateStr,
+    this.generatedDateStr,
+    this.sentViaEmail,
+    this.receiverEmail,
+    this.downloadedAt,
+    this.createdAt,
+    this.updatedAt,
+    required this.products,
+    required this.contactEmail,
+    required this.contactPhone,
+    required this.address,
+  });
+
+  factory Invoice.fromMap(Map<String, dynamic> map) {
+    return Invoice(
+      id: map['_id'],
+      serial: map['serial'],
+      grandTotal: map['grandTotal']?.toDouble(),
+      authorizerName: map['authorizerName'] ?? '',
+      authorizerDesignation: map['authorizerDesignation'] ?? '',
+      dateStr: map['dateStr'],
+      issueDateStr: map['issueDateStr'],
+      generatedDateStr: map['generatedDateStr'],
+      sentViaEmail: map['sentViaEmail'],
+      receiverEmail: map['receiverEmail'],
+      downloadedAt: map['downloadedAt'],
+      createdAt: map['createdAt'],
+      updatedAt: map['updatedAt'],
+      products: map['products'] != null
+          ? (map['products'] as List<dynamic>)
+                .map(
+                  (product) =>
+                      InvoiceProduct.fromMap(product as Map<String, dynamic>),
+                )
+                .toList()
+          : [],
+      contactEmail: map['contactEmail'] ?? '',
+      contactPhone: map['contactPhone'] ?? '',
+      address: map['address'] ?? '',
+    );
+  }
+
+  double calculateGrandTotal() {
+    return products.fold(0.0, (sum, product) => sum + product.totalPrice);
+  }
+}
 
 // {
 //   "status": true,
@@ -187,19 +368,3 @@ class Event {
 //   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzQ1ZGUzOGQ4MGI3NzI2ODQwNTBjYiIsImNsYXNzcm9sbCI6MjEwNjMsImVtYWlsIjoiZXhhbXBsZXVzZXIyNEBnbWFpbC5jb20iLCJyb2xlIjoyLCJpYXQiOjE3NDgyNjIzNzF9.HFbndTIkg9r_CKOel5IgirI3ZBIqK_FbHMV8D84gDJQ",
 //   "slug": "21063"
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

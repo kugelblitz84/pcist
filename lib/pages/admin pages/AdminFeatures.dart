@@ -99,9 +99,9 @@ class AdminFeatures extends StatelessWidget {
                               Expanded(
                                 child: _buildFeatureCard(
                                   icon: Icons.event_available,
-                                  title: 'Create Event',
+                                  title: 'Start New Event',
                                   description:
-                                      'Start a new event for the community',
+                                      'Create and configure new events',
                                   color: Colors.deepOrange,
                                   onTap: () => Get.toNamed("/setEvent"),
                                 ),
@@ -117,6 +117,79 @@ class AdminFeatures extends StatelessWidget {
                                 ),
                               ),
                             ],
+                          ),
+                          const SizedBox(height: 16),
+                          _buildFeatureCard(
+                            icon: Icons.photo_library,
+                            title: 'Upload to Gallery',
+                            description: 'Add images to the community gallery',
+                            color: Colors.purple,
+                            onTap: () => Ontapprocesses.UploadToGallery(),
+                            isFullWidth: true,
+                          ),
+
+                          const SizedBox(height: 32),
+
+                          // Document Management Section
+                          _buildSectionHeader('Document Management'),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildFeatureCard(
+                                  icon: Icons.description,
+                                  title: 'Create PAD Statement',
+                                  description:
+                                      'Generate official PAD statements',
+                                  color: Colors.blue,
+                                  onTap: () => Get.toNamed("/createPad"),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _buildFeatureCard(
+                                  icon: Icons.history,
+                                  title: 'PAD History',
+                                  description:
+                                      'View and download PAD statements',
+                                  color: Colors.blueAccent,
+                                  onTap: () => Get.toNamed("/padHistory"),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildFeatureCard(
+                                  icon: Icons.receipt,
+                                  title: 'Create Invoice',
+                                  description: 'Generate and send invoices',
+                                  color: Colors.green,
+                                  onTap: () => Get.toNamed("/createInvoice"),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _buildFeatureCard(
+                                  icon: Icons.receipt_long,
+                                  title: 'Invoice History',
+                                  description: 'View and download invoices',
+                                  color: Colors.greenAccent,
+                                  onTap: () => Get.toNamed("/invoiceHistory"),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          _buildFeatureCard(
+                            icon: Icons.download,
+                            title: 'Downloaded Documents',
+                            description: 'View and manage downloaded PDF files',
+                            color: Colors.deepPurple,
+                            onTap: () => Get.toNamed("/downloadedDocuments"),
+                            isFullWidth: true,
                           ),
 
                           const SizedBox(height: 32),
@@ -146,20 +219,6 @@ class AdminFeatures extends StatelessWidget {
                                 ),
                               ),
                             ],
-                          ),
-
-                          const SizedBox(height: 32),
-
-                          // Content Management Section
-                          _buildSectionHeader('Content Management'),
-                          const SizedBox(height: 16),
-                          _buildFeatureCard(
-                            icon: Icons.photo_library,
-                            title: 'Upload to Gallery',
-                            description: 'Add images to the community gallery',
-                            color: Colors.purple,
-                            onTap: () => Ontapprocesses.UploadToGallery(),
-                            isFullWidth: true,
                           ),
 
                           const SizedBox(height: 24),
