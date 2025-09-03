@@ -559,6 +559,7 @@ class DownloadService {
     required String title,
     required String filename,
     required String filePath,
+    bool showBackButton = false,
   }) {
     print(
       "Showing download success dialog for: $filename at $filePath",
@@ -655,6 +656,16 @@ class DownloadService {
             label: const Text('View Downloads'),
             style: TextButton.styleFrom(foregroundColor: Colors.green),
           ),
+          if (showBackButton)
+            TextButton.icon(
+              onPressed: () {
+                Get.back(); // Close dialog
+                Get.back(); // Go back to previous page
+              },
+              icon: const Icon(Icons.arrow_back, size: 16),
+              label: const Text('Back'),
+              style: TextButton.styleFrom(foregroundColor: Colors.deepOrange),
+            ),
         ],
       ),
       barrierDismissible: true,

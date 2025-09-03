@@ -457,8 +457,6 @@ class Ontapprocesses {
         contactPhone: contactPhone,
         address: address,
       );
-
-      Get.back(); // Go back to previous page
     } catch (err) {
       Get.snackbar("Error", "An error occurred: $err");
       print("PAD download error: $err");
@@ -531,7 +529,8 @@ class Ontapprocesses {
         address: address,
       );
 
-      Get.back(); // Go back to previous page
+      // Don't immediately go back - let user see success dialog and choose
+      // Get.back(); // Removed to allow success dialog to show
     } catch (err) {
       Get.snackbar("Error", "An error occurred: $err");
       print("Invoice download error: $err");

@@ -368,28 +368,14 @@ class _CreatePadPageState extends State<CreatePadPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Authorizers section
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Authorizers',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepOrange,
-                        ),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: _addAuthorizer,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Authorizer'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrange,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ],
+                  // Authorizers section header
+                  const Text(
+                    'Authorizers',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
+                    ),
                   ),
                   const SizedBox(height: 16),
 
@@ -479,6 +465,22 @@ class _CreatePadPageState extends State<CreatePadPage> {
                     );
                   }).toList(),
 
+                  // Add Authorizer button positioned before Contact Information
+                  Center(
+                    child: ElevatedButton.icon(
+                      onPressed: _addAuthorizer,
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add Authorizer'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
 
                   // Contact information section

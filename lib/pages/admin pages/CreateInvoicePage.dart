@@ -248,28 +248,14 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Products section
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Products/Services',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepOrange,
-                        ),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: _addProduct,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Product'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrange,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ],
+                  // Products section header
+                  const Text(
+                    'Products/Services',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
+                    ),
                   ),
                   const SizedBox(height: 16),
 
@@ -455,6 +441,24 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
                       ),
                     );
                   }).toList(),
+
+                  // Add Product button positioned above Grand Total
+                  Center(
+                    child: ElevatedButton.icon(
+                      onPressed: _addProduct,
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add Product'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
 
                   // Grand Total
                   Container(
