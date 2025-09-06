@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pcist/secret.dart';
 //import 'package:pcist/pages/homePage.dart';
 import 'package:pcist/config/userConfig.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -42,10 +41,9 @@ class _appBarState extends State<appBar> {
               fit: BoxFit.cover, // fills without border, may crop edges
             ),
           ),
+          // Chat is now available to all signed-in users (no admin gating)
           Obx(() {
-            final showChat =
-                UserConfig.isSignedIn.value && (LoggedInUserData.role == 2);
-            if (!showChat) return const SizedBox.shrink();
+            if (!UserConfig.isSignedIn.value) return const SizedBox.shrink();
             return Row(
               children: [
                 Padding(

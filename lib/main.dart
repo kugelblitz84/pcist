@@ -23,6 +23,8 @@ import 'package:pcist/pages/admin%20pages/PadHistoryPage.dart';
 import 'package:pcist/pages/admin%20pages/CreateInvoicePage.dart';
 import 'package:pcist/pages/admin%20pages/InvoiceHistoryPage.dart';
 import 'package:pcist/pages/admin%20pages/DownloadedDocumentsPage.dart';
+import 'package:pcist/pages/admin%20pages/ManageEventsPage.dart';
+import 'package:pcist/pages/admin%20pages/EventPaymentsPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,6 +84,9 @@ class pcIST extends StatelessWidget {
           name: '/downloadedDocuments',
           page: () => DownloadedDocumentsPage(),
         ),
+  GetPage(name: '/manageEvents', page: () => ManageEventsPage()),
+  GetPage(name: '/eventPayments', page: () => EventPaymentsPage()),
+  // edit page is navigated with Get.to(EventEditPage(event: e)) directly
         GetPage(name: '/viewProfile', page: () => ViewProfilePage()),
       ],
       home: MainPage(),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pcist/config/userConfig.dart';
-import 'package:pcist/secret.dart';
 import 'package:pcist/pages/notfiications_pages.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/pages/homeSections/entry_page.dart';
@@ -74,11 +73,9 @@ class HomePageState extends State<HomePage> {
         ),
         title: const SizedBox.shrink(),
         actions: [
-          // Chat (role 2 only)
+          // Chat now available to all signed-in users
           Obx(() {
-            final showChat =
-                UserConfig.isSignedIn.value && (LoggedInUserData.role == 2);
-            if (!showChat) return const SizedBox.shrink();
+            if (!UserConfig.isSignedIn.value) return const SizedBox.shrink();
             return Row(
               children: [
                 IconButton(
@@ -182,9 +179,8 @@ class HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      // Admin Features - Only show for admins
-                      if (UserConfig.isSignedIn.value &&
-                          LoggedInUserData.role == 2)
+                      // Admin Features always visible for signed-in users
+                      if (UserConfig.isSignedIn.value)
                         FadeSlideIn(
                           delay: const Duration(milliseconds: 0),
                           child: _DrawerTile(

@@ -113,7 +113,7 @@ class AdminFeatures extends StatelessWidget {
                                   title: 'Manage Events',
                                   description: 'View and edit existing events',
                                   color: Colors.black,
-                                  onTap: () => Get.toNamed("/allEvents"),
+                                  onTap: () => Get.toNamed("/manageEvents"),
                                 ),
                               ),
                             ],

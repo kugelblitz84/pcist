@@ -213,6 +213,34 @@ class UserAPI {
         ? List<String>.from(json['certificates'].map((e) => e.toString()))
         : [];
 
+    // New myParticipations structure parsing
+    try {
+      final participations = json['myParticipations'];
+      if (participations is Map<String, dynamic>) {
+        final soloList = participations['solo'];
+        final teamList = participations['team'];
+        LoggedInUserData.myParticipationsSolo = (soloList is List)
+            ? soloList
+                .whereType<Map<String, dynamic>>()
+                .map((e) => UserSoloParticipation.fromJson(e))
+                .toList()
+            : [];
+        LoggedInUserData.myParticipationsTeam = (teamList is List)
+            ? teamList
+                .whereType<Map<String, dynamic>>()
+                .map((e) => UserTeamParticipation.fromJson(e))
+                .toList()
+            : [];
+      } else {
+        LoggedInUserData.myParticipationsSolo = [];
+        LoggedInUserData.myParticipationsTeam = [];
+      }
+    } catch (e) {
+      LoggedInUserData.myParticipationsSolo = [];
+      LoggedInUserData.myParticipationsTeam = [];
+      print('Error parsing myParticipations: $e');
+    }
+
     print("setdata complete");
   }
 }

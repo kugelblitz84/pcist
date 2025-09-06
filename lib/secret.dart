@@ -25,6 +25,35 @@ class LoggedInUserData {
   static String? cchandle;
   static List<String> badges = [];
   static List<String> certificates = [];
+  // New participation tracking
+  static List<UserSoloParticipation> myParticipationsSolo = [];
+  static List<UserTeamParticipation> myParticipationsTeam = [];
+}
+
+class UserSoloParticipation {
+  String? eventId;
+  String? eventName;
+  UserSoloParticipation({this.eventId, this.eventName});
+  factory UserSoloParticipation.fromJson(Map<String, dynamic> json) {
+    return UserSoloParticipation(
+      eventId: json['eventId']?.toString(),
+      eventName: json['eventName']?.toString(),
+    );
+  }
+  Map<String, dynamic> toJson() => {'eventId': eventId, 'eventName': eventName};
+}
+
+class UserTeamParticipation {
+  String? eventId;
+  String? eventName;
+  UserTeamParticipation({this.eventId, this.eventName});
+  factory UserTeamParticipation.fromJson(Map<String, dynamic> json) {
+    return UserTeamParticipation(
+      eventId: json['eventId']?.toString(),
+      eventName: json['eventName']?.toString(),
+    );
+  }
+  Map<String, dynamic> toJson() => {'eventId': eventId, 'eventName': eventName};
 }
 
 class RegisteredMember {

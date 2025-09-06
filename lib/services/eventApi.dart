@@ -215,6 +215,40 @@ class EventApi {
     }
   }
 
+  // Update payment status for event participants (solo or team)
+  static Future<dynamic> updatePaymentStatus({
+    required String eventId,
+    required List<dynamic> members, // list of userIds/classroll objects or ids
+    bool? paymentStatus, // optional global default
+  }) async {
+    try {
+      final tokenData = await Tokenprocess.readToken();
+      final token = tokenData['authToken'];
+      final slug = tokenData['slug'];
+      final uri = Uri.http(
+        Secret.siteLink,
+        '/api/v1/event/update_payment/$eventId',
+      );
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+      final body = <String, dynamic>{
+        'members': members,
+        'slug': slug,
+      };
+      if (paymentStatus != null) body['paymentStatus'] = paymentStatus;
+      final response = await http.post(
+        uri,
+        headers: headers,
+        body: json.encode(body),
+      );
+      return response;
+    } catch (e) {
+      print('error in updatePaymentStatus: $e');
+    }
+  }
+
   // static Future<dynamic> getContestTrackerData() async {
   //   const String url = "https://clist.by/api/v4/contest";
   //   const Map<String, String> headers = {

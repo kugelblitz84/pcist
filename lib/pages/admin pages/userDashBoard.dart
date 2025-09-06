@@ -10,12 +10,11 @@ class UserDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = LoggedInUserData.role == 2;
     final name = LoggedInUserData.name ?? "User";
     final initials = name.length >= 2
         ? name.substring(0, 2).toUpperCase()
         : name.toUpperCase();
-    final fullName = isAdmin ? "$name (admin)" : name;
+    final fullName = name; // Unified UI: remove admin suffix
 
     return Scaffold(
       body: Container(
@@ -235,6 +234,21 @@ class UserDashboard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
+                    const Divider(height: 30, thickness: 1.2),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepOrange,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        onPressed: () => _showParticipationsSheet(context),
+                        icon: const Icon(Icons.visibility),
+                        label: const Text('View My Participations'),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                     // ElevatedButton(
                     //   onPressed: () {
                     //     // Edit user details navigation
@@ -288,6 +302,135 @@ class infoRow extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+void _showParticipationsSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) {
+      final solo = LoggedInUserData.myParticipationsSolo;
+      final team = LoggedInUserData.myParticipationsTeam;
+      return DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 50,
+                  height: 5,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+              const Text(
+                'My Participations',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  children: [
+                    _SectionHeader(label: 'Solo Events'),
+                    if (solo.isEmpty)
+                      const _EmptyLabel(text: 'No solo participations')
+                    else
+                      ...solo.map(
+                        (p) => _ParticipationTile(
+                          icon: Icons.person_outline,
+                          name: p.eventName ?? 'Unnamed',
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    _SectionHeader(label: 'Team Events'),
+                    if (team.isEmpty)
+                      const _EmptyLabel(text: 'No team participations')
+                    else
+                      ...team.map(
+                        (p) => _ParticipationTile(
+                          icon: Icons.groups_2_outlined,
+                          name: p.eventName ?? 'Unnamed',
+                        ),
+                      ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+class _ParticipationTile extends StatelessWidget {
+  final IconData icon;
+  final String name;
+  const _ParticipationTile({required this.icon, required this.name});
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, color: Colors.deepOrange),
+      title: Text(
+        name,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String label;
+  const _SectionHeader({required this.label});
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyLabel extends StatelessWidget {
+  final String text;
+  const _EmptyLabel({required this.text});
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(
+        text,
+        style: const TextStyle(color: Colors.black54),
       ),
     );
   }
