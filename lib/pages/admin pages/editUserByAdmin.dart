@@ -8,7 +8,8 @@ import 'package:get/get.dart';
 
 class EditUserByAdmin extends StatefulWidget {
   final String slug;
-  const EditUserByAdmin({super.key, required this.slug});
+  final bool readOnly; // when true hide membership toggle
+  const EditUserByAdmin({super.key, required this.slug, this.readOnly = false});
 
   @override
   State<EditUserByAdmin> createState() => _EditUserByAdminState();
@@ -22,6 +23,9 @@ class _EditUserByAdminState extends State<EditUserByAdmin> {
   String atcHandle = '';
   String _id = '';
   bool membership = false;
+  String classroll = '';
+  String batch = '';
+  String tshirt = '';
   bool isLoading = true;
 
   @override
@@ -35,7 +39,7 @@ class _EditUserByAdminState extends State<EditUserByAdmin> {
       final response = await UserAPI.getUserData(widget.slug);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-
+        //print("data fetched: $data");
         setState(() {
           name = data['name'] ?? '';
           email = data['email'] ?? '';
@@ -43,9 +47,12 @@ class _EditUserByAdminState extends State<EditUserByAdmin> {
           ccHandle = data['cchandle'] ?? '';
           atcHandle = data['atchandle'] ?? '';
           membership = data['membership'] ?? false;
+          classroll = (data['classroll']?.toString() ?? '');
+          batch = (data['batch']?.toString() ?? '');
+          tshirt = data['tshirt']?.toString() ?? '';
           _id = data['_id'] ?? '';
           isLoading = false;
-          print("it: $_id");
+          //print("it: $_id");
         });
       }
     } catch (err) {
@@ -176,7 +183,10 @@ class _EditUserByAdminState extends State<EditUserByAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit Member"), centerTitle: true),
+      appBar: AppBar(
+        title: Text(widget.readOnly ? "Member Details" : "Edit Member"),
+        centerTitle: true,
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -193,26 +203,30 @@ class _EditUserByAdminState extends State<EditUserByAdmin> {
                     children: [
                       buildUserDetail("Name", name),
                       buildUserDetail("Email", email),
+                      buildUserDetail("Class Roll", classroll),
+                      buildUserDetail("Batch", batch),
+                      buildUserDetail("T-Shirt", tshirt),
                       buildUserDetail("Codeforces", cfHandle),
                       buildUserDetail("CodeChef", ccHandle),
                       buildUserDetail("AtCoder", atcHandle),
                       const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Membership Status",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                      if (!widget.readOnly)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Membership Status",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                          Switch(
-                            value: membership,
-                            onChanged: toggleMembership,
-                          ),
-                        ],
-                      ),
+                            Switch(
+                              value: membership,
+                              onChanged: toggleMembership,
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),

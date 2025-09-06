@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:pcist/secret.dart'; // Replace with your actual path
+import 'package:get/get.dart';
+import 'package:pcist/pages/admin pages/editUserByAdmin.dart';
 
 class ViewParticipationPage extends StatelessWidget {
   final Event event;
@@ -44,6 +46,12 @@ class ViewParticipationPage extends StatelessWidget {
               paymentStatus ? Icons.payment : Icons.payment_outlined,
               color: paymentStatus ? Colors.green : Colors.orange,
             ),
+            onTap: () {
+              final slug = member.classroll?.toString();
+              if (slug != null && slug.isNotEmpty) {
+                Get.to(() => EditUserByAdmin(slug: slug, readOnly: true));
+              }
+            },
           ),
         );
       },
@@ -69,23 +77,27 @@ class ViewParticipationPage extends StatelessWidget {
             title: Text(teamName),
             subtitle: Text('${members.length} members'),
             children: members
-                .map(
-                  (member) => ListTile(
-                    leading: const Icon(Icons.person_outline),
-                    title: Text(member.name ?? 'Unknown'),
-                    subtitle: Text(
-                      'Class Roll: ${member.classroll?.toString() ?? 'N/A'}',
-                    ),
-                    trailing: Icon(
-                      member.paymentStatus == true
-                          ? Icons.payment
-                          : Icons.payment_outlined,
-                      color: member.paymentStatus == true
-                          ? Colors.green
-                          : Colors.orange,
-                    ),
-                  ),
-                )
+                .map((member) => ListTile(
+                      leading: const Icon(Icons.person_outline),
+                      title: Text(member.name ?? 'Unknown'),
+                      subtitle: Text(
+                        'Class Roll: ${member.classroll?.toString() ?? 'N/A'}',
+                      ),
+                      trailing: Icon(
+                        member.paymentStatus == true
+                            ? Icons.payment
+                            : Icons.payment_outlined,
+                        color: member.paymentStatus == true
+                            ? Colors.green
+                            : Colors.orange,
+                      ),
+                      onTap: () {
+                        final slug = member.classroll?.toString();
+                        if (slug != null && slug.isNotEmpty) {
+                          Get.to(() => EditUserByAdmin(slug: slug, readOnly: true));
+                        }
+                      },
+                    ))
                 .toList(),
           ),
         );

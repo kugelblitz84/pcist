@@ -314,70 +314,179 @@ void _showParticipationsSheet(BuildContext context) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    builder: (ctx) {
-      final solo = LoggedInUserData.myParticipationsSolo;
-      final team = LoggedInUserData.myParticipationsTeam;
-      return DraggableScrollableSheet(
+    builder: (ctx) => const _ParticipationsSheetContent(),
+  );
+}
+
+class _ParticipationsSheetContent extends StatefulWidget {
+  const _ParticipationsSheetContent();
+  @override
+  State<_ParticipationsSheetContent> createState() => _ParticipationsSheetContentState();
+}
+
+class _ParticipationsSheetContentState extends State<_ParticipationsSheetContent> {
+  final TextEditingController _search = TextEditingController();
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _search.addListener(() {
+      setState(() => _query = _search.text.trim().toLowerCase());
+    });
+  }
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final solo = LoggedInUserData.myParticipationsSolo;
+    final team = LoggedInUserData.myParticipationsTeam;
+    return DefaultTabController(
+      length: 2,
+      child: DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.6,
-        minChildSize: 0.4,
-        maxChildSize: 0.9,
-        builder: (context, scrollController) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 50,
-                  height: 5,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(4),
+        initialChildSize: 0.75,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Column(
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 50,
+              height: 5,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: const [
+                  Text(
+                    'My Participations',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                controller: _search,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  hintText: 'Search events...',
+                  isDense: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  suffixIcon: _query.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () => _search.clear(),
+                        ),
                 ),
               ),
-              const Text(
-                'My Participations',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            TabBar(
+              labelColor: Colors.deepOrange,
+              unselectedLabelColor: Colors.black54,
+              indicatorColor: Colors.deepOrange,
+              tabs: [
+                Tab(text: 'Solo (${solo.length})'),
+                Tab(text: 'Team (${team.length})'),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _buildGroupedList<UserSoloParticipation>(
+                    items: solo,
+                    icon: Icons.person_outline,
+                    scrollController: scrollController,
+                  ),
+                  _buildGroupedList<UserTeamParticipation>(
+                    items: team,
+                    icon: Icons.groups_2_outlined,
+                    scrollController: scrollController,
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: ListView(
-                  controller: scrollController,
-                  children: [
-                    _SectionHeader(label: 'Solo Events'),
-                    if (solo.isEmpty)
-                      const _EmptyLabel(text: 'No solo participations')
-                    else
-                      ...solo.map(
-                        (p) => _ParticipationTile(
-                          icon: Icons.person_outline,
-                          name: p.eventName ?? 'Unnamed',
-                        ),
-                      ),
-                    const SizedBox(height: 16),
-                    _SectionHeader(label: 'Team Events'),
-                    if (team.isEmpty)
-                      const _EmptyLabel(text: 'No team participations')
-                    else
-                      ...team.map(
-                        (p) => _ParticipationTile(
-                          icon: Icons.groups_2_outlined,
-                          name: p.eventName ?? 'Unnamed',
-                        ),
-                      ),
-                    const SizedBox(height: 12),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGroupedList<T>({
+    required List<dynamic> items,
+    required IconData icon,
+    required ScrollController scrollController,
+  }) {
+    // Filter
+    final filtered = items
+        .where((e) => (e.eventName ?? '').toLowerCase().contains(_query))
+        .toList();
+    if (filtered.isEmpty) {
+      return Center(
+        child: Text(
+          _query.isEmpty ? 'No events' : 'No results for "$_query"',
+          style: const TextStyle(color: Colors.black54),
         ),
       );
-    },
-  );
+    }
+    // Group by first letter
+    final Map<String, List<dynamic>> groups = {};
+    for (final item in filtered) {
+      final name = (item.eventName ?? 'Unnamed').trim();
+      final letter = name.isNotEmpty ? name[0].toUpperCase() : '#';
+      groups.putIfAbsent(letter, () => []).add(item);
+    }
+    final sortedKeys = groups.keys.toList()..sort();
+    return ListView.builder(
+      controller: scrollController,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      itemCount: sortedKeys.length,
+      itemBuilder: (context, index) {
+        final key = sortedKeys[index];
+        final list = groups[key]!..sort((a, b) => (a.eventName ?? '').compareTo(b.eventName ?? ''));
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 12, 4, 4),
+              child: Text(
+                key,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.deepOrange,
+                ),
+              ),
+            ),
+            ...list.map(
+              (p) => _ParticipationTile(
+                icon: icon,
+                name: p.eventName ?? 'Unnamed',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class _ParticipationTile extends StatelessWidget {
@@ -395,33 +504,3 @@ class _ParticipationTile extends StatelessWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  final String label;
-  const _SectionHeader({required this.label});
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: Colors.black87,
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyLabel extends StatelessWidget {
-  final String text;
-  const _EmptyLabel({required this.text});
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(text, style: const TextStyle(color: Colors.black54)),
-    );
-  }
-}
