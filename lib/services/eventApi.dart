@@ -233,10 +233,7 @@ class EventApi {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       };
-      final body = <String, dynamic>{
-        'members': members,
-        'slug': slug,
-      };
+      final body = <String, dynamic>{'members': members, 'slug': slug};
       if (paymentStatus != null) body['paymentStatus'] = paymentStatus;
       final response = await http.post(
         uri,

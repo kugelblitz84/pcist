@@ -5,7 +5,8 @@ import 'package:pcist/services/eventApi.dart';
 import 'package:pcist/secret.dart';
 
 class EventPaymentsPage extends StatefulWidget {
-  const EventPaymentsPage({super.key});
+  final String? eventId; // minimal identifier passed from ManageEventsPage
+  const EventPaymentsPage({super.key, this.eventId});
 
   @override
   State<EventPaymentsPage> createState() => _EventPaymentsPageState();
@@ -21,7 +22,19 @@ class _EventPaymentsPageState extends State<EventPaymentsPage> {
   void initState() {
     super.initState();
     if (!Eventsconfig.eventsLoaded.value) {
-      Eventsconfig.initializeEvents();
+      Eventsconfig.initializeEvents().then((_) => _initFromId());
+    } else {
+      _initFromId();
+    }
+  }
+
+  void _initFromId() {
+    if (widget.eventId == null) return; // no preselected id
+    final ev = Eventsconfig.allEvents.firstWhereOrNull(
+      (e) => e.id == widget.eventId,
+    );
+    if (ev != null) {
+      _chooseEvent(ev);
     }
   }
 
@@ -40,7 +53,8 @@ class _EventPaymentsPageState extends State<EventPaymentsPage> {
       } else {
         for (final t in event.registeredTeams) {
           // team considered paid only if all members paid
-            final paidAll = t.members.isNotEmpty &&
+          final paidAll =
+              t.members.isNotEmpty &&
               t.members.every((m) => m.paymentStatus == true);
           _teamSelection[t.teamName] = paidAll;
         }
@@ -131,10 +145,7 @@ class _EventPaymentsPageState extends State<EventPaymentsPage> {
       } else if (success == 0) {
         Get.snackbar('Error', 'All team updates failed');
       } else {
-        Get.snackbar(
-          'Partial',
-          'Success: $success  Failed: $failed',
-        );
+        Get.snackbar('Partial', 'Success: $success  Failed: $failed');
       }
     } catch (e) {
       Get.snackbar('Error', '$e');
@@ -145,7 +156,6 @@ class _EventPaymentsPageState extends State<EventPaymentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final events = Eventsconfig.allEvents;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Payments'),
@@ -157,27 +167,16 @@ class _EventPaymentsPageState extends State<EventPaymentsPage> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  DropdownButtonFormField<Event>(
-                    value: _selectedEvent,
-                    decoration: const InputDecoration(
-                      labelText: 'Select Event',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: events
-                        .map(
-                          (e) => DropdownMenuItem<Event>(
-                            value: e,
-                            child: Text(e.eventName ?? 'Unnamed'),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (val) {
-                      if (val != null) _chooseEvent(val);
-                    },
-                  ),
-                  const SizedBox(height: 16),
                   if (_selectedEvent == null)
-                    const Text('Pick an event to manage payments')
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          widget.eventId == null
+                              ? 'Select an event from Manage Events'
+                              : 'Event not found',
+                        ),
+                      ),
+                    )
                   else ...[
                     Expanded(
                       child: _selectedEvent!.eventType == 'solo'
@@ -218,7 +217,9 @@ class _EventPaymentsPageState extends State<EventPaymentsPage> {
         final entry = entries[index];
         final key = entry.key;
         final paid = entry.value;
-        final display = key.startsWith('id:') ? key.substring(3) : key.substring(3);
+        final display = key.startsWith('id:')
+            ? key.substring(3)
+            : key.substring(3);
         return SwitchListTile(
           title: Text(display),
           value: paid,

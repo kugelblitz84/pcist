@@ -56,62 +56,63 @@ class _ManageEventsPageState extends State<ManageEventsPage> {
             ),
           );
         }
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemCount: Eventsconfig.allEvents.length,
-            itemBuilder: (context, idx) {
-              final e = Eventsconfig.allEvents[idx];
-              return Card(
-                elevation: 2,
-                child: ListTile(
-                  leading: Icon(
-                    e.eventType == 'team' ? Icons.groups : Icons.person,
-                    color: Colors.deepOrange,
-                  ),
-                  title: Text(e.eventName ?? 'Unnamed'),
-                  subtitle: Text(
-                    [
-                      if (e.date != null)
-                        DateFormat('dd MMM yyyy h:mm a').format(e.date!),
-                      if (e.registrationDeadline != null)
-                        'Deadline: ${DateFormat('dd MMM').format(e.registrationDeadline!)}',
-                      e.location,
-                    ].whereType<String>().join('  •  '),
-                  ),
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (val) {
-                      if (val == 'edit') {
-                        Get.to(() => EventEditPage(event: e));
-                      } else if (val == 'payments') {
-                        Get.to(() => const EventPaymentsPage());
-                      }
-                    },
-                    itemBuilder: (ctx) => const [
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: ListTile(
-                          leading: Icon(Icons.edit),
-                          title: Text('Edit'),
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'payments',
-                        child: ListTile(
-                          leading: Icon(Icons.payments),
-                          title: Text('Payments'),
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ],
-                  ),
+        return ListView.separated(
+          padding: const EdgeInsets.all(16),
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemCount: Eventsconfig.allEvents.length,
+          itemBuilder: (context, idx) {
+            final e = Eventsconfig.allEvents[idx];
+            return Card(
+              elevation: 2,
+              child: ListTile(
+                leading: Icon(
+                  e.eventType == 'team' ? Icons.groups : Icons.person,
+                  color: Colors.deepOrange,
                 ),
-              );
-            },
-          );
+                title: Text(e.eventName ?? 'Unnamed'),
+                subtitle: Text(
+                  [
+                    if (e.date != null)
+                      DateFormat('dd MMM yyyy h:mm a').format(e.date!),
+                    if (e.registrationDeadline != null)
+                      'Deadline: ${DateFormat('dd MMM').format(e.registrationDeadline!)}',
+                    e.location,
+                  ].whereType<String>().join('  •  '),
+                ),
+                trailing: PopupMenuButton<String>(
+                  onSelected: (val) {
+                    if (val == 'edit') {
+                      Get.to(() => EventEditPage(event: e));
+                    } else if (val == 'payments') {
+                      // Navigate with only the event id to avoid sending heavy data
+                      Get.to(() => EventPaymentsPage(eventId: e.id));
+                    }
+                  },
+                  itemBuilder: (ctx) => const [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: ListTile(
+                        leading: Icon(Icons.edit),
+                        title: Text('Edit'),
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'payments',
+                      child: ListTile(
+                        leading: Icon(Icons.payments),
+                        title: Text('Payments'),
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
       }),
     );
   }

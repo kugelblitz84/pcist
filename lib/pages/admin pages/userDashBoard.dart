@@ -340,10 +340,7 @@ void _showParticipationsSheet(BuildContext context) {
               ),
               const Text(
                 'My Participations',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Expanded(
@@ -393,11 +390,7 @@ class _ParticipationTile extends StatelessWidget {
       dense: true,
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: Colors.deepOrange),
-      title: Text(
-        name,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
     );
   }
 }
@@ -428,10 +421,7 @@ class _EmptyLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(
-        text,
-        style: const TextStyle(color: Colors.black54),
-      ),
+      child: Text(text, style: const TextStyle(color: Colors.black54)),
     );
   }
 }

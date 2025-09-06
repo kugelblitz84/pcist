@@ -84,9 +84,9 @@ class pcIST extends StatelessWidget {
           name: '/downloadedDocuments',
           page: () => DownloadedDocumentsPage(),
         ),
-  GetPage(name: '/manageEvents', page: () => ManageEventsPage()),
-  GetPage(name: '/eventPayments', page: () => EventPaymentsPage()),
-  // edit page is navigated with Get.to(EventEditPage(event: e)) directly
+        GetPage(name: '/manageEvents', page: () => ManageEventsPage()),
+        GetPage(name: '/eventPayments', page: () => EventPaymentsPage()),
+        // edit page is navigated with Get.to(EventEditPage(event: e)) directly
         GetPage(name: '/viewProfile', page: () => ViewProfilePage()),
       ],
       home: MainPage(),
