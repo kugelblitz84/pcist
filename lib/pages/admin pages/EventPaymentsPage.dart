@@ -17,6 +17,7 @@ class _EventPaymentsPageState extends State<EventPaymentsPage> {
   bool _loading = false;
   final Map<String, bool> _soloSelection = {}; // userId/classroll keyed
   final Map<String, bool> _teamSelection = {}; // teamName keyed
+  final Map<String, String> _soloLabels = {}; // key -> display name
 
   @override
   void initState() {
@@ -49,6 +50,13 @@ class _EventPaymentsPageState extends State<EventPaymentsPage> {
               ? 'id:${m.userId}'
               : 'cr:${m.classroll}';
           _soloSelection[key] = m.paymentStatus ?? false;
+          // Prefer real name; fallback to identifier
+          final fallback = key.startsWith('id:')
+              ? key.substring(3)
+              : key.substring(3);
+          _soloLabels[key] = (m.name != null && m.name!.trim().isNotEmpty)
+              ? m.name!
+              : fallback;
         }
       } else {
         for (final t in event.registeredTeams) {
@@ -217,9 +225,9 @@ class _EventPaymentsPageState extends State<EventPaymentsPage> {
         final entry = entries[index];
         final key = entry.key;
         final paid = entry.value;
-        final display = key.startsWith('id:')
-            ? key.substring(3)
-            : key.substring(3);
+        final display =
+            _soloLabels[key] ??
+            (key.startsWith('id:') ? key.substring(3) : key.substring(3));
         return SwitchListTile(
           title: Text(display),
           value: paid,
