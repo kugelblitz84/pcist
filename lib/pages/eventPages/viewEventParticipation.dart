@@ -77,27 +77,31 @@ class ViewParticipationPage extends StatelessWidget {
             title: Text(teamName),
             subtitle: Text('${members.length} members'),
             children: members
-                .map((member) => ListTile(
-                      leading: const Icon(Icons.person_outline),
-                      title: Text(member.name ?? 'Unknown'),
-                      subtitle: Text(
-                        'Class Roll: ${member.classroll?.toString() ?? 'N/A'}',
-                      ),
-                      trailing: Icon(
-                        member.paymentStatus == true
-                            ? Icons.payment
-                            : Icons.payment_outlined,
-                        color: member.paymentStatus == true
-                            ? Colors.green
-                            : Colors.orange,
-                      ),
-                      onTap: () {
-                        final slug = member.classroll?.toString();
-                        if (slug != null && slug.isNotEmpty) {
-                          Get.to(() => EditUserByAdmin(slug: slug, readOnly: true));
-                        }
-                      },
-                    ))
+                .map(
+                  (member) => ListTile(
+                    leading: const Icon(Icons.person_outline),
+                    title: Text(member.name ?? 'Unknown'),
+                    subtitle: Text(
+                      'Class Roll: ${member.classroll?.toString() ?? 'N/A'}',
+                    ),
+                    trailing: Icon(
+                      member.paymentStatus == true
+                          ? Icons.payment
+                          : Icons.payment_outlined,
+                      color: member.paymentStatus == true
+                          ? Colors.green
+                          : Colors.orange,
+                    ),
+                    onTap: () {
+                      final slug = member.classroll?.toString();
+                      if (slug != null && slug.isNotEmpty) {
+                        Get.to(
+                          () => EditUserByAdmin(slug: slug, readOnly: true),
+                        );
+                      }
+                    },
+                  ),
+                )
                 .toList(),
           ),
         );

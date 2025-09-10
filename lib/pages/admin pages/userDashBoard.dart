@@ -321,10 +321,12 @@ void _showParticipationsSheet(BuildContext context) {
 class _ParticipationsSheetContent extends StatefulWidget {
   const _ParticipationsSheetContent();
   @override
-  State<_ParticipationsSheetContent> createState() => _ParticipationsSheetContentState();
+  State<_ParticipationsSheetContent> createState() =>
+      _ParticipationsSheetContentState();
 }
 
-class _ParticipationsSheetContentState extends State<_ParticipationsSheetContent> {
+class _ParticipationsSheetContentState
+    extends State<_ParticipationsSheetContent> {
   final TextEditingController _search = TextEditingController();
   String _query = '';
 
@@ -461,7 +463,8 @@ class _ParticipationsSheetContentState extends State<_ParticipationsSheetContent
       itemCount: sortedKeys.length,
       itemBuilder: (context, index) {
         final key = sortedKeys[index];
-        final list = groups[key]!..sort((a, b) => (a.eventName ?? '').compareTo(b.eventName ?? ''));
+        final list = groups[key]!
+          ..sort((a, b) => (a.eventName ?? '').compareTo(b.eventName ?? ''));
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -503,4 +506,3 @@ class _ParticipationTile extends StatelessWidget {
     );
   }
 }
-
