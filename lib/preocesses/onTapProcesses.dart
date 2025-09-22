@@ -97,9 +97,11 @@ class Ontapprocesses {
         Get.toNamed(
           '/OtpPage',
         ); //get to the otp page to receive the code from user and verify
+      } else {
+        Get.snackbar('Failed', res['message']);
       }
     } else {
-      Get.snackbar('Failed', "Email already in use");
+      Get.snackbar('Failed', "Internal Server Error");
     }
   }
 

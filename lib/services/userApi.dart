@@ -25,9 +25,9 @@ class UserAPI {
   ) async {
     final uri = Uri.http(Secret.siteLink, '/api/v1/user/register');
     final body = jsonEncode({
-      "classroll": classroll,
-      "email": email,
-      "password": pass,
+      "classroll": classroll.trim(),
+      "email": email.trim(),
+      "password": pass.trim(),
     });
     final header = {'Content-Type': 'application/json'};
     try {

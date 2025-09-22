@@ -245,6 +245,7 @@ class _SignUpState extends State<SignUp> {
                           _passwordController.text,
                           _classrollController.text,
                         );
+                        setState(() => prcd = "Register");
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
