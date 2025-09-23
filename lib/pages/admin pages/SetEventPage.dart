@@ -218,7 +218,7 @@ class _SetEventPageState extends State<SetEventPage> {
                   // Location
                   DropdownButtonFormField<String>(
                     value: _selectedLocation,
-                    items: ["Auditorium", "Lab 1", "Lab 2"]
+                    items: ["Onsite", "Online", "Hybrid"]
                         .map(
                           (location) => DropdownMenuItem(
                             value: location,
