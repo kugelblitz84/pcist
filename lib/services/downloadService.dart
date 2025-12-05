@@ -1,22 +1,25 @@
+import 'dart:convert';
 import 'dart:io';
-import 'package:dio/dio.dart';
+import 'dart:typed_data';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:pcist/authProcesses/tokenProcess.dart';
 import 'package:pcist/secret.dart';
+import 'package:http_parser/http_parser.dart';
 
 class DownloadService {
-  static final Dio _dio = Dio();
+  static final dio.Dio _dio = dio.Dio();
 
   // Initialize Dio with default settings
   static void _initializeDio() {
-    _dio.options = BaseOptions(
+    _dio.options = dio.BaseOptions(
       baseUrl: 'http://${Secret.siteLink}',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(minutes: 5),
-      headers: {'Content-Type': 'application/json'},
+      // Do not set global Content-Type; let FormData requests set multipart
     );
   }
 
@@ -97,7 +100,7 @@ class DownloadService {
 
   // Download PAD statement with progress tracking
   static Future<Map<String, dynamic>> downloadPadStatement({
-    required String statement,
+    required File statementPdf,
     required List<Map<String, String>> authorizers,
     required String contactEmail,
     required String contactPhone,
@@ -110,31 +113,37 @@ class DownloadService {
 
     try {
       final token = await Tokenprocess.readToken();
+      final slug = token['slug'] ?? '';
 
       // Prepare headers
-      final options = Options(
+      final options = dio.Options(
         headers: {
-          'authorization': 'Bearer ${token['token']}',
-          'Content-Type': 'application/json',
+          'authorization': 'Bearer ${token['authToken']}',
+          'x-user-slug': slug,
         },
-        responseType: ResponseType.bytes,
+        responseType: dio.ResponseType.bytes,
       );
 
-      // Prepare request body
-      final body = {
-        "statement": statement,
-        "authorizers": authorizers,
-        "contactEmail": contactEmail,
-        "contactPhone": contactPhone,
-        "address": address,
-      };
+      // Build multipart/form-data exactly as backend expects
+      final formData = dio.FormData.fromMap({
+        'statementPdf': await dio.MultipartFile.fromFile(
+          statementPdf.path,
+          filename: 'statement.pdf',
+          contentType: MediaType('application', 'pdf'),
+        ),
+        'slug': slug,
+        if (authorizers.isNotEmpty) 'authorizers': jsonEncode(authorizers),
+        if (contactEmail.isNotEmpty) 'contactEmail': contactEmail,
+        if (contactPhone.isNotEmpty) 'contactPhone': contactPhone,
+        if (address.isNotEmpty) 'address': address,
+      });
 
       onStart?.call();
 
       // Make the request with progress tracking
       final response = await _dio.post(
         '/api/v1/user/pad/download',
-        data: body,
+        data: formData,
         options: options,
         onReceiveProgress: (received, total) {
           if (total != -1 && onProgress != null) {
@@ -181,17 +190,22 @@ class DownloadService {
               'Failed to download PAD statement. Status: ${response.statusCode}',
         };
       }
-    } on DioException catch (e) {
+    } on dio.DioException catch (e) {
       String errorMessage = 'Download failed';
 
-      if (e.type == DioExceptionType.connectionTimeout) {
+      if (e.type == dio.DioExceptionType.connectionTimeout) {
         errorMessage =
             'Connection timeout. Please check your internet connection.';
-      } else if (e.type == DioExceptionType.receiveTimeout) {
+      } else if (e.type == dio.DioExceptionType.receiveTimeout) {
         errorMessage = 'Download timeout. The file might be too large.';
-      } else if (e.type == DioExceptionType.badResponse) {
-        errorMessage = 'Server error: ${e.response?.statusCode}';
-      } else if (e.type == DioExceptionType.connectionError) {
+      } else if (e.type == dio.DioExceptionType.badResponse) {
+        final respData = e.response?.data;
+        if (respData is Map && respData['message'] != null) {
+          errorMessage = respData['message'].toString();
+        } else {
+          errorMessage = 'Server error: ${e.response?.statusCode}';
+        }
+      } else if (e.type == dio.DioExceptionType.connectionError) {
         errorMessage =
             'Connection error. Please check your internet connection.';
       }
@@ -206,9 +220,18 @@ class DownloadService {
     }
   }
 
-  // Download PAD statement by ID
+  static String generatePadFilename({String? defaultName, String? pdfUrl}) {
+    final effectiveDefault = defaultName?.trim().isNotEmpty == true
+        ? defaultName!.trim()
+        : _filenameFromUrl(pdfUrl ?? '') ??
+              'pcIST-statement-${DateTime.now().millisecondsSinceEpoch}';
+    return _normalisePdfFilename(effectiveDefault);
+  }
+
+  // Download PAD statement using backend route
   static Future<Map<String, dynamic>> downloadPadById(
     String id, {
+    String? preferredFileName,
     Function(int, int)? onProgress,
     VoidCallback? onStart,
     VoidCallback? onComplete,
@@ -217,16 +240,20 @@ class DownloadService {
 
     try {
       final token = await Tokenprocess.readToken();
+      final slug = token['slug'] ?? '';
 
-      final options = Options(
-        headers: {'authorization': 'Bearer ${token['token']}'},
-        responseType: ResponseType.bytes,
+      final options = dio.Options(
+        headers: {
+          'authorization': 'Bearer ${token['authToken']}',
+          'x-user-slug': slug,
+        },
+        responseType: dio.ResponseType.bytes,
       );
 
       onStart?.call();
 
-      final response = await _dio.get(
-        '/api/v1/user/pad/download/$id',
+      final response = await _dio.get<List<int>>(
+        '/api/v1/user/pad/download/$id?slug=$slug',
         options: options,
         onReceiveProgress: (received, total) {
           if (total != -1 && onProgress != null) {
@@ -236,51 +263,70 @@ class DownloadService {
       );
 
       if (response.statusCode == 200) {
-        String filename =
-            'pcIST-statement-$id-${DateTime.now().millisecondsSinceEpoch}.pdf';
-        final contentDisposition =
-            response.headers['content-disposition']?.first;
-        if (contentDisposition != null) {
-          final filenameMatch = RegExp(
-            r'filename="([^"]+)"',
-          ).firstMatch(contentDisposition);
-          if (filenameMatch != null) {
-            filename = filenameMatch.group(1) ?? filename;
-          }
-        }
+        final defaultName =
+            preferredFileName ??
+            'pcIST-statement-$id-${DateTime.now().millisecondsSinceEpoch}';
+        final fallbackName = generatePadFilename(defaultName: defaultName);
 
+        final headerFilename = _extractFilenameFromContentDisposition(
+          response.headers['content-disposition']?.first,
+        );
+
+        final resolvedFilename = headerFilename != null
+            ? generatePadFilename(defaultName: headerFilename)
+            : fallbackName;
+
+        final bytes = _asBytes(response.data);
         final directory = await getDownloadDirectory();
-        final file = File('${directory.path}/$filename');
-        await file.writeAsBytes(response.data);
+        final file = File('${directory.path}/$resolvedFilename');
+        await file.writeAsBytes(bytes, flush: true);
 
         onComplete?.call();
 
         return {
           'success': true,
           'filePath': file.path,
-          'filename': filename,
-          'fileSize': response.data.length,
+          'filename': resolvedFilename,
+          'fileSize': bytes.length,
           'directory': directory.path,
         };
-      } else {
-        return {'success': false, 'message': 'PAD statement not found'};
       }
-    } on DioException catch (e) {
-      String errorMessage = 'Download failed';
 
-      if (e.type == DioExceptionType.connectionTimeout) {
+      final statusCode = response.statusCode;
+      return {
+        'success': false,
+        'message':
+            'PAD statement download failed (HTTP ${statusCode ?? 'unknown'}).',
+        'statusCode': statusCode,
+      };
+    } on dio.DioException catch (e) {
+      String errorMessage = 'Download failed';
+      final statusCode = e.response?.statusCode;
+
+      if (e.type == dio.DioExceptionType.connectionTimeout) {
         errorMessage =
             'Connection timeout. Please check your internet connection.';
-      } else if (e.type == DioExceptionType.receiveTimeout) {
+      } else if (e.type == dio.DioExceptionType.receiveTimeout) {
         errorMessage = 'Download timeout. The file might be too large.';
-      } else if (e.type == DioExceptionType.badResponse) {
-        errorMessage = 'Server error: ${e.response?.statusCode}';
-      } else if (e.type == DioExceptionType.connectionError) {
+      } else if (e.type == dio.DioExceptionType.badResponse) {
+        if (statusCode == 404) {
+          errorMessage = 'PAD statement not found (404).';
+        } else if (statusCode != null) {
+          errorMessage = 'Server error: $statusCode';
+        } else {
+          errorMessage = 'Unexpected server response.';
+        }
+      } else if (e.type == dio.DioExceptionType.connectionError) {
         errorMessage =
             'Connection error. Please check your internet connection.';
       }
 
-      return {'success': false, 'message': errorMessage, 'error': e.toString()};
+      return {
+        'success': false,
+        'message': errorMessage,
+        'statusCode': statusCode,
+        'error': e.toString(),
+      };
     } catch (e) {
       return {
         'success': false,
@@ -289,6 +335,79 @@ class DownloadService {
       };
     }
   }
+
+  static String? _extractFilenameFromContentDisposition(String? header) {
+    if (header == null || header.isEmpty) {
+      return null;
+    }
+
+    final utf8Match = RegExp(r"filename\*=UTF-8''([^;]+)").firstMatch(header);
+    if (utf8Match != null) {
+      return Uri.decodeFull(utf8Match.group(1)!);
+    }
+
+    final quotedMatch = RegExp(r'filename="?([^";]+)"?').firstMatch(header);
+    if (quotedMatch != null) {
+      return quotedMatch.group(1);
+    }
+
+    return null;
+  }
+
+  static String? _filenameFromUrl(String url) {
+    if (url.isEmpty) {
+      return null;
+    }
+    try {
+      final uri = Uri.parse(url);
+      if (uri.pathSegments.isEmpty) {
+        return null;
+      }
+      final segment = uri.pathSegments.last;
+      if (segment.isEmpty) {
+        return null;
+      }
+      return Uri.decodeComponent(segment);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static String _normalisePdfFilename(String input) {
+    var filename = input.trim();
+    if (filename.isEmpty) {
+      filename = 'pcIST-statement-${DateTime.now().millisecondsSinceEpoch}';
+    }
+
+    filename = filename.replaceAll(RegExp(r'[<>:"/\\|?*]+'), '_');
+    filename = filename.replaceAll(RegExp(r'\s+'), '_');
+
+    if (!filename.toLowerCase().endsWith('.pdf')) {
+      filename = '$filename.pdf';
+    }
+
+    return filename;
+  }
+
+  static List<int> _asBytes(dynamic data) {
+    if (data == null) {
+      return <int>[];
+    }
+    if (data is Uint8List) {
+      return data;
+    }
+    if (data is List<int>) {
+      return data;
+    }
+    if (data is List<dynamic>) {
+      return data.cast<int>();
+    }
+    throw ArgumentError(
+      'Unsupported download payload type: ${data.runtimeType}',
+    );
+  }
+
+  // Download Invoice with progress tracking
 
   // Download Invoice with progress tracking
   static Future<Map<String, dynamic>> downloadInvoice({
@@ -306,16 +425,18 @@ class DownloadService {
 
     try {
       final token = await Tokenprocess.readToken();
+      final slug = token['slug'] ?? '';
 
-      final options = Options(
+      final options = dio.Options(
         headers: {
-          'authorization': 'Bearer ${token['token']}',
+          'authorization': 'Bearer ${token['authToken']}',
           'Content-Type': 'application/json',
         },
-        responseType: ResponseType.bytes,
+        responseType: dio.ResponseType.bytes,
       );
 
       final body = {
+        "slug": slug,
         "products": products,
         "authorizerName": authorizerName,
         "authorizerDesignation": authorizerDesignation,
@@ -370,17 +491,17 @@ class DownloadService {
               'Failed to download invoice. Status: ${response.statusCode}',
         };
       }
-    } on DioException catch (e) {
+    } on dio.DioException catch (e) {
       String errorMessage = 'Download failed';
 
-      if (e.type == DioExceptionType.connectionTimeout) {
+      if (e.type == dio.DioExceptionType.connectionTimeout) {
         errorMessage =
             'Connection timeout. Please check your internet connection.';
-      } else if (e.type == DioExceptionType.receiveTimeout) {
+      } else if (e.type == dio.DioExceptionType.receiveTimeout) {
         errorMessage = 'Download timeout. The file might be too large.';
-      } else if (e.type == DioExceptionType.badResponse) {
+      } else if (e.type == dio.DioExceptionType.badResponse) {
         errorMessage = 'Server error: ${e.response?.statusCode}';
-      } else if (e.type == DioExceptionType.connectionError) {
+      } else if (e.type == dio.DioExceptionType.connectionError) {
         errorMessage =
             'Connection error. Please check your internet connection.';
       }
@@ -406,16 +527,19 @@ class DownloadService {
 
     try {
       final token = await Tokenprocess.readToken();
+      final slug = token['slug'] ?? '';
 
-      final options = Options(
-        headers: {'authorization': 'Bearer ${token['token']}'},
-        responseType: ResponseType.bytes,
+      final options = dio.Options(
+        headers: {
+          'authorization': 'Bearer ${token['authToken']}',
+          'x-user-slug': slug,
+        },
+        responseType: dio.ResponseType.bytes,
       );
 
       onStart?.call();
-
       final response = await _dio.get(
-        '/api/v1/user/invoice/download/$id',
+        '/api/v1/user/invoice/download/$id?slug=$slug',
         options: options,
         onReceiveProgress: (received, total) {
           if (total != -1 && onProgress != null) {
@@ -454,17 +578,17 @@ class DownloadService {
       } else {
         return {'success': false, 'message': 'Invoice not found'};
       }
-    } on DioException catch (e) {
+    } on dio.DioException catch (e) {
       String errorMessage = 'Download failed';
 
-      if (e.type == DioExceptionType.connectionTimeout) {
+      if (e.type == dio.DioExceptionType.connectionTimeout) {
         errorMessage =
             'Connection timeout. Please check your internet connection.';
-      } else if (e.type == DioExceptionType.receiveTimeout) {
+      } else if (e.type == dio.DioExceptionType.receiveTimeout) {
         errorMessage = 'Download timeout. The file might be too large.';
-      } else if (e.type == DioExceptionType.badResponse) {
+      } else if (e.type == dio.DioExceptionType.badResponse) {
         errorMessage = 'Server error: ${e.response?.statusCode}';
-      } else if (e.type == DioExceptionType.connectionError) {
+      } else if (e.type == dio.DioExceptionType.connectionError) {
         errorMessage =
             'Connection error. Please check your internet connection.';
       }

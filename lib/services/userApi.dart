@@ -8,7 +8,11 @@ import 'package:pcist/secret.dart';
 class UserAPI {
   static Future<dynamic> login(String classroll, String pass) async {
     final uri = Uri.http(Secret.siteLink, '/api/v1/user/login');
-    final body = jsonEncode({"classroll": classroll, "password": pass});
+    final parsedRoll = int.tryParse(classroll.trim());
+    final body = jsonEncode({
+      "classroll": parsedRoll ?? classroll.trim(),
+      "password": pass,
+    });
     final header = {'Content-Type': 'application/json'};
     try {
       final response = await http.post(uri, headers: header, body: body);
@@ -24,8 +28,9 @@ class UserAPI {
     String pass,
   ) async {
     final uri = Uri.http(Secret.siteLink, '/api/v1/user/register');
+    final parsedRoll = int.tryParse(classroll.trim());
     final body = jsonEncode({
-      "classroll": classroll.trim(),
+      "classroll": parsedRoll ?? classroll.trim(),
       "email": email.trim(),
       "password": pass.trim(),
     });

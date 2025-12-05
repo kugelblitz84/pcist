@@ -442,16 +442,26 @@ class Ontapprocesses {
   }
 
   static Future<void> DownloadPadStatement({
-    required String statement,
+    required File statementPdf,
     required List<dynamic> authorizers,
     required String contactEmail,
     required String contactPhone,
     required String address,
   }) async {
     try {
+      if (LoggedInUserData.role != 2) {
+        Get.snackbar(
+          "Forbidden",
+          "Only admins can download PAD statements.",
+          backgroundColor: Colors.red.withOpacity(0.1),
+          colorText: Colors.red[800],
+          icon: const Icon(Icons.error, color: Colors.red),
+        );
+        return;
+      }
       // Use the new Dio-based download helper
       await DownloadHelper.downloadPadStatement(
-        statement: statement,
+        statementPdf: statementPdf,
         authorizers: authorizers
             .map((auth) => auth.toMap() as Map<String, String>)
             .toList(),

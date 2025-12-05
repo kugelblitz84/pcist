@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pcist/services/downloadService.dart';
@@ -41,7 +42,7 @@ class DownloadHelper {
 
   // Download PAD statement with progress dialog
   static Future<void> downloadPadStatement({
-    required String statement,
+    required File statementPdf,
     required List<Map<String, String>> authorizers,
     required String contactEmail,
     required String contactPhone,
@@ -60,7 +61,7 @@ class DownloadHelper {
       dialogShown = true;
 
       final result = await DownloadService.downloadPadStatement(
-        statement: statement,
+        statementPdf: statementPdf,
         authorizers: authorizers,
         contactEmail: contactEmail,
         contactPhone: contactPhone,
@@ -117,46 +118,48 @@ class DownloadHelper {
   }
 
   // Download PAD statement by ID with progress dialog
-  static Future<void> downloadPadById(String id) async {
-    String filename = 'pcIST-statement-$id.pdf';
+  static Future<void> downloadPadById({
+    required String padId,
+    String? suggestedFileName,
+    bool showBackButton = false,
+  }) async {
+    final resolvedFilename = DownloadService.generatePadFilename(
+      defaultName: suggestedFileName ?? 'pcIST-statement-$padId.pdf',
+    );
+
     bool dialogShown = false;
 
     try {
-      // Show progress dialog
       DownloadService.showDownloadProgress(
         title: 'Downloading PAD Statement',
-        filename: filename,
+        filename: resolvedFilename,
       );
       dialogShown = true;
 
       final result = await DownloadService.downloadPadById(
-        id,
-        onStart: () {
-          // Progress dialog is already shown
-        },
+        padId,
+        preferredFileName: resolvedFilename,
+        onStart: () {},
         onProgress: (received, total) {
-          // Could update progress here if needed
+          // Reserved for future granular updates
         },
       );
 
-      // Close progress dialog safely
       if (dialogShown) {
         _safeCloseDialog();
         dialogShown = false;
       }
 
-      print("PAD download by ID result: $result"); // Debug logging
-
       if (result['success']) {
-        // Show success popup using helper method
         await _showSuccessDialog(
           title: 'PAD Statement downloaded successfully!',
-          filename: result['filename'] ?? filename,
+          filename: result['filename'] ?? resolvedFilename,
           filePath: result['filePath'] ?? '',
+          showBackButton: showBackButton,
         );
       } else {
         Get.snackbar(
-          "Download Failed",
+          'Download Failed',
           result['message'] ?? 'Unknown error occurred',
           backgroundColor: Colors.red.withOpacity(0.1),
           colorText: Colors.red[800],
@@ -167,16 +170,16 @@ class DownloadHelper {
         );
       }
     } catch (e) {
-      // Close progress dialog safely if still open
       if (dialogShown) {
         _safeCloseDialog();
       }
       Get.snackbar(
-        "Error",
-        "Failed to download PAD statement: $e",
+        'Error',
+        'Failed to download PAD statement: $e',
         backgroundColor: Colors.red.withOpacity(0.1),
         colorText: Colors.red[800],
         icon: const Icon(Icons.error, color: Colors.red),
+        snackPosition: SnackPosition.BOTTOM,
       );
     }
   }

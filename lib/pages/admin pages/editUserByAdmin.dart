@@ -117,7 +117,7 @@ class _EditUserByAdminState extends State<EditUserByAdmin> {
 
         final body = jsonEncode({
           "slug": slug,
-          "membership": "true",
+          "membership": true,
           "durationInMonths": selectedMonths, // Send this to backend
         });
 

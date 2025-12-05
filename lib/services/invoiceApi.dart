@@ -19,8 +19,10 @@ class InvoiceApi {
   }) async {
     final uri = Uri.http(Secret.siteLink, '/api/v1/user/invoice/send');
     final token = await Tokenprocess.readToken();
+    final slug = token['slug'] ?? '';
 
     final body = jsonEncode({
+      "slug": slug,
       "receiverEmail": receiverEmail,
       "subject": subject,
       "products": products,
@@ -33,7 +35,7 @@ class InvoiceApi {
 
     final headers = {
       'Content-Type': 'application/json',
-      'authorization': 'Bearer ${token['token']}',
+      'authorization': 'Bearer ${token['authToken']}',
     };
 
     try {
@@ -57,8 +59,10 @@ class InvoiceApi {
   }) async {
     final uri = Uri.http(Secret.siteLink, '/api/v1/user/invoice/download');
     final token = await Tokenprocess.readToken();
+    final slug = token['slug'] ?? '';
 
     final body = jsonEncode({
+      "slug": slug,
       "products": products,
       "authorizerName": authorizerName,
       "authorizerDesignation": authorizerDesignation,
@@ -69,7 +73,7 @@ class InvoiceApi {
 
     final headers = {
       'Content-Type': 'application/json',
-      'authorization': 'Bearer ${token['token']}',
+      'authorization': 'Bearer ${token['authToken']}',
     };
 
     try {
@@ -110,10 +114,16 @@ class InvoiceApi {
 
   // Download Invoice by ID
   static Future<Map<String, dynamic>> downloadInvoiceById(String id) async {
-    final uri = Uri.http(Secret.siteLink, '/api/v1/user/invoice/download/$id');
     final token = await Tokenprocess.readToken();
+    final slug = token['slug'] ?? '';
+    final uri = Uri.http(Secret.siteLink, '/api/v1/user/invoice/download/$id', {
+      'slug': slug,
+    });
 
-    final headers = {'authorization': 'Bearer ${token['token']}'};
+    final headers = {
+      'authorization': 'Bearer ${token['authToken']}',
+      'x-user-slug': slug,
+    };
 
     try {
       final response = await http.get(uri, headers: headers);
@@ -157,15 +167,18 @@ class InvoiceApi {
     int limit = 10,
   }) async {
     try {
+      final token = await Tokenprocess.readToken();
+      final slug = token['slug'] ?? '';
       final uri = Uri.http(Secret.siteLink, '/api/v1/user/invoice/history', {
         'page': page.toString(),
         'limit': limit.toString(),
+        'slug': slug,
       });
-      final token = await Tokenprocess.readToken();
 
       final headers = {
         'Content-Type': 'application/json',
-        'authorization': 'Bearer ${token['token']}',
+        'authorization': 'Bearer ${token['authToken']}',
+        'x-user-slug': slug,
       };
 
       final response = await http.get(uri, headers: headers);

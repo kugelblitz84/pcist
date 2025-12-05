@@ -1,14 +1,24 @@
 // Enhanced Download System Usage Examples
 // This file demonstrates how to use the new Dio-based download system with open_file integration
 
+import 'dart:io';
+
 import 'package:pcist/services/downloadHelper.dart';
 import 'package:pcist/services/downloadService.dart';
 
 class DownloadUsageExamples {
   // Example 1: Simple PAD statement download
   static Future<void> downloadPadExample() async {
+    // Provide the PAD PDF generated from your official template
+    final statementPdf = File('/path/to/generated-pad.pdf');
+    if (!await statementPdf.exists()) {
+      throw Exception(
+        'Provide a valid PAD PDF file before running this example.',
+      );
+    }
+
     await DownloadHelper.downloadPadStatement(
-      statement: "Payment Authorization Document for Project XYZ",
+      statementPdf: statementPdf,
       authorizers: [
         {"name": "John Doe", "designation": "Project Manager"},
         {"name": "Jane Smith", "designation": "Finance Director"},
@@ -27,7 +37,7 @@ class DownloadUsageExamples {
 
   // Example 2: Download existing document by ID
   static Future<void> downloadExistingPad(String padId) async {
-    await DownloadHelper.downloadPadById(padId);
+    await DownloadHelper.downloadPadById(padId: padId, showBackButton: false);
 
     // Downloads folder locations by platform:
     // Windows: ~/Downloads/pcIST Downloads/
@@ -92,21 +102,20 @@ class DownloadUsageExamples {
   }
 
   // Example 6: Advanced usage with custom progress handling
-  static Future<void> advancedDownloadExample() async {
-    final result = await DownloadService.downloadPadStatement(
-      statement: "Advanced PAD Statement",
-      authorizers: [
-        {"name": "Admin", "designation": "Administrator"},
-      ],
-      contactEmail: "admin@example.com",
-      contactPhone: "123-456-7890",
-      address: "Admin Office",
+  static Future<void> advancedDownloadExample(String padId) async {
+    final result = await DownloadService.downloadPadById(
+      padId,
+      preferredFileName: 'pcIST-sample.pdf',
       onStart: () {
         print("Download started");
       },
       onProgress: (received, total) {
-        final percentage = (received / total * 100).toStringAsFixed(1);
-        print("Download progress: $percentage%");
+        if (total > 0) {
+          final percentage = (received / total * 100).toStringAsFixed(1);
+          print("Download progress: $percentage%");
+        } else {
+          print("Download received $received bytes");
+        }
       },
       onComplete: () {
         print("Download completed");

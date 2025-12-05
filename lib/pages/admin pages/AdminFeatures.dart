@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
+import 'package:pcist/secret.dart';
 
 class AdminFeatures extends StatelessWidget {
   const AdminFeatures({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Guard: non-admins should not access this screen
+    final isAdmin = LoggedInUserData.role == 2;
+    if (!isAdmin) {
+      return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Get.back(),
+          ),
+          title: const Text('Admin Features'),
+        ),
+        body: const Center(
+          child: Text('You do not have permission to access admin features.'),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

@@ -62,12 +62,36 @@ class _PadHistoryPageState extends State<PadHistoryPage> {
     }
   }
 
-  Future<void> _downloadPadById(String id) async {
+  Future<void> _downloadPadById(PadStatement pad) async {
+    final padId = pad.id?.trim() ?? '';
+    if (padId.isEmpty) {
+      Get.snackbar(
+        'Unavailable',
+        'This PAD entry is missing its reference ID and cannot be downloaded.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    final serialSlug = (pad.serial?.trim().isNotEmpty ?? false)
+        ? pad.serial!.trim().replaceAll(RegExp(r'\s+'), '_')
+        : null;
+
     try {
-      // Use the new Dio-based download helper
-      await DownloadHelper.downloadPadById(id);
+      await DownloadHelper.downloadPadById(
+        padId: padId,
+        suggestedFileName: serialSlug != null
+            ? 'pcIST-${serialSlug.toLowerCase()}.pdf'
+            : null,
+        showBackButton: false,
+      );
     } catch (e) {
-      Get.snackbar("Error", "An error occurred: $e");
+      Get.snackbar(
+        backgroundColor: Colors.red,
+        'Error',
+        'Failed to download PAD statement: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -180,6 +204,9 @@ class _PadHistoryPageState extends State<PadHistoryPage> {
                   itemCount: padStatements.length,
                   itemBuilder: (context, index) {
                     final pad = padStatements[index];
+                    final hasPadId = pad.id?.isNotEmpty ?? false;
+                    final hasPdfLink = pad.pdfUrl?.isNotEmpty ?? false;
+                    final canDownload = hasPadId && hasPdfLink;
                     return Card(
                       margin: const EdgeInsets.only(bottom: 16),
                       elevation: 2,
@@ -212,26 +239,26 @@ class _PadHistoryPageState extends State<PadHistoryPage> {
                                   ),
                                 ),
                                 const Spacer(),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: pad.sent == true
-                                        ? Colors.green
-                                        : Colors.grey,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    pad.sent == true ? 'SENT' : 'DRAFT',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
+                                // Container(
+                                //   padding: const EdgeInsets.symmetric(
+                                //     horizontal: 8,
+                                //     vertical: 4,
+                                //   ),
+                                //   decoration: BoxDecoration(
+                                //     color: pad.sent == true
+                                //         ? Colors.green
+                                //         : Colors.grey,
+                                //     borderRadius: BorderRadius.circular(12),
+                                //   ),
+                                //   child: Text(
+                                //     pad.sent == true ? 'SENT' : 'DRAFT',
+                                //     style: const TextStyle(
+                                //       color: Colors.white,
+                                //       fontWeight: FontWeight.bold,
+                                //       fontSize: 12,
+                                //     ),
+                                //   ),
+                                // ),
                               ],
                             ),
                             const SizedBox(height: 12),
@@ -245,14 +272,32 @@ class _PadHistoryPageState extends State<PadHistoryPage> {
                                 ),
                               ),
                             const SizedBox(height: 8),
-                            Text(
-                              pad.statement.length > 100
-                                  ? '${pad.statement.substring(0, 100)}...'
-                                  : pad.statement,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black87,
-                              ),
+                            Builder(
+                              builder: (_) {
+                                final statementText = pad.statement?.trim();
+                                if (statementText == null ||
+                                    statementText.isEmpty) {
+                                  return const Text(
+                                    'No statement preview available for this PAD.',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black54,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  );
+                                }
+
+                                final truncated = statementText.length > 100
+                                    ? '${statementText.substring(0, 100)}...'
+                                    : statementText;
+                                return Text(
+                                  truncated,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
+                                );
+                              },
                             ),
                             const SizedBox(height: 12),
                             if (pad.authorizers.isNotEmpty)
@@ -358,7 +403,9 @@ class _PadHistoryPageState extends State<PadHistoryPage> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 ElevatedButton.icon(
-                                  onPressed: () => _downloadPadById(pad.id!),
+                                  onPressed: canDownload
+                                      ? () => _downloadPadById(pad)
+                                      : null,
                                   icon: const Icon(Icons.download, size: 16),
                                   label: const Text('Download'),
                                   style: ElevatedButton.styleFrom(
@@ -372,6 +419,28 @@ class _PadHistoryPageState extends State<PadHistoryPage> {
                                 ),
                               ],
                             ),
+                            if (!hasPadId)
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8.0),
+                                child: Text(
+                                  'No PAD identifier is available for this record yet.',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.redAccent,
+                                  ),
+                                ),
+                              )
+                            else if (!hasPdfLink)
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8.0),
+                                child: Text(
+                                  'No PDF has been attached to this PAD yet.',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.redAccent,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),

@@ -122,11 +122,16 @@ class EventApi {
 
   static Future<dynamic> uploadImagesToGallery(List<File> imageFiles) async {
     try {
+      final tokenData = await Tokenprocess.readToken();
+      final token = tokenData['authToken'];
+      final slug = tokenData['slug'] ?? '';
       final uri = Uri.http(
         Secret.siteLink,
         '/api/v1/event/upload_images_to_gallery',
       );
       var request = http.MultipartRequest("POST", uri);
+      request.headers['authorization'] = 'Bearer $token';
+      request.fields['slug'] = slug;
       //print(imageFiles);
       // imageFiles.map(
       //   (image) async => request.files.add(

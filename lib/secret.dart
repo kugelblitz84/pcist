@@ -1,7 +1,7 @@
 class Secret {
-  static final production = "pcist-backend-21023948f2fe.herokuapp.com";
-  static final development = "192.168.0.103:4000";
-  static final siteLink = production; // Change to development for local testing
+  static final prod = "pcist-backend-21023948f2fe.herokuapp.com";
+  static final dev = "192.168.0.102:4000"; //"192.168.0.103:4000";
+  static final siteLink = prod; // Change to development for local testing
 }
 
 class LoggedInUserData {
@@ -224,62 +224,92 @@ class PadAuthorizer {
 }
 
 class PadStatement {
-  String? id;
-  String? receiverEmail;
-  String? subject;
-  String statement;
-  List<PadAuthorizer> authorizers;
-  String contactEmail;
-  String contactPhone;
-  String address;
-  String? serial;
-  String? dateStr;
-  bool? sent;
-  String? sentAt;
-  String? downloadedAt;
-  String? createdAt;
-  String? updatedAt;
+  final String? id;
+  final String? receiverEmail;
+  final String? subject;
+  final String? statement;
+  final List<PadAuthorizer> authorizers;
+  final String? contactEmail;
+  final String? contactPhone;
+  final String? address;
+  final String? serial;
+  final String? dateStr;
+  final bool? sent;
+  final String? sentAt;
+  final String? downloadedAt;
+  final String? createdBy;
+  final String? pdfUrl;
+  final String? pdfPublicId;
+  final String? createdAt;
+  final String? updatedAt;
 
-  PadStatement({
+  const PadStatement({
     this.id,
     this.receiverEmail,
     this.subject,
-    required this.statement,
-    required this.authorizers,
-    required this.contactEmail,
-    required this.contactPhone,
-    required this.address,
+    this.statement,
+    List<PadAuthorizer>? authorizers,
+    this.contactEmail,
+    this.contactPhone,
+    this.address,
     this.serial,
     this.dateStr,
     this.sent,
     this.sentAt,
     this.downloadedAt,
+    this.createdBy,
+    this.pdfUrl,
+    this.pdfPublicId,
     this.createdAt,
     this.updatedAt,
-  });
+  }) : authorizers = authorizers ?? const [];
 
   factory PadStatement.fromMap(Map<String, dynamic> map) {
+    final rawAuthorizers = map['authorizers'] as List<dynamic>?;
     return PadStatement(
-      id: map['_id'],
-      receiverEmail: map['receiverEmail'],
-      subject: map['subject'],
-      statement: map['statement'] ?? '',
-      authorizers:
-          (map['authorizers'] as List<dynamic>?)
-              ?.map((auth) => PadAuthorizer.fromMap(auth))
-              .toList() ??
-          [],
-      contactEmail: map['contactEmail'] ?? '',
-      contactPhone: map['contactPhone'] ?? '',
-      address: map['address'] ?? '',
-      serial: map['serial'],
-      dateStr: map['dateStr'],
-      sent: map['sent'],
-      sentAt: map['sentAt'],
-      downloadedAt: map['downloadedAt'],
-      createdAt: map['createdAt'],
-      updatedAt: map['updatedAt'],
+      id: map['_id']?.toString(),
+      receiverEmail: map['receiverEmail']?.toString(),
+      subject: map['subject']?.toString(),
+      statement: map['statement']?.toString(),
+      authorizers: rawAuthorizers == null
+          ? const []
+          : rawAuthorizers
+                .map(
+                  (auth) => PadAuthorizer.fromMap(
+                    (auth as Map?)?.cast<String, dynamic>() ??
+                        <String, dynamic>{},
+                  ),
+                )
+                .where((auth) => auth.name.isNotEmpty || auth.role.isNotEmpty)
+                .toList(),
+      contactEmail: map['contactEmail']?.toString(),
+      contactPhone: map['contactPhone']?.toString(),
+      address: map['address']?.toString(),
+      serial: map['serial']?.toString(),
+      dateStr: map['dateStr']?.toString(),
+      sent: map['sent'] as bool?,
+      sentAt: map['sentAt']?.toString(),
+      downloadedAt: map['downloadedAt']?.toString(),
+      createdBy: _resolveCreatedBy(map['createdBy']),
+      pdfUrl: map['pdfUrl']?.toString(),
+      pdfPublicId: map['pdfPublicId']?.toString(),
+      createdAt: map['createdAt']?.toString(),
+      updatedAt: map['updatedAt']?.toString(),
     );
+  }
+
+  static String? _resolveCreatedBy(dynamic rawCreatedBy) {
+    if (rawCreatedBy == null) {
+      return null;
+    }
+    if (rawCreatedBy is String) {
+      return rawCreatedBy;
+    }
+    if (rawCreatedBy is Map) {
+      final map = rawCreatedBy.cast<String, dynamic>();
+      return map['_id']?.toString() ?? map['id']?.toString();
+    }
+    return rawCreatedBy.toString();
   }
 }
 

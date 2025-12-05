@@ -1,9 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pcist/secret.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:pcist/services/pdfTextExtractor.dart';
 
 class CreatePadPage extends StatefulWidget {
   const CreatePadPage({super.key});
@@ -14,31 +14,32 @@ class CreatePadPage extends StatefulWidget {
 
 class _CreatePadPageState extends State<CreatePadPage> {
   final _formKey = GlobalKey<FormState>();
-  final _statementController = TextEditingController();
   final _contactEmailController = TextEditingController(
-    text: "contact@pcist.org",
+    text: "pcist25@gmail.com",
   );
-  final _contactPhoneController = TextEditingController(text: "+8801XXXXXXXXX");
+  final _contactPhoneController = TextEditingController(text: "+8801537624875");
   final _addressController = TextEditingController(
     text: "Institute of Science & Technology (IST), Dhaka",
   );
   final _receiverEmailController = TextEditingController();
   final _subjectController = TextEditingController();
+  final _statementController = TextEditingController();
 
   List<PadAuthorizer> authorizers = [];
 
   bool _sendViaEmail = false;
-  bool _isExtractingText = false;
-  String? _selectedFileName;
+  String? _attachedFileName;
+  PlatformFile? _attachedPdf;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
-    _statementController.dispose();
     _contactEmailController.dispose();
     _contactPhoneController.dispose();
     _addressController.dispose();
     _receiverEmailController.dispose();
     _subjectController.dispose();
+    _statementController.dispose();
     super.dispose();
   }
 
@@ -54,14 +55,16 @@ class _CreatePadPageState extends State<CreatePadPage> {
     });
   }
 
-  Future<void> _pickAndExtractPdfText() async {
-    try {
-      setState(() {
-        _isExtractingText = true;
-      });
+  void _clearAttachment() {
+    setState(() {
+      _attachedPdf = null;
+      _attachedFileName = null;
+    });
+  }
 
-      // Pick PDF file
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+  Future<void> _attachPdfOnly() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
         allowMultiple: false,
@@ -69,72 +72,52 @@ class _CreatePadPageState extends State<CreatePadPage> {
 
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.first;
-
         if (file.path != null) {
           setState(() {
-            _selectedFileName = file.name;
+            _attachedPdf = file;
+            _attachedFileName = file.name;
           });
 
-          // Extract text from PDF
-          String extractedText = await PdfTextExtractor.extractTextFromPdf(
-            file.path!,
+          Get.snackbar(
+            'Attached',
+            'PDF file attached successfully',
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.TOP,
           );
-
-          if (extractedText.isNotEmpty) {
-            setState(() {
-              _statementController.text = extractedText;
-            });
-
-            Get.snackbar(
-              'Success',
-              'PDF text extracted successfully!',
-              backgroundColor: Colors.green,
-              colorText: Colors.white,
-              snackPosition: SnackPosition.TOP,
-            );
-          } else {
-            Get.snackbar(
-              'Warning',
-              'No text could be extracted from the PDF file.',
-              backgroundColor: Colors.orange,
-              colorText: Colors.white,
-              snackPosition: SnackPosition.TOP,
-            );
-          }
         }
       }
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to extract text from PDF: ${e.toString()}',
+        'Failed to attach PDF: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 5),
       );
-    } finally {
-      setState(() {
-        _isExtractingText = false;
-      });
     }
   }
 
-  void _clearStatement() {
-    setState(() {
-      _statementController.clear();
-      _selectedFileName = null;
-    });
+  Future<File?> _prepareStatementPdf() async {
+    if (_attachedPdf?.path != null) {
+      return File(_attachedPdf!.path!);
+    }
+    return null;
   }
 
-  void _generatePad() {
-    if (_formKey.currentState!.validate()) {
-      // Filter out empty authorizers
+  Future<void> _generatePad() async {
+    if (_isSubmitting) return;
+    if (!_formKey.currentState!.validate()) return;
+
+    try {
+      setState(() => _isSubmitting = true);
+
       final validAuthorizers = authorizers
           .where((auth) => auth.name.isNotEmpty && auth.role.isNotEmpty)
           .toList();
 
       if (_sendViaEmail) {
-        Ontapprocesses.SendPadStatement(
+        await Ontapprocesses.SendPadStatement(
           receiverEmail: _receiverEmailController.text,
           subject: _subjectController.text,
           statement: _statementController.text,
@@ -144,14 +127,28 @@ class _CreatePadPageState extends State<CreatePadPage> {
           address: _addressController.text,
         );
       } else {
-        Ontapprocesses.DownloadPadStatement(
-          statement: _statementController.text,
+        final pdfFile = await _prepareStatementPdf();
+        if (pdfFile == null || !await pdfFile.exists()) {
+          Get.snackbar(
+            'Missing PDF',
+            'Attach the generated PAD PDF before continuing.',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.TOP,
+          );
+          return;
+        }
+
+        await Ontapprocesses.DownloadPadStatement(
+          statementPdf: pdfFile,
           authorizers: validAuthorizers,
           contactEmail: _contactEmailController.text,
           contactPhone: _contactPhoneController.text,
           address: _addressController.text,
         );
       }
+    } finally {
+      setState(() => _isSubmitting = false);
     }
   }
 
@@ -255,9 +252,27 @@ class _CreatePadPageState extends State<CreatePadPage> {
                       },
                     ),
                     const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _statementController,
+                      maxLines: 6,
+                      decoration: const InputDecoration(
+                        labelText: 'Statement Text *',
+                        hintText:
+                            'Enter the official statement to include in the email',
+                        border: OutlineInputBorder(),
+                        alignLabelWithHint: true,
+                      ),
+                      validator: (value) {
+                        if (_sendViaEmail && (value == null || value.isEmpty)) {
+                          return 'Please enter the statement text';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
                   ],
 
-                  // Statement section with PDF import option
+                  // Statement section
                   const Text(
                     'Official Statement',
                     style: TextStyle(
@@ -267,106 +282,77 @@ class _CreatePadPageState extends State<CreatePadPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // PDF Import buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: _isExtractingText
-                              ? null
-                              : _pickAndExtractPdfText,
-                          icon: _isExtractingText
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.picture_as_pdf),
-                          label: Text(
-                            _isExtractingText
-                                ? 'Extracting...'
-                                : 'Import from PDF',
+                  if (!_sendViaEmail) ...[
+                    const Text(
+                      'Attach the generated PAD PDF created from the official template. Make sure the document already includes all required signatures and details.',
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _attachPdfOnly,
+                            icon: const Icon(Icons.attach_file),
+                            label: const Text('Attach PDF'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blueGrey.shade700,
+                              foregroundColor: Colors.white,
+                            ),
                           ),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton.icon(
+                          onPressed: _attachedPdf == null
+                              ? null
+                              : _clearAttachment,
+                          icon: const Icon(Icons.clear),
+                          label: const Text('Remove'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepOrange,
+                            backgroundColor: Colors.grey,
                             foregroundColor: Colors.white,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton.icon(
-                        onPressed: _statementController.text.isEmpty
-                            ? null
-                            : _clearStatement,
-                        icon: const Icon(Icons.clear),
-                        label: const Text('Clear'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey,
-                          foregroundColor: Colors.white,
+                      ],
+                    ),
+                    if (_attachedFileName != null) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade50,
+                          border: Border.all(color: Colors.green.shade200),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Attached PDF: $_attachedFileName',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            TextButton.icon(
+                              onPressed: _clearAttachment,
+                              icon: const Icon(Icons.close, size: 16),
+                              label: const Text('Remove attachment'),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
-
-                  if (_selectedFileName != null) ...[
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        border: Border.all(color: Colors.green.shade200),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Imported from: $_selectedFileName',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.green,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    const SizedBox(height: 24),
                   ],
-
-                  const SizedBox(height: 12),
-
-                  // Statement
-                  TextFormField(
-                    controller: _statementController,
-                    maxLines: 8,
-                    decoration: const InputDecoration(
-                      labelText: 'Official Statement *',
-                      hintText:
-                          'Enter the official statement content here or import from PDF...',
-                      border: OutlineInputBorder(),
-                      alignLabelWithHint: true,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter the statement or import from PDF';
-                      }
-                      if (value.length < 50) {
-                        return 'Statement should be at least 50 characters long';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
 
                   // Authorizers section header
                   const Text(
@@ -402,61 +388,75 @@ class _CreatePadPageState extends State<CreatePadPage> {
                       margin: const EdgeInsets.only(bottom: 16),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 121, 118, 118),
+                        ),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Column(
                         children: [
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
-                                child: TextFormField(
-                                  initialValue: authorizers[index].name,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Name',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.person),
-                                  ),
-                                  onChanged: (value) {
-                                    authorizers[index].name = value;
-                                  },
-                                  validator: (value) {
-                                    if (value != null &&
-                                        value.isNotEmpty &&
-                                        authorizers[index].role.isEmpty) {
-                                      return 'Please enter role when name is provided';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: TextFormField(
-                                  initialValue: authorizers[index].role,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Role/Designation',
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(Icons.work),
-                                  ),
-                                  onChanged: (value) {
-                                    authorizers[index].role = value;
-                                  },
-                                  validator: (value) {
-                                    if (value != null &&
-                                        value.isNotEmpty &&
-                                        authorizers[index].name.isEmpty) {
-                                      return 'Please enter name when role is provided';
-                                    }
-                                    return null;
-                                  },
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextFormField(
+                                      initialValue: authorizers[index].name,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Name',
+                                        border: OutlineInputBorder(),
+                                        prefixIcon: Icon(Icons.person),
+                                      ),
+                                      onChanged: (value) {
+                                        authorizers[index].name = value;
+                                      },
+                                      validator: (value) {
+                                        final val = value ?? '';
+                                        if (val.isNotEmpty &&
+                                            authorizers[index].role.isEmpty) {
+                                          return 'Please enter role when name is provided';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                    TextFormField(
+                                      initialValue: authorizers[index].role,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Role/Designation',
+                                        border: OutlineInputBorder(),
+                                        prefixIcon: Icon(Icons.work),
+                                      ),
+                                      onChanged: (value) {
+                                        authorizers[index].role = value;
+                                      },
+                                      validator: (value) {
+                                        final val = value ?? '';
+                                        if (val.isNotEmpty &&
+                                            authorizers[index].name.isEmpty) {
+                                          return 'Please enter name when role is provided';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              IconButton(
-                                onPressed: () => _removeAuthorizer(index),
-                                icon: const Icon(Icons.remove_circle),
-                                color: Colors.red,
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(),
+                                  IconButton(
+                                    onPressed: () => _removeAuthorizer(index),
+                                    icon: const Icon(
+                                      Icons.remove_circle_outline,
+                                    ),
+                                    color: Colors.red,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -552,10 +552,21 @@ class _CreatePadPageState extends State<CreatePadPage> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton.icon(
-                      onPressed: _generatePad,
-                      icon: Icon(_sendViaEmail ? Icons.send : Icons.download),
+                      onPressed: _isSubmitting ? null : _generatePad,
+                      icon: _isSubmitting
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Icon(_sendViaEmail ? Icons.send : Icons.download),
                       label: Text(
-                        _sendViaEmail
+                        _isSubmitting
+                            ? 'Processing...'
+                            : _sendViaEmail
                             ? 'Send PAD Statement'
                             : 'Download PAD Statement',
                       ),

@@ -1,79 +1,105 @@
 // ignore_for_file: non_constant_identifier_names, avoid_print, file_names
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:pcist/authProcesses/tokenProcess.dart';
 import 'package:pcist/secret.dart';
 
 class PadApi {
-  // Send PAD statement via email
-  static Future<dynamic> sendPadStatement({
+  // Send PAD statement via email (JSON body with plain text statement)
+  static Future<http.Response> sendPadStatement({
     required String receiverEmail,
-    required String subject,
     required String statement,
-    required List<Map<String, String>> authorizers,
-    required String contactEmail,
-    required String contactPhone,
-    required String address,
+    String? subject,
+    List<Map<String, String>>? authorizers,
+    String? contactEmail,
+    String? contactPhone,
+    String? address,
   }) async {
     final uri = Uri.http(Secret.siteLink, '/api/v1/user/pad/send');
     final token = await Tokenprocess.readToken();
+    final slug = token['slug'] ?? '';
 
-    final body = jsonEncode({
-      "receiverEmail": receiverEmail,
-      "subject": subject,
-      "statement": statement,
-      "authorizers": authorizers,
-      "contactEmail": contactEmail,
-      "contactPhone": contactPhone,
-      "address": address,
-    });
+    final Map<String, dynamic> bodyMap = {
+      'slug': slug,
+      'receiverEmail': receiverEmail,
+      'statement': statement,
+    };
+    if (subject != null && subject.isNotEmpty) bodyMap['subject'] = subject;
+    if (authorizers != null && authorizers.isNotEmpty) {
+      bodyMap['authorizers'] = authorizers;
+    }
+    if (contactEmail != null && contactEmail.isNotEmpty) {
+      bodyMap['contactEmail'] = contactEmail;
+    }
+    if (contactPhone != null && contactPhone.isNotEmpty) {
+      bodyMap['contactPhone'] = contactPhone;
+    }
+    if (address != null && address.isNotEmpty) bodyMap['address'] = address;
 
     final headers = {
       'Content-Type': 'application/json',
-      'authorization': 'Bearer ${token['token']}',
+      'authorization': 'Bearer ${token['authToken']}',
     };
 
     try {
-      final response = await http.post(uri, headers: headers, body: body);
+      final response = await http.post(
+        uri,
+        headers: headers,
+        body: jsonEncode(bodyMap),
+      );
       print("PAD Send Response: ${response.statusCode}");
       return response;
     } catch (e) {
       print("PAD Send Error: $e");
-      return e;
+      rethrow;
     }
   }
 
   // Download PAD statement as PDF
   static Future<Map<String, dynamic>> downloadPadStatement({
-    required String statement,
-    required List<Map<String, String>> authorizers,
-    required String contactEmail,
-    required String contactPhone,
-    required String address,
+    required File statementPdf,
+    List<Map<String, String>> authorizers = const [],
+    String? contactEmail,
+    String? contactPhone,
+    String? address,
   }) async {
     final uri = Uri.http(Secret.siteLink, '/api/v1/user/pad/download');
     final token = await Tokenprocess.readToken();
+    final slug = token['slug'] ?? '';
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['authorization'] = 'Bearer ${token['authToken']}'
+      ..fields['slug'] = slug;
 
-    final body = jsonEncode({
-      "statement": statement,
-      "authorizers": authorizers,
-      "contactEmail": contactEmail,
-      "contactPhone": contactPhone,
-      "address": address,
-    });
+    if (authorizers.isNotEmpty) {
+      request.fields['authorizers'] = jsonEncode(authorizers);
+    }
+    if (contactEmail != null && contactEmail.isNotEmpty) {
+      request.fields['contactEmail'] = contactEmail;
+    }
+    if (contactPhone != null && contactPhone.isNotEmpty) {
+      request.fields['contactPhone'] = contactPhone;
+    }
+    if (address != null && address.isNotEmpty) {
+      request.fields['address'] = address;
+    }
 
-    final headers = {
-      'Content-Type': 'application/json',
-      'authorization': 'Bearer ${token['token']}',
-    };
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'statementPdf',
+        statementPdf.path,
+        contentType: MediaType('application', 'pdf'),
+      ),
+    );
 
     try {
-      final response = await http.post(uri, headers: headers, body: body);
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
       print("PAD Download Response: ${response.statusCode}");
 
       if (response.statusCode == 200) {
-        // Extract filename from Content-Disposition header
         String filename = 'pcIST-statement.pdf';
         final contentDisposition = response.headers['content-disposition'];
         if (contentDisposition != null) {
@@ -110,10 +136,16 @@ class PadApi {
 
   // Download PAD statement by ID
   static Future<Map<String, dynamic>> downloadPadById(String id) async {
-    final uri = Uri.http(Secret.siteLink, '/api/v1/user/pad/download/$id');
     final token = await Tokenprocess.readToken();
+    final slug = token['slug'] ?? '';
+    final uri = Uri.http(Secret.siteLink, '/api/v1/user/pad/download/$id', {
+      'slug': slug,
+    });
 
-    final headers = {'authorization': 'Bearer ${token['token']}'};
+    final headers = {
+      'authorization': 'Bearer ${token['authToken']}',
+      'x-user-slug': slug,
+    };
 
     try {
       final response = await http.get(uri, headers: headers);
@@ -156,12 +188,16 @@ class PadApi {
 
   // Get PAD history
   static Future<dynamic> getPadHistory() async {
-    final uri = Uri.http(Secret.siteLink, '/api/v1/user/pad/history');
     final token = await Tokenprocess.readToken();
+    final slug = token['slug'] ?? '';
+    final uri = Uri.http(Secret.siteLink, '/api/v1/user/pad/history', {
+      'slug': slug,
+    });
 
     final headers = {
       'Content-Type': 'application/json',
-      'authorization': 'Bearer ${token['token']}',
+      'authorization': 'Bearer ${token['authToken']}',
+      'x-user-slug': slug,
     };
 
     try {

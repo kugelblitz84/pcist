@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pcist/config/userConfig.dart';
+import 'package:pcist/secret.dart';
 import 'package:pcist/pages/notfiications_pages.dart';
 import 'package:pcist/preocesses/onTapProcesses.dart';
 import 'package:pcist/pages/homeSections/entry_page.dart';
@@ -179,8 +180,9 @@ class HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      // Admin Features always visible for signed-in users
-                      if (UserConfig.isSignedIn.value)
+                      // Admin Features visible only for admins (role == 2)
+                      if (UserConfig.isSignedIn.value &&
+                          LoggedInUserData.role == 2)
                         FadeSlideIn(
                           delay: const Duration(milliseconds: 0),
                           child: _DrawerTile(
