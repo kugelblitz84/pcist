@@ -166,13 +166,9 @@ class InvoiceApi {
     try {
       final token = await Tokenprocess.readToken();
       final slug = token['slug'] ?? '';
-      final uri = Uri.http(
-        Secret.siteLink,
-        '/api/v1/user/invoice/history',
-        {
-          'slug': slug,
-        },
-      );
+      final uri = Uri.http(Secret.siteLink, '/api/v1/user/invoice/history', {
+        'slug': slug,
+      });
 
       final headers = {
         'Content-Type': 'application/json',
