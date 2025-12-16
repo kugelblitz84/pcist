@@ -161,19 +161,18 @@ class InvoiceApi {
     }
   }
 
-  // Get Invoice history with pagination
-  static Future<dynamic> getInvoiceHistory({
-    int page = 1,
-    int limit = 10,
-  }) async {
+  // Get Invoice history (admin-only)
+  static Future<dynamic> getInvoiceHistory() async {
     try {
       final token = await Tokenprocess.readToken();
       final slug = token['slug'] ?? '';
-      final uri = Uri.http(Secret.siteLink, '/api/v1/user/invoice/history', {
-        'page': page.toString(),
-        'limit': limit.toString(),
-        'slug': slug,
-      });
+      final uri = Uri.http(
+        Secret.siteLink,
+        '/api/v1/user/invoice/history',
+        {
+          'slug': slug,
+        },
+      );
 
       final headers = {
         'Content-Type': 'application/json',
@@ -183,7 +182,7 @@ class InvoiceApi {
 
       final response = await http.get(uri, headers: headers);
       print("Invoice History Response: ${response.statusCode}");
-      print("Invoice History Body: ${response.body}"); // For debugging
+      print("Invoice History Body: ${response.body}");
 
       return response;
     } catch (e) {

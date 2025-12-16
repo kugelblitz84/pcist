@@ -5,10 +5,16 @@ import 'package:pcist/services/downloadService.dart';
 
 class DownloadHelper {
   // Helper method to safely close progress dialog
-  static void _safeCloseDialog() {
+  static Future<void> _safeCloseDialog() async {
     try {
-      if (Get.isDialogOpen == true) {
-        Get.back();
+      // Attempt a few times in case overlays stack up
+      for (var i = 0; i < 3; i++) {
+        if (Get.isDialogOpen == true) {
+          Get.back(closeOverlays: true);
+          await Future.delayed(const Duration(milliseconds: 60));
+        } else {
+          break;
+        }
       }
     } catch (e) {
       // Ignore dialog close errors - prevents snackbar controller crashes
@@ -76,11 +82,11 @@ class DownloadHelper {
 
       // Close progress dialog safely
       if (dialogShown) {
-        _safeCloseDialog();
+        await _safeCloseDialog();
         dialogShown = false;
       }
 
-      print("PAD download result: $result"); // Debug logging
+      //print("PAD download result: $result"); // Debug logging
 
       if (result['success']) {
         // Show success popup using helper method
@@ -105,7 +111,7 @@ class DownloadHelper {
     } catch (e) {
       // Close progress dialog safely if still open
       if (dialogShown) {
-        _safeCloseDialog();
+        await _safeCloseDialog();
       }
       Get.snackbar(
         "Error",
@@ -146,7 +152,7 @@ class DownloadHelper {
       );
 
       if (dialogShown) {
-        _safeCloseDialog();
+        await _safeCloseDialog();
         dialogShown = false;
       }
 
@@ -171,7 +177,7 @@ class DownloadHelper {
       }
     } catch (e) {
       if (dialogShown) {
-        _safeCloseDialog();
+        await _safeCloseDialog();
       }
       Get.snackbar(
         'Error',
@@ -221,7 +227,7 @@ class DownloadHelper {
 
       // Close progress dialog safely
       if (dialogShown) {
-        _safeCloseDialog();
+        await _safeCloseDialog();
         dialogShown = false;
       }
 
@@ -250,7 +256,7 @@ class DownloadHelper {
     } catch (e) {
       // Close progress dialog safely if still open
       if (dialogShown) {
-        _safeCloseDialog();
+        await _safeCloseDialog();
       }
       Get.snackbar(
         "Error",
@@ -287,7 +293,7 @@ class DownloadHelper {
 
       // Close progress dialog safely
       if (dialogShown) {
-        _safeCloseDialog();
+        await _safeCloseDialog();
         dialogShown = false;
       }
 
@@ -315,7 +321,7 @@ class DownloadHelper {
     } catch (e) {
       // Close progress dialog safely if still open
       if (dialogShown) {
-        _safeCloseDialog();
+        await _safeCloseDialog();
       }
       Get.snackbar(
         "Error",

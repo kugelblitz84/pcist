@@ -16,9 +16,6 @@ class _InvoiceHistoryPageState extends State<InvoiceHistoryPage> {
   List<Invoice> invoices = [];
   bool isLoading = true;
   String errorMessage = '';
-  int currentPage = 1;
-  int totalPages = 1;
-  bool isLoadingMore = false;
 
   @override
   void initState() {
@@ -26,24 +23,14 @@ class _InvoiceHistoryPageState extends State<InvoiceHistoryPage> {
     _loadInvoiceHistory();
   }
 
-  Future<void> _loadInvoiceHistory({bool loadMore = false}) async {
+  Future<void> _loadInvoiceHistory() async {
     try {
-      if (!loadMore) {
-        setState(() {
-          isLoading = true;
-          errorMessage = '';
-          currentPage = 1;
-        });
-      } else {
-        setState(() {
-          isLoadingMore = true;
-        });
-      }
+      setState(() {
+        isLoading = true;
+        errorMessage = '';
+      });
 
-      final response = await InvoiceApi.getInvoiceHistory(
-        page: loadMore ? currentPage + 1 : 1,
-        limit: 10,
-      );
+      final response = await InvoiceApi.getInvoiceHistory();
 
       if (response.statusCode == 200) {
         try {
@@ -56,45 +43,24 @@ class _InvoiceHistoryPageState extends State<InvoiceHistoryPage> {
 
           if (data['success'] == true) {
             final List<dynamic> invoiceData = data['data'] ?? [];
-            final pagination = data['pagination'] ?? {};
 
             setState(() {
-              if (loadMore) {
-                invoices.addAll(
-                  invoiceData
-                      .map((invoice) => Invoice.fromMap(invoice))
-                      .toList(),
-                );
-                currentPage = currentPage + 1;
-                isLoadingMore = false;
-              } else {
-                invoices = invoiceData
-                    .map((invoice) => Invoice.fromMap(invoice))
-                    .toList();
-                currentPage = pagination['page'] ?? 1;
-                isLoading = false;
-              }
-              totalPages = pagination['pages'] ?? 1;
+              invoices = invoiceData
+                  .map((invoice) => Invoice.fromMap(invoice))
+                  .toList();
+              isLoading = false;
             });
           } else {
             setState(() {
               errorMessage =
                   data['message'] ?? 'Failed to load invoice history';
-              if (loadMore) {
-                isLoadingMore = false;
-              } else {
-                isLoading = false;
-              }
+              isLoading = false;
             });
           }
         } catch (jsonError) {
           setState(() {
             errorMessage = 'Failed to parse server response: $jsonError';
-            if (loadMore) {
-              isLoadingMore = false;
-            } else {
-              isLoading = false;
-            }
+            isLoading = false;
           });
         }
       } else {
@@ -103,11 +69,7 @@ class _InvoiceHistoryPageState extends State<InvoiceHistoryPage> {
             : 'No response data';
         setState(() {
           errorMessage = 'Server error (${response.statusCode}): $responseBody';
-          if (loadMore) {
-            isLoadingMore = false;
-          } else {
-            isLoading = false;
-          }
+          isLoading = false;
         });
       }
     } catch (e) {
@@ -123,12 +85,7 @@ class _InvoiceHistoryPageState extends State<InvoiceHistoryPage> {
         } else {
           errorMessage = 'An unexpected error occurred: ${e.toString()}';
         }
-
-        if (loadMore) {
-          isLoadingMore = false;
-        } else {
-          isLoading = false;
-        }
+        isLoading = false;
       });
     }
   }
@@ -251,17 +208,8 @@ class _InvoiceHistoryPageState extends State<InvoiceHistoryPage> {
                     Expanded(
                       child: ListView.builder(
                         padding: const EdgeInsets.all(16),
-                        itemCount: invoices.length + (isLoadingMore ? 1 : 0),
+                        itemCount: invoices.length,
                         itemBuilder: (context, index) {
-                          if (index == invoices.length) {
-                            return const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(16),
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-
                           final invoice = invoices[index];
                           return Card(
                             margin: const EdgeInsets.only(bottom: 16),
@@ -473,18 +421,6 @@ class _InvoiceHistoryPageState extends State<InvoiceHistoryPage> {
                         },
                       ),
                     ),
-                    if (currentPage < totalPages && !isLoadingMore)
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: ElevatedButton(
-                          onPressed: () => _loadInvoiceHistory(loadMore: true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepOrange,
-                            foregroundColor: Colors.white,
-                          ),
-                          child: const Text('Load More'),
-                        ),
-                      ),
                   ],
                 ),
         ),
