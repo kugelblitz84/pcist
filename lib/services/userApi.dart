@@ -44,24 +44,26 @@ class UserAPI {
     }
   }
 
-  static Future<dynamic> getUserData(String slug) async {
+  /// Fetch user data by slug. Requires authentication.
+  /// - Self or Admin: Returns full user data
+  /// - Other Users: Returns limited public profile data only
+  static Future<dynamic> getUserData(String slug, {required String token}) async {
     final dynamic response;
     final Uri uri;
-    // print("getUserdata called");
 
-    // print("inside uri");
     uri = Uri.http(Secret.siteLink, '/api/v1/user/get-user-data');
-    //print("uri made");
-    final headers = {'Content-Type': 'application/json'};
+    final headers = {
+      'Content-Type': 'application/json',
+      'authorization': 'Bearer $token',
+    };
     final body = jsonEncode({"slug": slug});
 
     try {
-      //print("calling for response");
       response = await http.post(uri, headers: headers, body: body);
       return response;
     } catch (err) {
-      print("error occured when retireving user data: $err");
-      return false;
+      print("Error occurred when retrieving user data: $err");
+      return null;
     }
   }
 
@@ -218,6 +220,10 @@ class UserAPI {
         ? List<String>.from(json['certificates'].map((e) => e.toString()))
         : [];
 
+    // Role-Based Access Control fields
+    LoggedInUserData.title = json['title']?.toString() ?? 'Member';
+    LoggedInUserData.treasurer = json['treasurer'] ?? false;
+
     // New myParticipations structure parsing
     try {
       final participations = json['myParticipations'];
@@ -247,5 +253,83 @@ class UserAPI {
     }
 
     print("setdata complete");
+  }
+
+  // ======================= ROLE & TITLE MANAGEMENT =======================
+
+  /// Update a user's organizational title (Admin only)
+  /// Valid titles: 'GS', 'JS', 'OS', 'Member'
+  static Future<dynamic> updateUserTitle({
+    required String token,
+    required String adminSlug,
+    required String userId,
+    required String title,
+  }) async {
+    try {
+      final uri = Uri.http(
+        Secret.siteLink,
+        '/api/v1/user/update-title/$userId',
+      );
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+      final body = jsonEncode({'slug': adminSlug, 'title': title});
+      final response = await http.put(uri, headers: headers, body: body);
+      return response;
+    } catch (e) {
+      print('Error updating user title: $e');
+      return null;
+    }
+  }
+
+  /// Toggle admin status for a user (Admin only)
+  static Future<dynamic> toggleAdminStatus({
+    required String token,
+    required String adminSlug,
+    required String userId,
+    required bool isAdmin,
+  }) async {
+    try {
+      final uri = Uri.http(
+        Secret.siteLink,
+        '/api/v1/user/toggle-admin/$userId',
+      );
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+      final body = jsonEncode({'slug': adminSlug, 'isAdmin': isAdmin});
+      final response = await http.put(uri, headers: headers, body: body);
+      return response;
+    } catch (e) {
+      print('Error toggling admin status: $e');
+      return null;
+    }
+  }
+
+  /// Toggle treasurer status for a user (Admin only)
+  static Future<dynamic> toggleTreasurerStatus({
+    required String token,
+    required String adminSlug,
+    required String userId,
+    required bool isTreasurer,
+  }) async {
+    try {
+      final uri = Uri.http(
+        Secret.siteLink,
+        '/api/v1/user/toggle-treasurer/$userId',
+      );
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+      final body = jsonEncode({'slug': adminSlug, 'isTreasurer': isTreasurer});
+      final response = await http.put(uri, headers: headers, body: body);
+      return response;
+    } catch (e) {
+      print('Error toggling treasurer status: $e');
+      return null;
+    }
   }
 }

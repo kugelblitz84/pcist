@@ -142,6 +142,36 @@ class UserDashboard extends StatelessWidget {
                         color: Colors.black87,
                       ),
                     ),
+                    // Title Badge - subtle display for organizational role
+                    if (LoggedInUserData.title != 'Member') ...[
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getTitleColor(
+                            LoggedInUserData.title,
+                          ).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _getTitleColor(
+                              LoggedInUserData.title,
+                            ).withOpacity(0.5),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          LoggedInUserData.titleFullName,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: _getTitleColor(LoggedInUserData.title),
+                          ),
+                        ),
+                      ),
+                    ],
                     if (!LoggedInUserData.isEmailVerified) ...[
                       SizedBox(height: 15),
                       Center(
@@ -504,5 +534,19 @@ class _ParticipationTile extends StatelessWidget {
       leading: Icon(icon, color: Colors.deepOrange),
       title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
     );
+  }
+}
+
+/// Helper function to get title badge color
+Color _getTitleColor(String title) {
+  switch (title) {
+    case 'GS':
+      return const Color(0xFFD4AF37); // Gold
+    case 'JS':
+      return const Color(0xFFC0C0C0); // Silver
+    case 'OS':
+      return const Color(0xFFCD7F32); // Bronze
+    default:
+      return Colors.grey;
   }
 }

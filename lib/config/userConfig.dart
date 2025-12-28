@@ -23,13 +23,15 @@ class UserConfig extends GetxController {
   static Future<void> initialiseUser() async {
     try {
       final tokenData = await Tokenprocess.readToken();
+      final token = tokenData['authToken'] ?? '';
+      final slug = tokenData['slug'] ?? '';
 
-      final response = await UserAPI.getUserData(tokenData["slug"] ?? "21010");
+      final response = await UserAPI.getUserData(slug, token: token);
       await Eventsconfig.initializeEvents();
       await SocketConfig.connect();
       // print(
       //     'initalize user class response from get userdata: ${response.statusCode}');
-      if (response.runtimeType == bool) {
+      if (response == null) {
         print('error in response');
         retryLater();
       } else if (response.statusCode == 200) {
@@ -104,6 +106,8 @@ class UserConfig extends GetxController {
     LoggedInUserData.cchandle = null;
     LoggedInUserData.badges = [];
     LoggedInUserData.certificates = [];
+    LoggedInUserData.title = 'Member';
+    LoggedInUserData.treasurer = false;
   }
 
   @override

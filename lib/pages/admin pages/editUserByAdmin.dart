@@ -36,8 +36,10 @@ class _EditUserByAdminState extends State<EditUserByAdmin> {
 
   void getMemberData() async {
     try {
-      final response = await UserAPI.getUserData(widget.slug);
-      if (response.statusCode == 200) {
+      final tokenData = await Tokenprocess.readToken();
+      final token = tokenData['authToken'] ?? '';
+      final response = await UserAPI.getUserData(widget.slug, token: token);
+      if (response != null && response.statusCode == 200) {
         final data = jsonDecode(response.body);
         //print("data fetched: $data");
         setState(() {

@@ -181,6 +181,7 @@ class HomePageState extends State<HomePage> {
                         ),
                       ),
                       // Admin Features visible only for admins (role == 2)
+                      // Treasurers see Invoice Management instead
                       if (UserConfig.isSignedIn.value &&
                           LoggedInUserData.role == 2)
                         FadeSlideIn(
@@ -190,6 +191,18 @@ class HomePageState extends State<HomePage> {
                             onTap: () {
                               _closeEndDrawer();
                               Get.toNamed('/adminFeatures');
+                            },
+                          ),
+                        )
+                      else if (UserConfig.isSignedIn.value &&
+                          LoggedInUserData.treasurer == true)
+                        FadeSlideIn(
+                          delay: const Duration(milliseconds: 0),
+                          child: _DrawerTile(
+                            title: 'Generate Invoice',
+                            onTap: () {
+                              _closeEndDrawer();
+                              Get.toNamed('/createInvoice');
                             },
                           ),
                         ),

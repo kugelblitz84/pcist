@@ -28,6 +28,28 @@ class LoggedInUserData {
   // New participation tracking
   static List<UserSoloParticipation> myParticipationsSolo = [];
   static List<UserTeamParticipation> myParticipationsTeam = [];
+  // Role-Based Access Control fields
+  static String title = 'Member'; // GS, JS, OS, Member
+  static bool treasurer = false;
+
+  // Helper getters for permissions
+  static bool get isAdmin => role == 2;
+  static bool get canManageInvoices => isAdmin || treasurer;
+  static bool get canManageUsers => isAdmin;
+
+  // Title display helper
+  static String get titleFullName {
+    switch (title) {
+      case 'GS':
+        return 'General Secretary';
+      case 'JS':
+        return 'Joint Secretary';
+      case 'OS':
+        return 'Organizing Secretary';
+      default:
+        return 'Member';
+    }
+  }
 }
 
 class UserSoloParticipation {
