@@ -47,7 +47,10 @@ class UserAPI {
   /// Fetch user data by slug. Requires authentication.
   /// - Self or Admin: Returns full user data
   /// - Other Users: Returns limited public profile data only
-  static Future<dynamic> getUserData(String slug, {required String token}) async {
+  static Future<dynamic> getUserData(
+    String slug, {
+    required String token,
+  }) async {
     final dynamic response;
     final Uri uri;
 

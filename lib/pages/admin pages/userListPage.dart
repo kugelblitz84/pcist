@@ -267,21 +267,28 @@ class _UserListPageState extends State<UserListPage> {
                                     ),
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         nameDisplay,
                                         style: TextStyle(
                                           fontWeight: FontWeight.w500,
-                                          fontStyle: isAdmin ? FontStyle.italic : FontStyle.normal,
-                                          color: isAdmin ? Colors.indigo : Colors.black87,
+                                          fontStyle: isAdmin
+                                              ? FontStyle.italic
+                                              : FontStyle.normal,
+                                          color: isAdmin
+                                              ? Colors.indigo
+                                              : Colors.black87,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       // Role indicators below name
                                       if (isAdmin || isTreasurer)
                                         Padding(
-                                          padding: const EdgeInsets.only(top: 2),
+                                          padding: const EdgeInsets.only(
+                                            top: 2,
+                                          ),
                                           child: Wrap(
                                             spacing: 4,
                                             children: [
@@ -291,7 +298,8 @@ class _UserListPageState extends State<UserListPage> {
                                                   style: TextStyle(
                                                     fontSize: 10,
                                                     fontStyle: FontStyle.italic,
-                                                    color: Colors.indigo.shade400,
+                                                    color:
+                                                        Colors.indigo.shade400,
                                                   ),
                                                 ),
                                               if (isTreasurer)
@@ -300,7 +308,8 @@ class _UserListPageState extends State<UserListPage> {
                                                   style: TextStyle(
                                                     fontSize: 10,
                                                     fontStyle: FontStyle.italic,
-                                                    color: Colors.green.shade600,
+                                                    color:
+                                                        Colors.green.shade600,
                                                   ),
                                                 ),
                                             ],
@@ -330,8 +339,12 @@ class _UserListPageState extends State<UserListPage> {
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: _getTitleColor(title).withOpacity(0.15),
-                                            borderRadius: BorderRadius.circular(4),
+                                            color: _getTitleColor(
+                                              title,
+                                            ).withOpacity(0.15),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
                                           ),
                                           child: Text(
                                             _getTitleShortName(title),
